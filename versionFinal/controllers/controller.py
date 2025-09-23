@@ -15,20 +15,20 @@ class ScriptController:
         self.script_thread = None
         
     def run(self):
-        from view import MainView
+        from main_view import MainView
         self.view = MainView(self)
-        self.view.withdraw()
+        self.view.withdraw()  # Ocultar ventana principal hasta login
         self.show_login()
         
     def show_login(self):
-        from view import LoginView
+        from login_view import LoginView
         self.login_view = LoginView(self.view, self)
         self.view.wait_window(self.login_view)
         
     def handle_login(self, username, password):
         if self.model.validate_credentials(username, password):
             self.login_view.destroy()
-            self.view.deiconify()
+            self.view.deiconify()  # Mostrar ventana principal
             self.view.update_status("Login exitoso. Selecciona un archivo CSV para comenzar.")
         else:
             messagebox.showerror("Error", "Usuario o contraseña incorrectos")
@@ -41,6 +41,7 @@ class ScriptController:
         if file_path:
             if self.model.load_csv(file_path):
                 self.view.csv_path.set(file_path)
+                # Mostrar logs recientes
                 for log in self.model.get_recent_logs(5):
                     self.view.update_status(log)
                     
@@ -63,6 +64,7 @@ class ScriptController:
         self.view.update_buttons(True, False)
         self.view.update_status("Script iniciado. Presiona ESC para pausar.")
         
+        # Iniciar el script en un hilo separado
         self.script_thread = threading.Thread(target=self.execute_script)
         self.script_thread.daemon = True
         self.script_thread.start()
@@ -95,7 +97,7 @@ class ScriptController:
             self.pause_script()
             
     def show_pause_dialog(self):
-        from view import PauseDialog
+        from pause_view import PauseDialog
         if self.pause_dialog is None or not self.pause_dialog.winfo_exists():
             self.pause_dialog = PauseDialog(self.view, self)
             
@@ -148,30 +150,29 @@ class ScriptController:
             self.view.after(0, lambda: self.view.update_buttons(False, False))
             
     def process_row(self, row, line_number):
-        """Procesa una fila individual del CSV - IMPLEMENTA AQUÍ TU LÓGICA ESPECÍFICA"""
+        """Procesa una fila individual del CSV"""
         self.model.add_log(f"Procesando línea {line_number}")
         self.view.update_status(f"Procesando línea {line_number}")
         
-        # EJEMPLO DE IMPLEMENTACIÓN - COMPLETA CON TU LÓGICA ESPECÍFICA
+        # Implementación de la lógica específica del script original
+        # Aquí debes colocar todas las acciones de tu script AutoHotkey
         
-        # 1. Click en lista
+        # Ejemplo de implementación:
         pyautogui.click(self.model.coords['select_list'])
         time.sleep(1.5)
         
-        # 2. Click en caso número
         pyautogui.click(self.model.coords['case_numero'])
         time.sleep(1.5)
         
-        # 3. Presionar delete
         pyautogui.press('delete')
         time.sleep(1)
         
-        # 4. Escribir valor de columna B (índice 1)
+        # Escribir valor de columna B (índice 1)
         value_b = str(row.iloc[1]) if pd.notna(row.iloc[1]) else ""
         pyautogui.write(value_b)
         time.sleep(1.5)
         
-        # 5. Verificar columna D (índice 3)
+        # Verificar columna D (índice 3)
         if pd.notna(row.iloc[3]) and row.iloc[3] > 0:
             pyautogui.click(1507, 650)  # Seleccionar punto USO
             time.sleep(2.5)
@@ -180,71 +181,11 @@ class ScriptController:
                 pyautogui.press('down')
                 time.sleep(2)
         
-        # 6. Presionar Actualizar
+        # Presionar Actualizar
         pyautogui.click(self.model.coords['actualizar'])
         time.sleep(1.5)
         
-        # 7. Verificar columna E (índice 4) para lógica U/V
-        if pd.notna(row.iloc[4]):
-            if row.iloc[4] == "U":
-                self.process_u_logic(row)
-            elif row.iloc[4] == "V":
-                self.process_v_logic(row)
-        
-        # 8. Continuar con el resto de tu lógica específica...
+        # Continuar con el resto de tu lógica específica...
+        # Implementa aquí todas las acciones de tu script original
         
         self.model.add_log(f"Línea {line_number} procesada exitosamente")
-    
-    def process_u_logic(self, row):
-        """Procesa la lógica para el caso U"""
-        pyautogui.click(self.model.coords['seleccionar_mapa'])
-        time.sleep(2)
-        
-        pyautogui.click(self.model.coords['asignar_un_nse'])
-        time.sleep(2)
-        
-        pyautogui.click(self.model.coords['casilla_un_nse'])
-        time.sleep(2)
-        
-        # Procesar columnas F a P (índices 5 a 15)
-        for col_index in range(5, 16):
-            if pd.notna(row.iloc[col_index]) and row.iloc[col_index] > 0:
-                if col_index in self.model.coords_select_u:
-                    x, y = self.model.coords_select_u[col_index]
-                    pyautogui.click(x, y)
-                    time.sleep(3)
-        
-        pyautogui.click(self.model.coords['confirmar_nse_u'])
-        time.sleep(2)
-    
-    def process_v_logic(self, row):
-        """Procesa la lógica para el caso V"""
-        pyautogui.click(self.model.coords['seleccionar_mapa'])
-        time.sleep(3)
-        
-        pyautogui.click(self.model.coords['asignar_varios_nse'])
-        time.sleep(3)
-        
-        # Procesar columnas F a P (índices 5 a 15)
-        for col_index in range(5, 16):
-            if pd.notna(row.iloc[col_index]) and row.iloc[col_index] > 0:
-                if col_index in self.model.coords_select_v:
-                    # Click en coordenada select
-                    x_cs, y_cs = self.model.coords_select_v[col_index]
-                    pyautogui.click(x_cs, y_cs)
-                    time.sleep(2)
-                    
-                    # Click en coordenada type
-                    x_ct, y_ct = self.model.coords_type_v[col_index]
-                    pyautogui.click(x_ct, y_ct)
-                    time.sleep(2)
-                    
-                    # Escribir valor
-                    pyautogui.write(str(row.iloc[col_index]))
-                    time.sleep(2)
-        
-        pyautogui.click(self.model.coords['confirmar_nse_v'])
-        time.sleep(2)
-        
-        pyautogui.click(self.model.coords['cerrar_asignar_nse'])
-        time.sleep(2)
