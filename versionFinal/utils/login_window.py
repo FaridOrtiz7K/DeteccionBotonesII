@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import logging
-from utils.config_manager import ConfigManager
+#from utils.config_manager import ConfigManager
 
 logger = logging.getLogger(__name__)
 
@@ -9,7 +9,7 @@ class LoginWindow(tk.Toplevel):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
-        self.config_manager = ConfigManager()
+        #self.config_manager = ConfigManager()
         self.title("Inicio de Sesión")
         self.geometry("300x200")
         self.resizable(False, False)

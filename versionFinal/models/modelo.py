@@ -1,5 +1,4 @@
 import pandas as pd
-import time
 from datetime import datetime
 
 class ScriptModel:
@@ -14,7 +13,7 @@ class ScriptModel:
         self.csv_file_path = ""
         self.script_log = []
         
-        # Configuración de coordenadas (estas deberían ajustarse según la resolución)
+        # Configuración de coordenadas
         self.coords = {
             'select_list': (89, 263),
             'case_numero': (1483, 519),
@@ -30,24 +29,6 @@ class ScriptModel:
             'detalle_nse': (100, 114),
             'cerrar_administrar_servicios': (882, 49),
             'logo_ge': (39, 55)
-        }
-        
-        self.coords_select_u = {
-            6: (1268, 637), 7: (1268, 661), 8: (1268, 685), 9: (1268, 709),
-            10: (1268, 733), 11: (1268, 757), 12: (1268, 781), 13: (1268, 825),
-            14: (1268, 856), 15: (1268, 881), 16: (1268, 908)
-        }
-        
-        self.coords_select_v = {
-            6: (1235, 563), 7: (1235, 602), 8: (1235, 630), 9: (1235, 668),
-            10: (1235, 702), 11: (1600, 563), 12: (1600, 602), 13: (1600, 630),
-            14: (1235, 772), 15: (1235, 804), 16: (1235, 838)
-        }
-        
-        self.coords_type_v = {
-            6: (1365, 563), 7: (1365, 602), 8: (1365, 630), 9: (1365, 668),
-            10: (1365, 702), 11: (1730, 563), 12: (1730, 602), 13: (1730, 630),
-            14: (1365, 772), 15: (1365, 804), 16: (1365, 838)
         }
 
     def load_csv(self, file_path):
@@ -82,7 +63,6 @@ class ScriptModel:
         timestamp = datetime.now().strftime("%H:%M:%S")
         log_entry = f"[{timestamp}] {message}"
         self.script_log.append(log_entry)
-        # Mantener solo los últimos 100 logs
         if len(self.script_log) > 100:
             self.script_log.pop(0)
 
@@ -90,7 +70,6 @@ class ScriptModel:
         return self.script_log[-count:] if self.script_log else []
 
     def validate_credentials(self, username, password):
-        # Aquí puedes implementar una validación más segura
         valid_users = {
             "admin": "admin",
             "user": "password"

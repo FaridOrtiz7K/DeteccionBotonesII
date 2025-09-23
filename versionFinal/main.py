@@ -1,13 +1,34 @@
-from controller import ScriptController
+import sys
+import os
 
+# Asegurar que Python encuentre los módulos en el mismo directorio
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(current_dir)
 
-def main():
-    # Asegurar que pyautogui falle rápido si hay error
+try:
+    from controller import ScriptController
     import pyautogui
-    pyautogui.FAILSAFE = True
     
-    app = ScriptController()
-    app.run()
+    def main():
+        # Configurar pyautogui
+        pyautogui.FAILSAFE = True
+        
+        # Crear y ejecutar la aplicación
+        app = ScriptController()
+        app.run()
+        
+        # Iniciar el loop principal de Tkinter
+        import tkinter as tk
+        tk.mainloop()
 
-if __name__ == "__main__":
-    main()
+    if __name__ == "__main__":
+        main()
+
+except ImportError as e:
+    print(f"Error de importación: {e}")
+    print("Asegúrate de que todos los archivos estén en el mismo directorio:")
+    print("- model.py")
+    print("- view.py") 
+    print("- controller.py")
+    print("- main.py")
+    input("Presiona Enter para salir...")
