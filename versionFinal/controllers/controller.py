@@ -1,13 +1,14 @@
 import tkinter.messagebox as messagebox
 import threading
 import time
+import pandas as pd
 import pyautogui
 from tkinter import filedialog
 
 class ScriptController:
     def __init__(self):
-        from model import ScriptModel
-        from view import MainView, LoginView, PauseDialog
+        from models import ScriptModel
+        from views import MainView, LoginView, PauseDialog
         
         self.model = ScriptModel()
         self.view = None
@@ -16,14 +17,14 @@ class ScriptController:
         self.script_thread = None
         
     def run(self):
-        from view import MainView, LoginView
+        from views import MainView, LoginView
         
         self.view = MainView(self)
         self.view.withdraw()  # Ocultar ventana principal hasta login
         self.show_login()
         
     def show_login(self):
-        from view import LoginView
+        from views import LoginView
         self.login_view = LoginView(self.view, self)
         self.view.wait_window(self.login_view)
         
@@ -99,7 +100,7 @@ class ScriptController:
             self.pause_script()
             
     def show_pause_dialog(self):
-        from view import PauseDialog
+        from views import PauseDialog
         if self.pause_dialog is None or not self.pause_dialog.winfo_exists():
             self.pause_dialog = PauseDialog(self.view, self)
             
