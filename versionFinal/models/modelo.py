@@ -71,7 +71,8 @@ class ScriptModel:
 
     def validate_credentials(self, username, password):
         valid_users = {
-            "admin": "admin",
-            "user": "password"
+            "admin": "123",
+            "user1": "password1",
+            "user2": "password2"
         }
         return username in valid_users and valid_users[username] == password

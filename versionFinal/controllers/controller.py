@@ -7,7 +7,7 @@ from tkinter import filedialog
 
 class ScriptController:
     def __init__(self):
-        from model import ScriptModel # pyright: ignore[reportMissingImports]
+        from models.modelo import ScriptModel # pyright: ignore[reportMissingImports]
         self.model = ScriptModel()
         self.view = None
         self.login_view = None
@@ -15,13 +15,13 @@ class ScriptController:
         self.script_thread = None
         
     def run(self):
-        from main_view import MainView # pyright: ignore[reportMissingImports]
+        from views.main_view import MainView # pyright: ignore[reportMissingImports]
         self.view = MainView(self)
         self.view.withdraw()  # Ocultar ventana principal hasta login
         self.show_login()
         
     def show_login(self):
-        from login_view import LoginView # pyright: ignore[reportMissingImports]
+        from views.login_view import LoginView # pyright: ignore[reportMissingImports]
         self.login_view = LoginView(self.view, self)
         self.view.wait_window(self.login_view)
         
