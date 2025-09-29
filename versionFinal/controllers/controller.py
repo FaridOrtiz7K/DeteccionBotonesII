@@ -8,7 +8,7 @@ from datetime import datetime
 
 class ScriptController:
     def __init__(self):
-        from model import ScriptModel
+        from models.modelo import ScriptModel
         self.model = ScriptModel()
         self.view = None
         self.login_view = None
@@ -16,13 +16,13 @@ class ScriptController:
         self.script_thread = None
         
     def run(self):
-        from main_view import MainView
+        from views.main_view import MainView
         self.view = MainView(self)
         self.view.withdraw()  # Ocultar ventana principal hasta login
         self.show_login()
         
     def show_login(self):
-        from login_view import LoginView
+        from views.login_view import LoginView
         self.login_view = LoginView(self.view, self)
         self.view.wait_window(self.login_view)
         
@@ -108,7 +108,7 @@ class ScriptController:
             self.pause_script()
             
     def show_pause_dialog(self):
-        from pause_view import PauseDialog
+        from views.pause_view import PauseDialog
         if self.pause_dialog is None or not self.pause_dialog.winfo_exists():
             self.pause_dialog = PauseDialog(self.view, self)
             
