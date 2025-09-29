@@ -1,0 +1,16 @@
+{
+    "select_list": [89, 263],
+    "case_numero": [1483, 519],
+    "actualizar": [1290, 349],
+    "seleccionar_mapa": [169, 189],
+    "asignar_un_nse": [1463, 382],
+    "casilla_un_nse": [1266, 590],
+    "asignar_varios_nse": [1491, 386],
+    "confirmar_nse_u": [1306, 639],
+    "confirmar_nse_v": [1648, 752],
+    "cerrar_asignar_nse": [1598, 823],
+    "administrar_servicios": [1563, 385],
+    "detalle_nse": [100, 114],
+    "cerrar_administrar_servicios": [882, 49],
+    "logo_ge": [39, 55]
+}
