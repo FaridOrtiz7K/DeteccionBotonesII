@@ -74,6 +74,7 @@ class ProcesadorCSV:
                 logger.error("No se pudo obtener el ID")
                 return False
                 
+            id_obtenido = int(id_obtenido)
             logger.info(f"ID obtenido: {id_obtenido}")
             
             # Paso 4: Buscar el ID en el CSV
