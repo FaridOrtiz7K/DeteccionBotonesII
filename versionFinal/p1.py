@@ -160,7 +160,7 @@ def main():
     pyautogui.FAILSAFE = True
     
     # Nombre del archivo CSV - cambia esto por tu archivo real
-    archivo_csv = "p1.csv"  # Cambia por el nombre real de tu CSV
+    archivo_csv = "NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"  # Cambia por el nombre real de tu CSV
     
     # Crear procesador
     procesador = ProcesadorCSV(archivo_csv)
