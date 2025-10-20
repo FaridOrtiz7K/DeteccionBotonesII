@@ -7,20 +7,27 @@ global LoopCount := 589
 global CSVFile := "NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
 global CurrentLine := 0
 global IsRunning := false
+global UseRelativeCoords := false
+global ReferenceImage := "VentanaAsignar.png"
+global ImageSearchArea := "0,0,A_ScreenWidth,A_ScreenHeight"
 
-; Coordenadas para tipo U
+; COORDENADAS RELATIVAS ACTUALIZADAS (de la tabla verde)
+global CoordsSelect := {6: [33, 92], 7: [33, 131], 8: [33, 159], 9: [33, 197]
+                   , 10: [33, 231], 11: [398, 92], 12: [398, 131], 13: [398, 159]
+                   , 14: [33, 301], 15: [33, 333], 16: [33, 367]}
+
+global CoordsType := {6: [163, 92], 7: [163, 131], 8: [163, 159], 9: [163, 197]
+                 , 10: [163, 231], 11: [528, 92], 12: [528, 131], 13: [528, 159]
+                 , 14: [163, 301], 15: [163, 333], 16: [163, 367]}
+
+; Coordenadas para botones (relativas)
+global CoordsAsignar := [446, 281]
+global CoordsCerrar := [396, 352]
+
+; Coordenadas para tipo U (mantenemos las absolutas por ahora)
 global CoordsSelectU := {6: [1268, 637], 7: [1268, 661], 8: [1268, 685], 9: [1268, 709]
                     , 10: [1268, 733], 11: [1268, 757], 12: [1268, 781], 13: [1268, 825]
                     , 14: [1268, 856], 15: [1268, 881], 16: [1268, 908]}
-
-; Coordenadas para tipo V
-global CoordsSelect := {6: [1235, 563], 7: [1235, 602], 8: [1235, 630], 9: [1235, 668]
-                   , 10: [1235, 702], 11: [1600, 563], 12: [1600, 602], 13: [1600, 630]
-                   , 14: [1235, 772], 15: [1235, 804], 16: [1235, 838]}
-
-global CoordsType := {6: [1365, 563], 7: [1365, 602], 8: [1365, 630], 9: [1365, 668]
-                 , 10: [1365, 702], 11: [1730, 563], 12: [1730, 602], 13: [1730, 630]
-                 , 14: [1365, 772], 15: [1365, 804], 16: [1365, 838]}
 
 ; Función principal de loop
 Loop {
@@ -38,6 +45,9 @@ Loop {
             LoopCount := Array[3]
             if (Array[4] != "") {
                 CSVFile := Array[4]
+            }
+            if (Array[5] != "") {
+                ReferenceImage := Array[5]
             }
             FileAppend, CONFIG_OK, ahk_response.txt
         }
@@ -63,6 +73,10 @@ Loop {
             } else {
                 FileAppend, IDLE, ahk_response.txt
             }
+        }
+        else if (comando_principal = "WAIT_FOR_IMAGE") {
+            result := DetectImage()
+            FileAppend, %result%, ahk_response.txt
         }
         
         ; Confirmación para Python
@@ -138,61 +152,24 @@ ExecuteNSEScript() {
         Click, 1290, 349
         Sleep, 1500
         
-        ; Manejar tipo U o V
+        ; Paso 2 - Abrir botón para asignar NSE
+        Click, 1648, 752  ; Clic en ASIGNAR (coordenada absoluta inicial)
+        Sleep, 3000
+        
+        ; ESPACIO PARA DETECCIÓN DE IMAGEN
+        imageResult := DetectImage()
+        if (UseRelativeCoords) {
+            FileAppend, IMAGE_DETECTION_SUCCESS, ahk_progress.txt
+        } else {
+            FileAppend, IMAGE_DETECTION_FAILED, ahk_progress.txt
+        }
+        
+        ; Manejar tipo U o V con coordenadas relativas si la imagen fue detectada
         if (columns[5] = "U") {
-            Click, 169, 189
-            Sleep, 2000
-            Click, 1463, 382
-            Sleep, 2000
-            Click, 1266, 590
-            Sleep, 2000
-            
-            ; Lógica U para columnas 6-16
-            Loop, 11 {
-                colIndex := A_Index + 5
-                if (columns[colIndex] > 0) {
-                    x := CoordsSelectU[colIndex][1]
-                    y := CoordsSelectU[colIndex][2]
-                    Click, %x% %y%
-                    Sleep, 3000
-                }
-            }
-            
-            Click, 1306, 639
-            Sleep, 2000
+            HandleTypeU(columns)
         }
         else if (columns[5] = "V") {
-            Click, 169, 189
-            Sleep, 3000
-            Click, 1491, 386
-            Sleep, 3000
-            
-            ; Lógica V para columnas 6-16
-            Loop, 11 {
-                colIndex := A_Index + 5
-                if (columns[colIndex] > 0) {
-                    ; Click en coordenada select
-                    x_cs := CoordsSelect[colIndex][1]
-                    y_cs := CoordsSelect[colIndex][2]
-                    Click, %x_cs% %y_cs%
-                    Sleep, 2000
-                    
-                    ; Click en coordenada type
-                    x_ct := CoordsType[colIndex][1]
-                    y_ct := CoordsType[colIndex][2]
-                    Click, %x_ct% %y_ct%
-                    Sleep, 2000
-                    
-                    ; Escribir valor
-                    Send, % columns[colIndex]
-                    Sleep, 2000
-                }
-            }
-            
-            Click, 1648, 752
-            Sleep, 2000
-            Click, 1598, 823
-            Sleep, 2000
+            HandleTypeV(columns)
         }
         
         ; Manejar servicios (columnas 18-26)
@@ -451,6 +428,82 @@ HandleErrorClick() {
     Loop, 5 {
         Click, 704, 384
         Sleep, 2000
+    }
+}
+
+; Nueva función para manejar tipo U
+HandleTypeU(columns) {
+    Click, 169, 189
+    Sleep, 2000
+    Click, 1463, 382
+    Sleep, 2000
+    Click, 1266, 590
+    Sleep, 2000
+    
+    ; Lógica U para columnas 6-16
+    Loop, 11 {
+        colIndex := A_Index + 5
+        if (columns[colIndex] > 0) {
+            x := CoordsSelectU[colIndex][1]
+            y := CoordsSelectU[colIndex][2]
+            Click, %x% %y%
+            Sleep, 3000
+        }
+    }
+    
+    Click, 1306, 639
+    Sleep, 2000
+}
+
+; Nueva función para manejar tipo V con coordenadas relativas
+HandleTypeV(columns) {
+    Click, 169, 189
+    Sleep, 3000
+    Click, 1491, 386
+    Sleep, 3000
+    
+    ; Lógica V para columnas 6-16 con coordenadas relativas
+    Loop, 11 {
+        colIndex := A_Index + 5
+        if (columns[colIndex] > 0) {
+            ; Usar coordenadas relativas de la tabla verde
+            x_cs := CoordsSelect[colIndex][1]  ; x-relativa
+            y_cs := CoordsSelect[colIndex][2]  ; y-relativa
+            x_ct := CoordsType[colIndex][1]    ; x-relativa  
+            y_ct := CoordsType[colIndex][2]    ; y-relativa
+            
+            Click, %x_cs% %y_cs%
+            Sleep, 2000
+            Click, %x_ct% %y_ct%
+            Sleep, 2000
+            Send, % columns[colIndex]
+            Sleep, 2000
+        }
+    }
+    
+    ; Usar coordenadas relativas para CERRAR
+    x_cerrar := CoordsCerrar[1]
+    y_cerrar := CoordsCerrar[2]
+    Click, %x_cerrar% %y_cerrar%
+    Sleep, 2000
+}
+
+; Función de detección de imagen
+DetectImage() {
+    ; Buscar la imagen de referencia
+    ImageSearch, FoundX, FoundY, %ImageSearchArea%, *50 %ReferenceImage%
+    
+    if (ErrorLevel = 0) {
+        ; Imagen encontrada - usar coordenadas relativas
+        UseRelativeCoords := true
+        return "IMAGE_DETECTED|" FoundX "|" FoundY
+    } else if (ErrorLevel = 1) {
+        ; Imagen no encontrada - usar coordenadas absolutas originales
+        UseRelativeCoords := false
+        return "IMAGE_NOT_FOUND"
+    } else {
+        UseRelativeCoords := false
+        return "IMAGE_SEARCH_ERROR"
     }
 }
 
