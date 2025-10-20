@@ -53,11 +53,13 @@ class AHKController:
         except Exception as e:
             return False, f"Error comunicándose con AHK: {str(e)}"
     
-    def set_config(self, start_count, loop_count, csv_file=None):
+    def set_config(self, start_count, loop_count, csv_file=None, reference_image=None):
         """Configura los parámetros del script"""
         params = [start_count, loop_count]
         if csv_file:
             params.append(csv_file)
+        if reference_image:
+            params.append(reference_image)
         return self.send_command("SET_CONFIG", params)
     
     def read_csv(self):
@@ -104,6 +106,7 @@ def main():
     start_count = 1
     loop_count = 589
     csv_file = r"NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
+    reference_image = "VentanaAsignar.png"
     
     # Inicializar controlador AHK
     ahk = AHKController()
@@ -131,9 +134,10 @@ def main():
     print(f"  - Inicia en: {start_count}")
     print(f"  - Número de lotes: {loop_count}")
     print(f"  - Archivo CSV: {csv_file}")
+    print(f"  - Imagen de referencia: {reference_image}")
     print()
     
-    success, response = ahk.set_config(start_count, loop_count, csv_file)
+    success, response = ahk.set_config(start_count, loop_count, csv_file, reference_image)
     if not success:
         print(f"❌ Error en configuración: {response}")
         input("Presiona Enter para salir...")
