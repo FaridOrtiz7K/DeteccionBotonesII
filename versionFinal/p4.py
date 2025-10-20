@@ -1,183 +1,235 @@
-import pyautogui
-import keyboard
-import time
-import csv
 import os
-from tkinter import messagebox
+import time
+import sys
 
-class GERouteAutomation:
+class AHKController:
     def __init__(self):
-        self.csv_file = r"C:\Users\cmf05\Documents\AutoHotkey\Nombres negocios SIGP.csv"
+        self.command_file = "ahk_command.txt"
+        self.done_file = "ahk_done.txt"
+        self.response_file = "ahk_response.txt"
+        self.progress_file = "ahk_progress.txt"
         
-    def check_files(self):
-        """Verifica que el archivo CSV exista"""
-        if not os.path.exists(self.csv_file):
-            messagebox.showerror("Error", f"El archivo CSV no existe en: {self.csv_file}")
-            return False
-        return True
-    
-    def read_csv_data(self):
-        """Lee los datos del CSV"""
+    def send_command(self, command, params=None):
+        """Envía un comando a AHK y espera respuesta"""
+        if params is None:
+            params = []
+            
+        # Limpiar archivos de respuesta anteriores
+        for file in [self.done_file, self.response_file, self.progress_file]:
+            if os.path.exists(file):
+                os.remove(file)
+        
+        # Escribir comando
+        command_str = command
+        if params:
+            command_str += "|" + "|".join(str(p) for p in params)
+            
         try:
-            with open(self.csv_file, 'r', encoding='utf-8') as file:
-                return list(csv.reader(file))
-        except Exception as e:
-            messagebox.showerror("Error", f"Error leyendo CSV: {str(e)}")
-            return None
-    
-    def safe_click(self, x, y, wait_time=1):
-        """Clic seguro con verificación de ESC"""
-        if keyboard.is_pressed('esc'):
-            return False
-        pyautogui.click(x, y)
-        time.sleep(wait_time)
-        return True
-    
-    def safe_type(self, text, wait_time=1):
-        """Escribir texto de forma segura"""
-        if keyboard.is_pressed('esc'):
-            return False
-        pyautogui.write(text)
-        time.sleep(wait_time)
-        return True
-    
-    def safe_press(self, key, wait_time=1):
-        """Presionar tecla de forma segura"""
-        if keyboard.is_pressed('esc'):
-            return False
-        pyautogui.press(key)
-        time.sleep(wait_time)
-        return True
-    
-    def execute_automation(self):
-        """Ejecuta la automatización principal"""
-        if not self.check_files():
-            return False
+            with open(self.command_file, 'w', encoding='utf-8') as f:
+                f.write(command_str)
             
-        lines = self.read_csv_data()
-        if not lines or len(lines) < 1:
-            messagebox.showerror("Error", "CSV vacío o con formato incorrecto")
-            return False
-        
-        messagebox.showinfo("Preparado", "Script listo. Posicione el cursor y espere 5 segundos.")
-        time.sleep(5)
-        
-        num_ra = 0  # Índice para las líneas del CSV
-        
-        for iteration in range(9):
-            if keyboard.is_pressed('esc'):
-                messagebox.showinfo("Información", "Script detenido por el usuario")
-                return True
+            # Esperar respuesta
+            timeout = 30  # 30 segundos máximo de espera
+            start_time = time.time()
+            
+            while not os.path.exists(self.done_file):
+                if time.time() - start_time > timeout:
+                    return False, "Timeout esperando respuesta de AHK"
+                time.sleep(0.1)
+            
+            # Leer respuesta si existe
+            response = "OK"
+            if os.path.exists(self.response_file):
+                with open(self.response_file, 'r', encoding='utf-8') as f:
+                    response = f.read().strip()
+                os.remove(self.response_file)
+            
+            # Limpiar archivo done
+            if os.path.exists(self.done_file):
+                os.remove(self.done_file)
                 
-            print(f"Procesando iteración {iteration + 1}/9")
+            return True, response
             
-            # Secuencia de clics para agregar ruta
-            steps = [
-                (327, 381, 2),   # Agregar ruta de GE
-                (1396, 608, 3),  # Archivo
-                (1406, 634, 3),  # Abrir
-                (1120, 666, 3),  # Documents
-            ]
-            
-            for x, y, wait in steps:
-                if not self.safe_click(x, y, wait):
-                    return True
-            
-            # Alt + n
-            if keyboard.is_pressed('esc'): return True
-            pyautogui.hotkey('alt', 'n')
-            time.sleep(3)
-            
-            # Escribir nombre del archivo KML
-            if num_ra < len(lines):
-                line_data = lines[num_ra]
-                if len(line_data) >= 1:
-                    kml_name = f"RA {line_data[0]}.kml"
-                    if not self.safe_type(kml_name, 1):
-                        return True
-            
-            time.sleep(3)
-            if not self.safe_press('enter', 3):
-                return True
-            
-            # Segunda secuencia de clics
-            steps2 = [
-                (327, 381, 2),   # Agregar ruta de GE
-                (1406, 675, 2),  # Cargar ruta
-                (70, 266, 2),    # Select Lote
-                (168, 188, 2),   # Seleccionar en el mapa
-                (1366, 384, 2),  # Anotar
-                (1449, 452, 2),  # Agregar texto adicional
-                (1421, 526, 2),  # Escriba el texto adicional
-            ]
-            
-            for x, y, wait in steps2:
-                if not self.safe_click(x, y, wait):
-                    return True
-            
-            # Limpiar campo y escribir texto
-            if not self.safe_press('backspace', 1):
-                return True
-            
-            if num_ra < len(lines):
-                line_data = lines[num_ra]
-                if len(line_data) >= 2:
-                    if not self.safe_type(line_data[1], 1):
-                        return True
-                    
-                    # Finalizar texto
-                    steps3 = [
-                        (1263, 572, 3),  # Agregar texto
-                        (1338, 570, 2),  # Cerrar
-                    ]
-                    
-                    for x, y, wait in steps3:
-                        if not self.safe_click(x, y, wait):
-                            return True
-            
-            # Guardar cada 10 iteraciones (aunque solo son 9)
-            if (iteration + 1) % 10 == 0:
-                if keyboard.is_pressed('esc'): return True
-                pyautogui.hotkey('ctrl', 's')
-                time.sleep(6)
-            
-            # Limpiar y pasar al siguiente
-            steps4 = [
-                (360, 980, 1),  # Limpiar trazo
-                (70, 266, 2),   # Select Lote
-            ]
-            
-            for x, y, wait in steps4:
-                if not self.safe_click(x, y, wait):
-                    return True
-            
-            if not self.safe_press('down', 2):
-                return True
-            
-            num_ra += 1
-        
-        # Guardar final
-        if keyboard.is_pressed('esc'): return True
-        pyautogui.hotkey('ctrl', 's')
-        time.sleep(6)
-        
-        messagebox.showinfo("Completado", "El script ha finalizado exitosamente!")
-        return True
+        except Exception as e:
+            return False, f"Error comunicándose con AHK: {str(e)}"
+    
+    def set_config(self, csv_file=None):
+        """Configura los parámetros del script"""
+        params = []
+        if csv_file:
+            params.append(csv_file)
+        return self.send_command("SET_CONFIG", params)
+    
+    def read_csv(self):
+        """Solicita leer el CSV"""
+        return self.send_command("READ_CSV")
+    
+    def execute_ge_route(self):
+        """Ejecuta el script GE Route completo"""
+        return self.send_command("EXECUTE_GE_ROUTE")
+    
+    def stop_script(self):
+        """Detiene el script en ejecución"""
+        return self.send_command("STOP_SCRIPT")
+    
+    def get_status(self):
+        """Obtiene el estado actual"""
+        return self.send_command("GET_STATUS")
+    
+    def get_progress(self):
+        """Obtiene el progreso actual"""
+        if os.path.exists(self.progress_file):
+            try:
+                with open(self.progress_file, 'r', encoding='utf-8') as f:
+                    progress_data = f.read().strip()
+                os.remove(self.progress_file)
+                return True, progress_data
+            except:
+                return False, "Error leyendo progreso"
+        return False, "No hay datos de progreso"
+
+def clear_screen():
+    """Limpia la pantalla de la consola"""
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def print_header():
+    """Imprime el encabezado del programa"""
+    print("=" * 60)
+    print("       CONTROLADOR GE ROUTE - AUTOMATIZACIÓN")
+    print("=" * 60)
+    print()
 
 def main():
-    """Función principal"""
-    pyautogui.FAILSAFE = True
-    pyautogui.PAUSE = 0.1
+    # Configuración inicial
+    csv_file = r"NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
     
-    print("=== Automatización de Rutas GE ===")
-    print("Instrucciones:")
-    print("1. Asegúrese de tener el archivo CSV en la ubicación correcta")
-    print("2. Abra la aplicación donde ejecutará el script")
-    print("3. El script comenzará automáticamente después de 5 segundos")
-    print("4. Presione ESC en cualquier momento para detener")
+    # Inicializar controlador AHK
+    ahk = AHKController()
     
-    automation = GERouteAutomation()
-    automation.execute_automation()
+    clear_screen()
+    print_header()
+    
+    # Verificar conexión con AHK
+    print("Verificando conexión con AutoHotkey...")
+    success, response = ahk.get_status()
+    
+    if not success:
+        print(f"❌ ERROR: No se pudo conectar con AutoHotkey")
+        print(f"   Mensaje: {response}")
+        print()
+        print("Asegúrate de que el script GE_Route_Automation.ahk esté en ejecución")
+        input("Presiona Enter para salir...")
+        return
+    
+    print("✅ Conexión con AutoHotkey establecida")
+    print()
+    
+    # Configurar parámetros
+    print("Configurando parámetros...")
+    print(f"  - Archivo CSV: {csv_file}")
+    print()
+    
+    success, response = ahk.set_config(csv_file)
+    if not success:
+        print(f"❌ Error en configuración: {response}")
+        input("Presiona Enter para salir...")
+        return
+    
+    print("✅ Configuración aplicada correctamente")
+    print()
+    
+    # Verificar CSV
+    print("Verificando archivo CSV...")
+    success, response = ahk.read_csv()
+    if not success:
+        print(f"❌ Error con el archivo CSV: {response}")
+        input("Presiona Enter para salir...")
+        return
+    
+    print("✅ Archivo CSV verificado correctamente")
+    print()
+    
+    # Confirmación final antes de ejecutar
+    print("⚠️  ADVERTENCIA: El script comenzará en 3 segundos")
+    print("   Asegúrate de que la ventana de GE esté activa")
+    print("   Presiona Ctrl+C para cancelar")
+    print()
+    
+    try:
+        input("Presiona Enter para INICIAR la automatización GE Route...")
+        
+        # Cuenta regresiva
+        for i in range(3, 0, -1):
+            print(f"▶️  Iniciando en {i}...")
+            time.sleep(1)
+        
+        print()
+        print("🚀 INICIANDO AUTOMATIZACIÓN GE ROUTE...")
+        print("   Presiona Ctrl+C en cualquier momento para detener")
+        print()
+        
+        # Ejecutar script GE Route
+        success, response = ahk.execute_ge_route()
+        if not success:
+            print(f"❌ Error al iniciar ejecución: {response}")
+            input("Presiona Enter para salir...")
+            return
+        
+        print("✅ Ejecución GE Route iniciada")
+        print()
+        
+        # Monitorear progreso
+        print("Monitoreando progreso...")
+        last_progress = 0
+        
+        try:
+            while True:
+                # Verificar estado
+                success, status = ahk.get_status()
+                if success:
+                    if "RUNNING" in status:
+                        # Obtener progreso
+                        success, progress = ahk.get_progress()
+                        if success and "PROGRESS" in progress:
+                            parts = progress.split("|")
+                            if len(parts) >= 2:
+                                current_iteration = parts[1]
+                                if current_iteration != last_progress:
+                                    print(f"📊 Procesando iteración: {current_iteration}/9")
+                                    last_progress = current_iteration
+                        else:
+                            print(".", end="", flush=True)
+                    elif "COMPLETED" in status:
+                        print()
+                        print("🎉 AUTOMATIZACIÓN COMPLETADA EXITOSAMENTE!")
+                        break
+                    elif "IDLE" in status:
+                        print()
+                        print("⏸️  Script en espera")
+                        break
+                    elif "STOPPED" in status:
+                        print()
+                        print("⏹️  Script detenido")
+                        break
+                else:
+                    print(f"❌ Error obteniendo estado: {status}")
+                    break
+                
+                time.sleep(2)
+                
+        except KeyboardInterrupt:
+            print()
+            print("🛑 Deteniendo script...")
+            ahk.stop_script()
+            print("Script detenido por el usuario")
+        
+        print()
+        input("Presiona Enter para salir...")
+        
+    except KeyboardInterrupt:
+        print()
+        print("❌ Ejecución cancelada por el usuario")
+        input("Presiona Enter para salir...")
 
 if __name__ == "__main__":
     main()
