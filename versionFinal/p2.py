@@ -9,9 +9,9 @@ from utils.ahk_writer import AHKWriter
 
 class NSEAutomation:
     def __init__(self):
-        self.start_count = 1
+        self.start_count = 1 # Línea específica a procesar (1-indexed)
         self.csv_file = "NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
-        self.reference_image = "asignar_nse_reference.png"
+        self.reference_image = "img/VentanaAsignar.png"
         self.is_running = False
         
         # Inicializar AHKWriter
@@ -265,7 +265,7 @@ def main():
             time.sleep(1)
         
         print()
-        print("🚀 INICIANDO AUTOMATIZACIÓN NSE (PROCESO ÚNICO)...")
+        print("🚀 INICIANDO AUTOMATIZACIÓN NSE ...")
         print("   Presiona Ctrl+C en cualquier momento para detener")
         print()
         
