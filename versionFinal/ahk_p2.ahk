@@ -33,68 +33,36 @@ Loop {
         Array := StrSplit(comando, "|")
         comando_principal := Array[1]
         
-        if (comando_principal = "CLICK") {
-            x := Array[2]
-            y := Array[3]
-            sleep_time := Array[4]
-            Click, %x% %y%
-            Sleep, %sleep_time%
-        }
-        else if (comando_principal = "SEND") {
-            texto := Array[2]
-            sleep_time := Array[3]
-            Send, %texto%
-            Sleep, %sleep_time%
-        }
-        else if (comando_principal = "PRESS") {
-            tecla := Array[2]
-            sleep_time := Array[3]
-            Send, {%tecla%}
-            Sleep, %sleep_time%
-        }
-        else if (comando_principal = "SET_CONFIG") {
+        if (comando_principal = "SET_CONFIG") {
             StartCount := Array[2]
             LoopCount := Array[3]
             if (Array[4] != "") {
                 CSVFile := Array[4]
             }
+            FileAppend, CONFIG_OK, ahk_response.txt
         }
         else if (comando_principal = "READ_CSV") {
             FileRead, csvContent, %CSVFile%
             if (csvContent = "") {
                 FileAppend, ERROR|No se pudo leer el CSV, ahk_response.txt
             } else {
-                FileAppend, SUCCESS, ahk_response.txt
+                FileAppend, CSV_OK, ahk_response.txt
             }
         }
         else if (comando_principal = "EXECUTE_NSE") {
             IsRunning := true
             ExecuteNSEScript()
-            IsRunning := false
         }
         else if (comando_principal = "STOP_SCRIPT") {
             IsRunning := false
             FileAppend, STOPPED, ahk_response.txt
-            ;ExitApp  ; Opcional: descomentar si quieres que se cierre completamente
         }
         else if (comando_principal = "GET_STATUS") {
             if (IsRunning) {
-                FileAppend, RUNNING|%CurrentLine%, ahk_response.txt
+                FileAppend, RUNNING, ahk_response.txt
             } else {
                 FileAppend, IDLE, ahk_response.txt
             }
-        }
-        else if (comando_principal = "U_LOGIC") {
-            ; Parámetros: col6|col7|...|col16
-            HandleULogic(Array)
-        }
-        else if (comando_principal = "V_LOGIC") {
-            ; Parámetros: col6|col7|...|col16
-            HandleVLogic(Array)
-        }
-        else if (comando_principal = "SERVICES") {
-            ; Parámetros: col18|col19|...|col26
-            HandleServices(Array)
         }
         
         ; Confirmación para Python
@@ -109,27 +77,36 @@ ExecuteNSEScript() {
     FileRead, csvContent, %CSVFile%
     if (csvContent = "") {
         FileAppend, ERROR|CSV vacío, ahk_response.txt
+        IsRunning := false
         return
     }
     
     lines := StrSplit(csvContent, "`n")
     if (lines.MaxIndex() < 1) {
         FileAppend, ERROR|CSV con formato incorrecto, ahk_response.txt
+        IsRunning := false
         return
     }
     
-    Sleep, 5000  ; Espera inicial
+    FileAppend, STARTED, ahk_response.txt
+    
+    Sleep, 3000  ; Espera inicial de 3 segundos
     
     Cont := StartCount
     
     Loop, %LoopCount% {
         if (!IsRunning) {
+            FileAppend, STOPPED, ahk_response.txt
             break
         }
         
         CurrentLine := Cont
         
         ; Parsear línea actual
+        if (Cont + 1 > lines.MaxIndex()) {
+            break
+        }
+        
         currentLine := lines[Cont + 1]
         columns := StrSplit(currentLine, ",")
         
@@ -170,17 +147,19 @@ ExecuteNSEScript() {
             Click, 1266, 590
             Sleep, 2000
             
-            ; Preparar parámetros para U_LOGIC
-            u_params := []
+            ; Lógica U para columnas 6-16
             Loop, 11 {
                 colIndex := A_Index + 5
                 if (columns[colIndex] > 0) {
-                    u_params.Push(columns[colIndex])
-                } else {
-                    u_params.Push(0)
+                    x := CoordsSelectU[colIndex][1]
+                    y := CoordsSelectU[colIndex][2]
+                    Click, %x% %y%
+                    Sleep, 3000
                 }
             }
-            HandleULogic(u_params)
+            
+            Click, 1306, 639
+            Sleep, 2000
         }
         else if (columns[5] = "V") {
             Click, 169, 189
@@ -188,32 +167,88 @@ ExecuteNSEScript() {
             Click, 1491, 386
             Sleep, 3000
             
-            ; Preparar parámetros para V_LOGIC
-            v_params := []
+            ; Lógica V para columnas 6-16
             Loop, 11 {
                 colIndex := A_Index + 5
                 if (columns[colIndex] > 0) {
-                    v_params.Push(columns[colIndex])
-                } else {
-                    v_params.Push(0)
+                    ; Click en coordenada select
+                    x_cs := CoordsSelect[colIndex][1]
+                    y_cs := CoordsSelect[colIndex][2]
+                    Click, %x_cs% %y_cs%
+                    Sleep, 2000
+                    
+                    ; Click en coordenada type
+                    x_ct := CoordsType[colIndex][1]
+                    y_ct := CoordsType[colIndex][2]
+                    Click, %x_ct% %y_ct%
+                    Sleep, 2000
+                    
+                    ; Escribir valor
+                    Send, % columns[colIndex]
+                    Sleep, 2000
                 }
             }
-            HandleVLogic(v_params)
+            
+            Click, 1648, 752
+            Sleep, 2000
+            Click, 1598, 823
+            Sleep, 2000
         }
         
-        ; Manejar servicios
+        ; Manejar servicios (columnas 18-26)
         if (columns[18] > 0) {
-            ; Preparar parámetros para SERVICES
-            service_params := []
-            Loop, 9 {
-                colIndex := A_Index + 18
-                if (columns[colIndex] > 0) {
-                    service_params.Push(columns[colIndex])
-                } else {
-                    service_params.Push(0)
-                }
+            Click, 1563, 385
+            Sleep, 2000
+            Click, 100, 114
+            Sleep, 2000
+            
+            ; VOZ COBRE TELMEX
+            if (columns[19] > 0) {
+                HandleVozCobre(columns[19])
             }
-            HandleServices(service_params)
+            
+            ; Datos s/dom
+            if (columns[20] > 0) {
+                HandleDatosSDom(columns[20])
+            }
+            
+            ; Datos-cobre-telmex-inf
+            if (columns[21] > 0) {
+                HandleDatosCobreTelmex(columns[21])
+            }
+            
+            ; Datos-fibra-telmex-inf
+            if (columns[22] > 0) {
+                HandleDatosFibraTelmex(columns[22])
+            }
+            
+            ; TV cable otros
+            if (columns[23] > 0) {
+                HandleTVCableOtros(columns[23])
+            }
+            
+            ; Dish
+            if (columns[24] > 0) {
+                HandleDish(columns[24])
+            }
+            
+            ; TVS
+            if (columns[25] > 0) {
+                HandleTVS(columns[25])
+            }
+            
+            ; SKY
+            if (columns[26] > 0) {
+                HandleSKY(columns[26])
+            }
+            
+            ; VETV
+            if (columns[27] > 0) {
+                HandleVETV(columns[27])
+            }
+            
+            Click, 882, 49
+            Sleep, 5000
         }
         
         ; Finalizar iteración
@@ -224,7 +259,7 @@ ExecuteNSEScript() {
         
         Cont++
         
-        ; Actualizar estado
+        ; Actualizar progreso
         FileAppend, PROGRESS|%Cont%, ahk_progress.txt
     }
     
@@ -232,86 +267,10 @@ ExecuteNSEScript() {
     Click, 39, 55
     
     FileAppend, COMPLETED, ahk_response.txt
-    
-    ; Presionar F5 cada 3 minutos hasta que se detenga
-    while (IsRunning) {
-        Send, {F5}
-        Sleep, 180000  ; 3 minutos
-    }
+    IsRunning := false
 }
 
-; Función para manejar lógica U
-HandleULogic(params) {
-    Loop, 11 {
-        colIndex := A_Index + 5
-        if (params[colIndex] > 0) {
-            x := CoordsSelectU[colIndex][1]
-            y := CoordsSelectU[colIndex][2]
-            Click, %x% %y%
-            Sleep, 3000
-        }
-    }
-    Click, 1306, 639
-    Sleep, 2000
-}
-
-; Función para manejar lógica V
-HandleVLogic(params) {
-    Loop, 11 {
-        colIndex := A_Index + 5
-        if (params[colIndex] > 0) {
-            ; Click en coordenada select
-            x_cs := CoordsSelect[colIndex][1]
-            y_cs := CoordsSelect[colIndex][2]
-            Click, %x_cs% %y_cs%
-            Sleep, 2000
-            
-            ; Click en coordenada type
-            x_ct := CoordsType[colIndex][1]
-            y_ct := CoordsType[colIndex][2]
-            Click, %x_ct% %y_ct%
-            Sleep, 2000
-            
-            ; Escribir valor
-            Send, % params[colIndex]
-            Sleep, 2000
-        }
-    }
-    Click, 1648, 752
-    Sleep, 2000
-    Click, 1598, 823
-    Sleep, 2000
-}
-
-; Función para manejar servicios
-HandleServices(params) {
-    Click, 1563, 385
-    Sleep, 2000
-    Click, 100, 114
-    Sleep, 2000
-    
-    ; VOZ COBRE TELMEX
-    if (params[1] > 0) {
-        HandleVozCobre(params[1])
-    }
-    
-    ; Datos s/dom
-    if (params[2] > 0) {
-        HandleDatosSDom(params[2])
-    }
-    
-    ; Datos-cobre-telmex-inf
-    if (params[3] > 0) {
-        HandleDatosCobreTelmex(params[3])
-    }
-    
-    ; ... (implementar los demás servicios de manera similar)
-    
-    Click, 882, 49
-    Sleep, 5000
-}
-
-; Funciones individuales de servicios (implementar según necesidad)
+; Funciones individuales de servicios
 HandleVozCobre(cantidad) {
     Click, 100, 114
     Sleep, 2000
@@ -340,10 +299,144 @@ HandleDatosSDom(cantidad) {
 }
 
 HandleDatosCobreTelmex(cantidad) {
-    ; Implementar según la lógica específica
     Click, 100, 114
     Sleep, 2000
-    ; ... más pasos
+    Click, 138, 269
+    Sleep, 2000
+    NavigateDown(2)
+    Click, 159, 355
+    Sleep, 2000
+    NavigateDown(1)
+    Click, 127, 383
+    Sleep, 2000
+    Send, %cantidad%
+    Sleep, 2000
+    Click, 82, 423
+    Sleep, 2000
+    HandleErrorClick()
+}
+
+HandleDatosFibraTelmex(cantidad) {
+    Click, 100, 114
+    Sleep, 2000
+    Click, 138, 269
+    Sleep, 2000
+    NavigateDown(2)
+    Click, 152, 294
+    Sleep, 2000
+    NavigateDown(1)
+    Click, 150, 323
+    Sleep, 2000
+    NavigateDown(1)
+    Click, 127, 383
+    Sleep, 2000
+    Send, %cantidad%
+    Sleep, 2000
+    Click, 82, 423
+    Sleep, 2000
+    HandleErrorClick()
+}
+
+HandleTVCableOtros(cantidad) {
+    Click, 100, 114
+    Sleep, 2000
+    Click, 138, 269
+    Sleep, 2000
+    NavigateDown(3)
+    Click, 150, 323
+    Sleep, 2000
+    NavigateDown(4)
+    Click, 127, 383
+    Sleep, 2000
+    Send, %cantidad%
+    Sleep, 2000
+    Click, 82, 423
+    Sleep, 2000
+    HandleErrorClick()
+}
+
+HandleDish(cantidad) {
+    Click, 100, 114
+    Sleep, 2000
+    Click, 138, 269
+    Sleep, 2000
+    NavigateDown(3)
+    Click, 152, 294
+    Sleep, 2000
+    NavigateDown(2)
+    Click, 150, 323
+    Sleep, 2000
+    NavigateDown(1)
+    Click, 127, 383
+    Sleep, 2000
+    Send, %cantidad%
+    Sleep, 2000
+    Click, 82, 423
+    Sleep, 2000
+    HandleErrorClick()
+}
+
+HandleTVS(cantidad) {
+    Click, 100, 114
+    Sleep, 2000
+    Click, 138, 269
+    Sleep, 2000
+    NavigateDown(3)
+    Click, 152, 294
+    Sleep, 2000
+    NavigateDown(2)
+    Click, 150, 323
+    Sleep, 2000
+    NavigateDown(2)
+    Click, 127, 383
+    Sleep, 2000
+    Send, %cantidad%
+    Sleep, 2000
+    Click, 82, 423
+    Sleep, 2000
+    HandleErrorClick()
+}
+
+HandleSKY(cantidad) {
+    Click, 100, 114
+    Sleep, 2000
+    Click, 138, 269
+    Sleep, 2000
+    NavigateDown(3)
+    Click, 152, 294
+    Sleep, 2000
+    NavigateDown(2)
+    Click, 150, 323
+    Sleep, 2000
+    NavigateDown(3)
+    Click, 127, 383
+    Sleep, 2000
+    Send, %cantidad%
+    Sleep, 2000
+    Click, 82, 423
+    Sleep, 2000
+    HandleErrorClick()
+}
+
+HandleVETV(cantidad) {
+    Click, 100, 114
+    Sleep, 2000
+    Click, 138, 269
+    Sleep, 2000
+    NavigateDown(3)
+    Click, 152, 294
+    Sleep, 2000
+    NavigateDown(2)
+    Click, 150, 323
+    Sleep, 2000
+    NavigateDown(5)
+    Click, 127, 383
+    Sleep, 2000
+    Send, %cantidad%
+    Sleep, 2000
+    Click, 82, 423
+    Sleep, 2000
+    HandleErrorClick()
 }
 
 ; Funciones auxiliares
