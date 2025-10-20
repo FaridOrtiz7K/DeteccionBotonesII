@@ -103,7 +103,7 @@ def main():
     # Configuración inicial
     start_count = 1
     loop_count = 589
-    csv_file = r"C:\Users\cmf05\Documents\AutoHotkey\NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
+    csv_file = r"NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
     
     # Inicializar controlador AHK
     ahk = AHKController()

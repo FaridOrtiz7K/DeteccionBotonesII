@@ -4,7 +4,7 @@
 ; Variables globales
 global StartCount := 1
 global LoopCount := 589
-global CSVFile := "C:\Users\cmf05\Documents\AutoHotkey\NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
+global CSVFile := "NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
 global CurrentLine := 0
 global IsRunning := false
 
