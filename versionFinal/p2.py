@@ -150,10 +150,12 @@ class NSEAutomation:
             if str(row[4]).strip().upper() != "V":
                 print(f"⚠️  Saltando línea {self.start_count} - No es tipo V: {row[4]}")
                 return
-            
-            # Paso directo - Abrir botón para asignar NSE
-            self.click(1648, 752)  # Clic en ASIGNAR
-            self.sleep(3)
+            # click en el boton seleccionar lote 
+            self.click(169, 189)
+            self.sleep(2)
+            # click en el boton asignar nse
+            self.click(1491, 386)
+            self.sleep(2)
             
             # ESPACIO PARA DETECCIÓN DE IMAGEN CON REINTENTOS
             image_found, base_location = self.wait_for_image_with_retries(self.reference_image, max_attempts=30)
@@ -181,16 +183,6 @@ class NSEAutomation:
         # Calcular coordenadas absolutas sumando las relativas a la posición base
         base_x, base_y = base_location
         
-        # Coordenadas absolutas para los primeros clics
-        click_1_x = base_x + 169
-        click_1_y = base_y + 189
-        click_2_x = base_x + 1491
-        click_2_y = base_y + 386
-        
-        self.click(click_1_x, click_1_y)
-        self.sleep(3)
-        self.click(click_2_x, click_2_y)
-        self.sleep(3)
         
         # Lógica V para columnas 7-17 con coordenadas relativas
         # Nota: row[6] a row[16] corresponden a columnas 7-17 (índices base 0)
