@@ -4,6 +4,9 @@ import sys
 import pandas as pd
 import logging
 import pyautogui
+import cv2
+import numpy as np
+from PIL import ImageGrab
 from utils.ahk_writer import AHKWriter
 from utils.ahk_click_down import AHKClickDown
 
@@ -23,20 +26,96 @@ class NSEServicesAutomation:
         self.csv_file = "NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
         self.current_line = 0
         self.is_running = False
+        self.reference_point = None  # Punto de referencia para coordenadas relativas
         
         # Inicializar controladores AHK
         self.ahk_writer = AHKWriter()
-        self.ahk_click_down = AHKClickDown()
+        self.ahk_click_down = AHKClickDownDown()
         
-        # Configurar coordenadas centralizadas para fácil mantenimiento
+        # Configurar coordenadas base (serán actualizadas con coordenadas relativas)
         self.coords = {
-            'menu_principal': (100, 114),
-            'campo_cantidad': (127, 383),
-            'boton_guardar': (82, 423),
-            'boton_error': (704, 384),
-            'cierre': (882, 49),
-            'inicio_servicios': (1563, 385)
+            'menu_principal': (81, 81),
+            'campo_cantidad': (108, 350),
+            'boton_guardar': (63, 390),
+            'boton_error': (704, 384),  # Esta no cambia ya que es global
+            'cierre': (863, 16),
+            'inicio_servicios': (1563, 385),  # Esta no cambia ya que es para iniciar
+            'casilla_servicio': (121, 236),
+            'casilla_tipo': (121, 261),
+            'casilla_empresa': (121, 290),
+            'casilla_producto': (121, 322),
         }
+
+    def buscar_imagen(self, imagen_path, timeout=30, confidence=0.8):
+        """
+        Busca una imagen en la pantalla usando OpenCV
+        Retorna las coordenadas de la esquina superior izquierda si la encuentra
+        """
+        logging.info(f"🔍 Buscando imagen: {imagen_path}")
+        
+        try:
+            # Cargar la imagen template
+            template = cv2.imread(imagen_path)
+            if template is None:
+                logging.error(f"❌ No se pudo cargar la imagen: {imagen_path}")
+                return None
+            
+            template_height, template_width = template.shape[:2]
+            
+            for intento in range(timeout):
+                # Capturar screenshot de toda la pantalla
+                screenshot = ImageGrab.grab()
+                screenshot_cv = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
+                
+                # Realizar la búsqueda de la plantilla
+                result = cv2.matchTemplate(screenshot_cv, template, cv2.TM_CCOEFF_NORMED)
+                min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+                
+                if max_val >= confidence:
+                    # Encontrado - retornar coordenadas de la esquina superior izquierda
+                    x, y = max_loc
+                    logging.info(f"✅ Imagen encontrada en intento {intento + 1} - Coordenadas: ({x}, {y}) - Confianza: {max_val:.2f}")
+                    return (x, y)
+                
+                logging.info(f"⏳ Intento {intento + 1}/{timeout} - Confianza máxima: {max_val:.2f}")
+                time.sleep(1)
+            
+            logging.error(f"❌ No se encontró la imagen después de {timeout} intentos")
+            return None
+            
+        except Exception as e:
+            logging.error(f"❌ Error en búsqueda de imagen: {e}")
+            return None
+
+    def actualizar_coordenadas_relativas(self, referencia):
+        """
+        Actualiza todas las coordenadas para que sean relativas al punto de referencia
+        """
+        if referencia is None:
+            logging.error("❌ No se puede actualizar coordenadas: referencia es None")
+            return False
+        
+        ref_x, ref_y = referencia
+        
+        # Actualizar coordenadas relativas
+        self.coords_relativas = {
+            'menu_principal': (ref_x + 81, ref_y + 81),
+            'campo_cantidad': (ref_x + 108, ref_y + 350),
+            'boton_guardar': (ref_x + 63, ref_y + 390),
+            'cierre': (ref_x + 863, ref_y + 16),
+            'casilla_servicio': (ref_x + 121, ref_y + 236),
+            'casilla_tipo': (ref_x + 121, ref_y + 261),
+            'casilla_empresa': (ref_x + 121, ref_y + 290),
+            'casilla_producto': (ref_x + 121, ref_y + 322),
+        }
+        
+        # Mantener coordenadas que no cambian
+        self.coords_relativas['boton_error'] = self.coords['boton_error']
+        self.coords_relativas['inicio_servicios'] = self.coords['inicio_servicios']
+        
+        self.reference_point = referencia
+        logging.info("✅ Coordenadas actualizadas a relativas")
+        return True
 
     def iniciar_ahk(self):
         """Iniciar ambos servicios AHK"""
@@ -70,11 +149,17 @@ class NSEServicesAutomation:
     def write(self, text):
         """Escribir texto usando AHK Writer"""
         try:
+            # Usar coordenadas relativas si están disponibles
+            if hasattr(self, 'coords_relativas') and self.coords_relativas:
+                campo_coords = self.coords_relativas['campo_cantidad']
+            else:
+                campo_coords = self.coords['campo_cantidad']
+                
             # Primero hacer clic en el campo de cantidad, luego escribir
-            if self.click(*self.coords['campo_cantidad']):
+            if self.click(*campo_coords):
                 return self.ahk_writer.ejecutar_escritura_ahk(
-                    self.coords['campo_cantidad'][0],
-                    self.coords['campo_cantidad'][1],
+                    campo_coords[0],
+                    campo_coords[1],
                     str(text)
                 )
             return False
@@ -82,12 +167,17 @@ class NSEServicesAutomation:
             logging.error(f"Error escribiendo texto '{text}': {e}")
             return False
 
-    def press_down(self, times=1):
+    def press_down(self, x, y, times=1):
         """Presionar flecha down usando AHK"""
         try:
+            # Usar coordenadas relativas si están disponibles
+            if hasattr(self, 'coords_relativas') and self.coords_relativas:
+                click_coords = (x, y)
+            else:
+                click_coords = (x, y)
+                
             # Usamos AHK Click Down con las veces especificadas
-            # Hacemos clic en una posición neutral primero
-            return self.ahk_click_down.ejecutar_click_down(100, 100, times)
+            return self.ahk_click_down.ejecutar_click_down(click_coords[0], click_coords[1], times)
         except Exception as e:
             logging.error(f"Error presionando DOWN {times} veces: {e}")
             return False
@@ -99,7 +189,11 @@ class NSEServicesAutomation:
     def handle_error_click(self):
         """Manejar clics de error"""
         for _ in range(5):
-            self.click(*self.coords['boton_error'])
+            # Usar coordenadas relativas si están disponibles para boton_error
+            if hasattr(self, 'coords_relativas') and self.coords_relativas:
+                self.click(*self.coords_relativas['boton_error'])
+            else:
+                self.click(*self.coords['boton_error'])
             self.sleep(2)
 
     def procesar_linea_especifica(self):
@@ -134,7 +228,22 @@ class NSEServicesAutomation:
                 
                 self.click(*self.coords['inicio_servicios'])
                 self.sleep(2)
-                self.click(*self.coords['menu_principal'])
+                
+                # BUSCAR IMAGEN Y ACTUALIZAR COORDENADAS
+                print("🔍 Buscando ventana de servicios...")
+                referencia = self.buscar_imagen("referencia_servicios.png", timeout=30)
+                
+                if referencia is None:
+                    print("❌ ERROR: No se pudo encontrar la ventana de servicios")
+                    return False
+                
+                # Actualizar coordenadas relativas
+                if not self.actualizar_coordenadas_relativas(referencia):
+                    print("❌ ERROR: No se pudieron actualizar las coordenadas relativas")
+                    return False
+                
+                # Continuar con el procesamiento normal usando coordenadas relativas
+                self.click(*self.coords_relativas['menu_principal'])
                 self.sleep(2)
                     
                 # Llamar a funciones de servicios
@@ -184,8 +293,9 @@ class NSEServicesAutomation:
                     print(f"  └─ Procesando VETV: {row[26]}")
                     self.handle_vetv(row[26])
                     servicios_procesados += 1
-                    
-                self.click(*self.coords['cierre'])
+                
+                # Usar coordenadas relativas para el cierre
+                self.click(*self.coords_relativas['cierre'])
                 self.sleep(5)
                 
                 print(f"✅ Línea {self.current_line} completada: {servicios_procesados} servicios procesados")
@@ -199,166 +309,117 @@ class NSEServicesAutomation:
             logging.error(f"Error en procesar_linea_especifica: {e}")
             return False
 
-    # Funciones de servicios (mantenemos las originales pero ahora usan AHK)
     def handle_voz_cobre(self, cantidad):
-        self.click(*self.coords['menu_principal'])
-        self.sleep(2)
-        self.click(127, 383)
+        # Usar coordenadas relativas
+        self.click(*self.coords_relativas['menu_principal'])
         self.sleep(2)
         self.write(str(int(cantidad)))
         self.sleep(2)
-        self.click(*self.coords['boton_guardar'])
+        self.click(*self.coords_relativas['boton_guardar'])
         self.sleep(2)
         self.handle_error_click()
 
     def handle_datos_sdom(self, cantidad):
-        self.click(*self.coords['menu_principal'])
+        self.click(*self.coords_relativas['menu_principal'])
         self.sleep(2)
-        self.click(138, 269)
-        self.sleep(2)
-        self.press_down(2)
-        self.click(127, 383)
+        self.press_down(*self.coords_relativas['casilla_servicio'], 2)
         self.sleep(2)
         self.write(str(int(cantidad)))
         self.sleep(2)
-        self.click(*self.coords['boton_guardar'])
+        self.click(*self.coords_relativas['boton_guardar'])
         self.sleep(2)
         self.handle_error_click()
 
     def handle_datos_cobre_telmex(self, cantidad):
-        self.click(*self.coords['menu_principal'])
+        self.click(*self.coords_relativas['menu_principal'])
         self.sleep(2)
-        self.click(138, 269)
-        self.sleep(2)
-        self.press_down(2)
-        self.click(159, 355)
-        self.sleep(2)
-        self.press_down(1)
-        self.click(127, 383)
+        self.press_down(*self.coords_relativas['casilla_servicio'], 2)
+        self.press_down(*self.coords_relativas['casilla_producto'], 1)
         self.sleep(2)
         self.write(str(int(cantidad)))
         self.sleep(2)
-        self.click(*self.coords['boton_guardar'])
+        self.click(*self.coords_relativas['boton_guardar'])
         self.sleep(2)
         self.handle_error_click()
 
     def handle_datos_fibra_telmex(self, cantidad):
-        self.click(*self.coords['menu_principal'])
+        self.click(*self.coords_relativas['menu_principal'])
         self.sleep(2)
-        self.click(138, 269)
-        self.sleep(2)
-        self.press_down(2)
-        self.click(152, 294)
-        self.sleep(2)
-        self.press_down(1)
-        self.click(150, 323)
-        self.sleep(2)
-        self.press_down(1)
-        self.click(127, 383)
+        self.press_down(*self.coords_relativas['casilla_servicio'], 2)
+        self.press_down(*self.coords_relativas['casilla_tipo'], 1)
+        self.press_down(*self.coords_relativas['casilla_empresa'], 1)
         self.sleep(2)
         self.write(str(int(cantidad)))
         self.sleep(2)
-        self.click(*self.coords['boton_guardar'])
+        self.click(*self.coords_relativas['boton_guardar'])
         self.sleep(2)
         self.handle_error_click()
 
     def handle_tv_cable_otros(self, cantidad):
-        self.click(*self.coords['menu_principal'])
+        self.click(*self.coords_relativas['menu_principal'])
         self.sleep(2)
-        self.click(138, 269)
-        self.sleep(2)
-        self.press_down(3)
-        self.click(150, 323)
-        self.sleep(2)
-        self.press_down(4)
-        self.click(127, 383)
+        self.press_down(*self.coords_relativas['casilla_servicio'], 3)
+        self.press_down(*self.coords_relativas['casilla_empresa'], 4)
         self.sleep(2)
         self.write(str(int(cantidad)))
         self.sleep(2)
-        self.click(*self.coords['boton_guardar'])
+        self.click(*self.coords_relativas['boton_guardar'])
         self.sleep(2)
         self.handle_error_click()
 
     def handle_dish(self, cantidad):
-        self.click(*self.coords['menu_principal'])
+        self.click(*self.coords_relativas['menu_principal'])
         self.sleep(2)
-        self.click(138, 269)
-        self.sleep(2)
-        self.press_down(3)
-        self.click(152, 294)
-        self.sleep(2)
-        self.press_down(2)
-        self.click(150, 323)
-        self.sleep(2)
-        self.press_down(1)
-        self.click(127, 383)
+        self.press_down(*self.coords_relativas['casilla_servicio'], 3)
+        self.press_down(*self.coords_relativas['casilla_tipo'], 2)
+        self.press_down(*self.coords_relativas['casilla_empresa'], 1)
         self.sleep(2)
         self.write(str(int(cantidad)))
         self.sleep(2)
-        self.click(*self.coords['boton_guardar'])
+        self.click(*self.coords_relativas['boton_guardar'])
         self.sleep(2)
         self.handle_error_click()
 
     def handle_tvs(self, cantidad):
-        self.click(*self.coords['menu_principal'])
+        self.click(*self.coords_relativas['menu_principal'])
         self.sleep(2)
-        self.click(138, 269)
-        self.sleep(2)
-        self.press_down(3)
-        self.click(152, 294)
-        self.sleep(2)
-        self.press_down(2)
-        self.click(150, 323)
-        self.sleep(2)
-        self.press_down(2)
-        self.click(127, 383)
+        self.press_down(*self.coords_relativas['casilla_servicio'], 3)
+        self.press_down(*self.coords_relativas['casilla_tipo'], 2)
+        self.press_down(*self.coords_relativas['casilla_empresa'], 2)
         self.sleep(2)
         self.write(str(int(cantidad)))
         self.sleep(2)
-        self.click(*self.coords['boton_guardar'])
+        self.click(*self.coords_relativas['boton_guardar'])
         self.sleep(2)
         self.handle_error_click()
 
     def handle_sky(self, cantidad):
-        self.click(*self.coords['menu_principal'])
+        self.click(*self.coords_relativas['menu_principal'])
         self.sleep(2)
-        self.click(138, 269)
-        self.sleep(2)
-        self.press_down(3)
-        self.click(152, 294)
-        self.sleep(2)
-        self.press_down(2)
-        self.click(150, 323)
-        self.sleep(2)
-        self.press_down(3)
-        self.click(127, 383)
+        self.press_down(*self.coords_relativas['casilla_servicio'], 3)
+        self.press_down(*self.coords_relativas['casilla_tipo'], 2)
+        self.press_down(*self.coords_relativas['casilla_empresa'], 3)
         self.sleep(2)
         self.write(str(int(cantidad)))
         self.sleep(2)
-        self.click(*self.coords['boton_guardar'])
+        self.click(*self.coords_relativas['boton_guardar'])
         self.sleep(2)
         self.handle_error_click()
 
     def handle_vetv(self, cantidad):
-        self.click(*self.coords['menu_principal'])
+        self.click(*self.coords_relativas['menu_principal'])
         self.sleep(2)
-        self.click(138, 269)
-        self.sleep(2)
-        self.press_down(3)
-        self.click(152, 294)
-        self.sleep(2)
-        self.press_down(2)
-        self.click(150, 323)
-        self.sleep(2)
-        self.press_down(5)
-        self.click(127, 383)
+        self.press_down(*self.coords_relativas['casilla_servicio'], 3)
+        self.press_down(*self.coords_relativas['casilla_tipo'], 2)
+        self.press_down(*self.coords_relativas['casilla_empresa'], 5)
         self.sleep(2)
         self.write(str(int(cantidad)))
         self.sleep(2)
-        self.click(*self.coords['boton_guardar'])
+        self.click(*self.coords_relativas['boton_guardar'])
         self.sleep(2)
         self.handle_error_click()
 
+# Las funciones clear_screen(), print_header() y main() permanecen igual...
 def clear_screen():
     """Limpia la pantalla de la consola"""
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -396,10 +457,13 @@ def main():
     print("Verificando dependencias...")
     try:
         import pandas as pd
+        import cv2
+        import numpy as np
+        from PIL import ImageGrab
         print("✅ Dependencias verificadas")
     except ImportError as e:
         print(f"❌ Error: {e}")
-        print("Instala las dependencias con: pip install pandas")
+        print("Instala las dependencias con: pip install pandas opencv-python pillow numpy")
         input("Presiona Enter para salir...")
         return
     
