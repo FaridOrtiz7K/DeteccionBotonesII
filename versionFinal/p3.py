@@ -186,7 +186,7 @@ class NSEServicesAutomation:
         """Presionar flecha down usando AHK"""
         try:                
             # Usamos AHK Click Down con las veces especificadas
-            return self.ahk_enter.ejecutar_enter_ahk()
+            return self.ahk_enter.presionar_enter(1)
         except Exception as e:
             logging.error(f"Error presionando enter")
             return False

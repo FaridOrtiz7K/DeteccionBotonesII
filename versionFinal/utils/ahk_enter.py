@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 class EnterAHKManager:
     def __init__(self):
         self.ahk_process = None
-        self.script_path = "ahk_script2.ahk"
+        self.script_path = "ahk_enter.ahk"
         
     def crear_script_ahk(self):
         """Crea automáticamente el script de AutoHotkey para presionar Enter"""
