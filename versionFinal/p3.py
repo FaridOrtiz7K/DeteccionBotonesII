@@ -30,7 +30,7 @@ class NSEServicesAutomation:
         
         # Inicializar controladores AHK
         self.ahk_writer = AHKWriter()
-        self.ahk_click_down = AHKClickDownDown()
+        self.ahk_click_down = AHKClickDown()
         
         # Configurar coordenadas base (serán actualizadas con coordenadas relativas)
         self.coords = {
