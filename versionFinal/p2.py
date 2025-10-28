@@ -9,7 +9,7 @@ from utils.ahk_writer import AHKWriter
 
 class NSEAutomation:
     def __init__(self):
-        self.start_count = 15 # Línea específica a procesar (1-indexed)
+        self.start_count = 4 # Línea específica a procesar (1-indexed)
         self.csv_file = "NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
         self.reference_image = "img/VentanaAsignar.png"
         self.is_running = False
