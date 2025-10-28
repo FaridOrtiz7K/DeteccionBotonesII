@@ -2,3 +2,85 @@
 2025-10-28 11:45:09,965 - INFO - AutoHotkey (click down) iniciado correctamente
 2025-10-28 11:45:50,167 - INFO - AutoHotkey (writer) detenido correctamente
 2025-10-28 11:45:50,172 - INFO - AutoHotkey (click down) detenido correctamente
+2025-10-28 13:18:54,636 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-10-28 13:18:56,660 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-10-28 13:19:38,017 - INFO - Comando click+down enviado a AHK: 135|261|3
+2025-10-28 13:19:39,444 - INFO - Click + Down ejecutado correctamente
+2025-10-28 13:19:39,448 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-10-28 13:19:39,454 - INFO - Comando click+down enviado a AHK: 135|286|2
+2025-10-28 13:19:40,769 - INFO - Click + Down ejecutado correctamente
+2025-10-28 13:19:40,770 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-10-28 13:19:40,772 - INFO - Comando click+down enviado a AHK: 135|315|3
+2025-10-28 13:19:42,189 - INFO - Click + Down ejecutado correctamente
+2025-10-28 13:19:42,190 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-10-28 13:34:47,017 - INFO - AutoHotkey (writer) detenido correctamente
+2025-10-28 13:34:47,051 - INFO - AutoHotkey (click down) detenido correctamente
+2025-10-28 13:39:41,120 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-10-28 13:39:43,131 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-10-28 13:39:45,153 - INFO - AutoHotkey iniciado correctamente
+2025-10-28 13:40:21,233 - INFO - AutoHotkey (writer) detenido correctamente
+2025-10-28 13:40:21,263 - INFO - AutoHotkey (click down) detenido correctamente
+2025-10-28 13:40:21,278 - INFO - AutoHotkey detenido correctamente
+2025-10-28 13:40:30,191 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-10-28 13:40:32,216 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-10-28 13:40:34,228 - INFO - AutoHotkey iniciado correctamente
+2025-10-28 13:41:35,801 - INFO - AutoHotkey (writer) detenido correctamente
+2025-10-28 13:41:35,815 - INFO - AutoHotkey (click down) detenido correctamente
+2025-10-28 13:41:35,827 - INFO - AutoHotkey detenido correctamente
+2025-10-28 13:41:43,675 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-10-28 13:41:45,689 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-10-28 13:41:47,712 - INFO - AutoHotkey iniciado correctamente
+2025-10-28 13:42:17,617 - INFO - AutoHotkey (writer) detenido correctamente
+2025-10-28 13:42:17,634 - INFO - AutoHotkey (click down) detenido correctamente
+2025-10-28 13:42:17,645 - INFO - AutoHotkey detenido correctamente
+2025-10-28 13:42:25,912 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-10-28 13:42:27,928 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-10-28 13:42:29,959 - INFO - AutoHotkey iniciado correctamente
+2025-10-28 13:43:09,272 - INFO - Comando click+down enviado a AHK: 135|261|3
+2025-10-28 13:43:10,699 - INFO - Click + Down ejecutado correctamente
+2025-10-28 13:43:10,702 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-10-28 13:43:10,707 - INFO - Comando click+down enviado a AHK: 135|286|2
+2025-10-28 13:43:12,018 - INFO - Click + Down ejecutado correctamente
+2025-10-28 13:43:12,020 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-10-28 13:43:12,022 - INFO - Comando click+down enviado a AHK: 135|315|3
+2025-10-28 13:43:13,551 - INFO - Click + Down ejecutado correctamente
+2025-10-28 13:43:13,554 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-10-28 13:44:03,013 - INFO - AutoHotkey (writer) detenido correctamente
+2025-10-28 13:44:03,033 - INFO - AutoHotkey (click down) detenido correctamente
+2025-10-28 13:44:03,049 - INFO - AutoHotkey detenido correctamente
+2025-10-28 13:50:29,563 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-10-28 13:50:31,598 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-10-28 13:50:33,619 - INFO - AutoHotkey iniciado correctamente
+2025-10-28 13:50:50,037 - INFO - Comando click+down enviado a AHK: 135|261|3
+2025-10-28 13:50:51,261 - INFO - Click + Down ejecutado correctamente
+2025-10-28 13:50:51,264 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-10-28 13:50:51,270 - INFO - Comando click+down enviado a AHK: 135|315|4
+2025-10-28 13:50:52,997 - INFO - Click + Down ejecutado correctamente
+2025-10-28 13:50:53,000 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-10-28 13:51:15,864 - INFO - Comando click+down enviado a AHK: 135|261|3
+2025-10-28 13:51:17,178 - INFO - Click + Down ejecutado correctamente
+2025-10-28 13:51:17,181 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-10-28 13:51:17,187 - INFO - Comando click+down enviado a AHK: 135|286|2
+2025-10-28 13:51:18,498 - INFO - Click + Down ejecutado correctamente
+2025-10-28 13:51:18,500 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-10-28 13:51:18,503 - INFO - Comando click+down enviado a AHK: 135|315|3
+2025-10-28 13:51:20,131 - INFO - Click + Down ejecutado correctamente
+2025-10-28 13:51:20,133 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-10-28 13:52:55,668 - INFO - AutoHotkey (writer) detenido correctamente
+2025-10-28 13:52:55,682 - INFO - AutoHotkey (click down) detenido correctamente
+2025-10-28 13:52:55,707 - INFO - AutoHotkey detenido correctamente
+2025-10-28 13:54:42,736 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-10-28 13:54:44,750 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-10-28 13:54:46,769 - INFO - AutoHotkey iniciado correctamente
+2025-10-28 13:55:45,447 - INFO - Comando click+down enviado a AHK: 135|261|3
+2025-10-28 13:55:46,568 - INFO - Click + Down ejecutado correctamente
+2025-10-28 13:55:46,570 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-10-28 13:55:46,573 - INFO - Comando click+down enviado a AHK: 135|286|2
+2025-10-28 13:55:47,911 - INFO - Click + Down ejecutado correctamente
+2025-10-28 13:55:47,915 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-10-28 13:55:47,920 - INFO - Comando click+down enviado a AHK: 135|315|3
+2025-10-28 13:55:49,349 - INFO - Click + Down ejecutado correctamente
+2025-10-28 13:55:49,350 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-10-28 13:58:13,776 - INFO - AutoHotkey (writer) detenido correctamente
+2025-10-28 13:58:13,790 - INFO - AutoHotkey (click down) detenido correctamente
+2025-10-28 13:58:13,812 - INFO - AutoHotkey detenido correctamente
