@@ -9,6 +9,7 @@ import numpy as np
 from PIL import ImageGrab
 from utils.ahk_writer import AHKWriter
 from utils.ahk_click_down import AHKClickDown
+from utils.ahk_enter import EnterAHKManager
 
 # Configurar logging
 logging.basicConfig(
@@ -181,6 +182,14 @@ class NSEServicesAutomation:
         except Exception as e:
             logging.error(f"Error presionando DOWN {times} veces: {e}")
             return False
+    def press_enter(self):
+        """Presionar flecha down usando AHK"""
+        try:                
+            # Usamos AHK Click Down con las veces especificadas
+            return self.ahk_enter.ejecutar_enter_ahk()
+        except Exception as e:
+            logging.error(f"Error presionando enter")
+            return False
 
     def sleep(self, seconds):
         """Esperar segundos"""
@@ -231,7 +240,7 @@ class NSEServicesAutomation:
                 
                 # BUSCAR IMAGEN Y ACTUALIZAR COORDENADAS
                 print("🔍 Buscando ventana de servicios...")
-                referencia = self.buscar_imagen("referencia_servicios.png", timeout=30)
+                referencia = self.buscar_imagen("img/ventanaAdministracion.png", timeout=30)
                 
                 if referencia is None:
                     print("❌ ERROR: No se pudo encontrar la ventana de servicios")
@@ -323,6 +332,7 @@ class NSEServicesAutomation:
         self.click(*self.coords_relativas['menu_principal'])
         self.sleep(2)
         self.press_down(*self.coords_relativas['casilla_servicio'], 2)
+        self.press_enter()
         self.sleep(2)
         self.write(str(int(cantidad)))
         self.sleep(2)
@@ -334,7 +344,9 @@ class NSEServicesAutomation:
         self.click(*self.coords_relativas['menu_principal'])
         self.sleep(2)
         self.press_down(*self.coords_relativas['casilla_servicio'], 2)
+        self.press_enter()
         self.press_down(*self.coords_relativas['casilla_producto'], 1)
+        self.press_enter()
         self.sleep(2)
         self.write(str(int(cantidad)))
         self.sleep(2)
@@ -346,8 +358,11 @@ class NSEServicesAutomation:
         self.click(*self.coords_relativas['menu_principal'])
         self.sleep(2)
         self.press_down(*self.coords_relativas['casilla_servicio'], 2)
+        self.press_enter()
         self.press_down(*self.coords_relativas['casilla_tipo'], 1)
+        self.press_enter()
         self.press_down(*self.coords_relativas['casilla_empresa'], 1)
+        self.press_enter()
         self.sleep(2)
         self.write(str(int(cantidad)))
         self.sleep(2)
@@ -359,7 +374,9 @@ class NSEServicesAutomation:
         self.click(*self.coords_relativas['menu_principal'])
         self.sleep(2)
         self.press_down(*self.coords_relativas['casilla_servicio'], 3)
+        self.press_enter()
         self.press_down(*self.coords_relativas['casilla_empresa'], 4)
+        self.press_enter()
         self.sleep(2)
         self.write(str(int(cantidad)))
         self.sleep(2)
@@ -371,8 +388,11 @@ class NSEServicesAutomation:
         self.click(*self.coords_relativas['menu_principal'])
         self.sleep(2)
         self.press_down(*self.coords_relativas['casilla_servicio'], 3)
+        self.press_enter()
         self.press_down(*self.coords_relativas['casilla_tipo'], 2)
+        self.press_enter()
         self.press_down(*self.coords_relativas['casilla_empresa'], 1)
+        self.press_enter()
         self.sleep(2)
         self.write(str(int(cantidad)))
         self.sleep(2)
@@ -384,8 +404,11 @@ class NSEServicesAutomation:
         self.click(*self.coords_relativas['menu_principal'])
         self.sleep(2)
         self.press_down(*self.coords_relativas['casilla_servicio'], 3)
+        self.press_enter()
         self.press_down(*self.coords_relativas['casilla_tipo'], 2)
+        self.press_enter()
         self.press_down(*self.coords_relativas['casilla_empresa'], 2)
+        self.press_enter()
         self.sleep(2)
         self.write(str(int(cantidad)))
         self.sleep(2)
@@ -397,8 +420,11 @@ class NSEServicesAutomation:
         self.click(*self.coords_relativas['menu_principal'])
         self.sleep(2)
         self.press_down(*self.coords_relativas['casilla_servicio'], 3)
+        self.press_enter()
         self.press_down(*self.coords_relativas['casilla_tipo'], 2)
+        self.press_enter()
         self.press_down(*self.coords_relativas['casilla_empresa'], 3)
+        self.press_enter()
         self.sleep(2)
         self.write(str(int(cantidad)))
         self.sleep(2)
@@ -410,8 +436,11 @@ class NSEServicesAutomation:
         self.click(*self.coords_relativas['menu_principal'])
         self.sleep(2)
         self.press_down(*self.coords_relativas['casilla_servicio'], 3)
+        self.press_enter()
         self.press_down(*self.coords_relativas['casilla_tipo'], 2)
+        self.press_enter()
         self.press_down(*self.coords_relativas['casilla_empresa'], 5)
+        self.press_enter()
         self.sleep(2)
         self.write(str(int(cantidad)))
         self.sleep(2)
