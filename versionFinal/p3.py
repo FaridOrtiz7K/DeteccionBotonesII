@@ -120,7 +120,7 @@ class NSEServicesAutomation:
         return True
 
     def iniciar_ahk(self):
-        """Iniciar ambos servicios AHK"""
+        """Iniciar todos los servicios AHK"""
         try:
             if not self.ahk_writer.start_ahk():
                 logging.error("No se pudo iniciar AHK Writer")
@@ -128,18 +128,22 @@ class NSEServicesAutomation:
             if not self.ahk_click_down.start_ahk():
                 logging.error("No se pudo iniciar AHK Click Down")
                 return False
-            logging.info("✅ Ambos servicios AHK iniciados correctamente")
+            if not self.ahk_enter.start_ahk():  # ¡FALTABA ESTA LÍNEA!
+                logging.error("No se pudo iniciar AHK Enter")
+                return False
+            logging.info("✅ Todos los servicios AHK iniciados correctamente")
             return True
         except Exception as e:
             logging.error(f"Error iniciando servicios AHK: {e}")
             return False
 
     def detener_ahk(self):
-        """Detener ambos servicios AHK"""
+        """Detener todos los servicios AHK"""
         try:
             self.ahk_writer.stop_ahk()
             self.ahk_click_down.stop_ahk()
-            logging.info("✅ Servicios AHK detenidos correctamente")
+            self.ahk_enter.stop_ahk()  # ¡FALTABA ESTA LÍNEA!
+            logging.info("✅ Todos los servicios AHK detenidos correctamente")
         except Exception as e:
             logging.error(f"Error deteniendo servicios AHK: {e}")
 
