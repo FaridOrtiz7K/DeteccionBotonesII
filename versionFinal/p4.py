@@ -10,7 +10,7 @@ from utils.ahk_writer import AHKWriter
 class GEAutomation:
     def __init__(self):
         self.csv_file = "NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
-        self.reference_image = "img/VentanaTextoAdicional.png"  # Imagen para detectar ventana de texto adicional
+        self.reference_image = "img/textoAdicional.PNG"  # Imagen para detectar ventana de texto adicional
         self.is_running = False
         
         # Inicializar AHKWriter
