@@ -35,6 +35,7 @@ class GEAutomation:
         # COORDENADAS ABSOLUTAS (solo las necesarias)
         self.coords = {
             'agregar_ruta': (327, 381),
+            'archivo': (1396, 608),
             'abrir': (1406, 634),
             'seleccionar_mapa': (168, 188),
             'anotar': (1366, 384),
