@@ -263,7 +263,13 @@ class GEAutomation:
                 self.sleep(1)
                 self.write_with_ahk(*self.coords['campo_texto'], texto_adicional)
                 self.sleep(1)
+                # 15. Agregar texto
+                self.click(*self.coords['agregar_texto'])
+                self.sleep(3)
             
+                # 16. Cerrar ventana de texto
+                self.click(*self.coords['cerrar_ventana_texto'])
+                self.sleep(2)
             
             
             # 17. Limpiar trazo
