@@ -245,7 +245,7 @@ class NSEServicesAutomation:
                 
                 # BUSCAR IMAGEN Y ACTUALIZAR COORDENADAS
                 print("🔍 Buscando ventana de servicios...")
-                referencia = self.buscar_imagen("img/ventanaAdministracion.png", timeout=30)
+                referencia = self.buscar_imagen("img/ventanaAdministracion4.PNG", timeout=30)
                 
                 if referencia is None:
                     print("❌ ERROR: No se pudo encontrar la ventana de servicios")
