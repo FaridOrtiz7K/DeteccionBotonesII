@@ -10,7 +10,7 @@ import logging
 from utils.ahk_writer import AHKWriter
 from utils.ahk_manager import AHKManager
 from utils.ahk_enter import EnterAHKManager
-from utils.ahk_click_down import AHKClickDownManager  # Nuevo manager para flechas abajo
+from utils.ahk_click_down import AHKClickDown  # Nuevo manager para flechas abajo
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class GEAutomation:
         self.ahk_writer = AHKWriter()           # Para escritura de texto
         self.ahk_manager = AHKManager()         # Para ventana de archivo
         self.enter = EnterAHKManager()          # Para presionar Enter
-        self.ahk_click_down = AHKClickDownManager()  # Para flechas abajo
+        self.ahk_click_down = AHKClickDown()  # Para flechas abajo
         
         # Configurar pyautogui
         pyautogui.FAILSAFE = True
