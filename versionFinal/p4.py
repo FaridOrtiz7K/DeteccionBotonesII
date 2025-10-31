@@ -31,16 +31,18 @@ class GEAutomation:
             'seleccionar_mapa': (168, 188),
             'anotar': (1366, 384),
             'agregar_texto_adicional': (1449, 452),
-            'campo_texto': (1421, 526),  # Coordenada base que se ajustará con detección
-            'agregar_texto': (1263, 572),
-            'cerrar_ventana_texto': (1338, 570),
+            'campo_texto': (1421, 526),  # Cambia con respecto a la deteccion de la imagen
+            'agregar_texto': (1263, 572), # Cambia con respecto a la deteccion de la imagen
+            'cerrar_ventana_texto': (1338, 570),#Cambia con respecto a la deteccion de la imagen
             'limpiar_trazo': (360, 980),
             'lote_again': (70, 266)
         }
         
         # Coordenadas relativas para detección de imagen (campo de texto)
         self.coords_texto_relativas = {
-            'campo_texto': [0, 0]  # Se ajustará según la detección
+            'campo_texto': (222 , 54),  # Se ajustará según la detección
+            'agregar_texto': (64 , 100),
+            'cerrar_ventana_texto': (139 , 98)
         }
 
     def click(self, x, y, duration=0.1):
@@ -193,9 +195,6 @@ class GEAutomation:
             self.click(*self.coords['documents'])
             self.sleep(3)
             
-            # 5. Presionar Alt + n
-            pyautogui.hotkey('alt', 'n')
-            self.sleep(3)
             
             # 6. Escribir nombre del archivo KML con AHKWriter
             nombre_archivo = f"RA {num_txt_type}.kml"
@@ -237,18 +236,24 @@ class GEAutomation:
                 # Calcular coordenadas absolutas del campo de texto basado en la detección
                 x_campo = base_location[0] + self.coords_texto_relativas['campo_texto'][0]
                 y_campo = base_location[1] + self.coords_texto_relativas['campo_texto'][1]
-                
+                x_agregar = base_location[0] + self.coords_texto_relativas['agregar_texto'][0]
+                y_agregar = base_location[1] + self.coords_texto_relativas['agregar_texto'][1]
+                x_cerrar = base_location[0] + self.coords_texto_relativas['cerrar_ventana_texto'][0]
+                y_cerrar = base_location[1] + self.coords_texto_relativas['cerrar_ventana_texto'][1]
                 # Hacer clic en el campo de texto detectado
                 self.click(x_campo, y_campo)
                 self.sleep(2)
                 
-                # Presionar Backspace para limpiar
-                pyautogui.press('backspace')
-                self.sleep(1)
-                
                 # Escribir texto adicional con AHKWriter
                 self.write_with_ahk(x_campo, y_campo, texto_adicional)
                 self.sleep(1)
+                # 15. Agregar texto
+                self.click(x_agregar, y_agregar)
+                self.sleep(3)
+            
+                # 16. Cerrar ventana de texto
+                self.click(x_cerrar, y_cerrar)
+                self.sleep(2)
             else:
                 # Fallback a coordenadas fijas si no se detecta la imagen
                 print("⚠️  Usando coordenadas fijas para campo de texto")
@@ -259,13 +264,7 @@ class GEAutomation:
                 self.write_with_ahk(*self.coords['campo_texto'], texto_adicional)
                 self.sleep(1)
             
-            # 15. Agregar texto
-            self.click(*self.coords['agregar_texto'])
-            self.sleep(3)
             
-            # 16. Cerrar ventana de texto
-            self.click(*self.coords['cerrar_ventana_texto'])
-            self.sleep(2)
             
             # 17. Limpiar trazo
             self.click(*self.coords['limpiar_trazo'])
