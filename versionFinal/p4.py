@@ -396,7 +396,10 @@ class GEAutomation:
                 self.click(x_campo, y_campo)
                 self.sleep(2)
                 # Escribir el texto adicional usando AHK Writer
-                self.escribir_texto_adicional_ahk(x_campo, y_campo, texto_adicional)
+                if not self.ahk_writer.start_ahk():
+                    logger.error("No se pudo iniciar AHK Writer")
+                self.ahk_writer.ejecutar_escritura_ahk(x_campo, y_campo, texto_adicional)
+                self.ahk_writer.stop_ahk()
                 print("✅ Texto adicional escrito con AHK Writer")
                 print(texto_adicional)                
                 self.sleep(2)
