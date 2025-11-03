@@ -375,8 +375,8 @@ class GEAutomation:
                 
                     
             # Guardar al final
-            self.save_progress()
-            print("✅ Script completado exitosamente!")
+            #self.save_progress()
+            #print("✅ Script completado exitosamente!")
             return True
             
         except Exception as e:
