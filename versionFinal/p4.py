@@ -397,7 +397,8 @@ class GEAutomation:
                 self.sleep(2)
                 # Escribir el texto adicional usando AHK Writer
                 self.ahk_writer.ejecutar_escritura_ahk(x_campo, y_campo, texto_adicional)
-                
+                print("✅ Texto adicional escrito con AHK Writer")
+                print(texto_adicional)                
                 self.sleep(2)
                 
                 # 8. Agregar de texto adicional
