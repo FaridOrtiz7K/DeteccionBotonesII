@@ -12,9 +12,9 @@ class AHKWriter:
         
     def crear_script_ahk(self):
         """Crea automáticamente el script de AutoHotkey para escribir texto"""
-        ahk_script = """
-#Persistent
+        ahk_script = '''#Persistent
 #SingleInstance force
+#WinActivateForce
 
 ; Script de AutoHotkey para escribir texto en coordenadas específicas
 Loop {
@@ -29,26 +29,52 @@ Loop {
         y_campo := Array[2]
         texto := Array[3]
         
-        ; Hacer click en las coordenadas especificadas
-        Click, %x_campo% %y_campo%
-        Sleep, 300
+        ; Activar la ventana primero
+        WinActivate, A
         
-        ; Seleccionar y limpiar el campo (opcional)
+        ; Hacer click en las coordenadas especificadas
+        MouseMove, %x_campo%, %y_campo%, 0
+        Sleep, 100
+        Click, %x_campo% %y_campo%
+        Sleep, 800
+        
+        ; Asegurar que el campo está enfocado
+        Sleep, 300
+        Click, %x_campo% %y_campo%
+        Sleep, 500
+        
+        ; Seleccionar todo el texto existente
         Send, ^a
-        Sleep, 100
+        Sleep, 300
         Send, {Delete}
-        Sleep, 100
+        Sleep, 300
         
         ; Escribir el texto
         SendInput, %texto%
-        Sleep, 300
+        Sleep, 500
+        
+        ; Verificar que se escribió el texto
+        Send, ^a
+        Sleep, 200
+        Send, ^c
+        Sleep, 200
+        
+        ; Guardar texto copiado para verificación
+        clipboard_text := Clipboard
+        FileAppend, Texto escrito: %clipboard_text%`n, ahk_writer_debug.txt
+        
+        ; Restaurar selección
+        Send, {Right}
+        Sleep, 100
         
         ; Confirmación para Python
         FileAppend, done, ahk_writer_done.txt
+        
+        ; Limpiar portapapeles
+        Clipboard := ""
     }
-    Sleep, 500  ; Revisar cada medio segundo
-}
-"""
+    Sleep, 300
+}'''
         try:
             with open(self.script_path, "w", encoding="utf-8") as f:
                 f.write(ahk_script)
@@ -61,21 +87,35 @@ Loop {
     def start_ahk(self):
         """Inicia AutoHotkey de manera más robusta"""
         if self.ahk_process and self.ahk_process.poll() is None:
-            return True  # Ya está en ejecución
-            
+            logger.info("AHK Writer ya está en ejecución")
+            return True
+
         try:
+            # Limpiar archivos temporales previos
+            for temp_file in ["ahk_writer_command.txt", "ahk_writer_done.txt", "ahk_writer_debug.txt"]:
+                if os.path.exists(temp_file):
+                    os.remove(temp_file)
+            
             if not os.path.exists(self.script_path):
                 if not self.crear_script_ahk():
                     return False
                     
-            self.ahk_process = subprocess.Popen(['AutoHotkey_1.1.37.02/AutoHotkeyU64.exe', self.script_path])
-            time.sleep(2)
+            # Verificar que AutoHotkey existe
+            ahk_exe_path = 'AutoHotkey_1.1.37.02/AutoHotkeyU64.exe'
+            if not os.path.exists(ahk_exe_path):
+                logger.error(f"AutoHotkey no encontrado en: {ahk_exe_path}")
+                return False
+                
+            self.ahk_process = subprocess.Popen([ahk_exe_path, self.script_path])
+            time.sleep(3)  # Esperar más tiempo para que inicie
+            
             is_running = self.ahk_process.poll() is None
             if is_running:
                 logger.info("AutoHotkey (writer) iniciado correctamente")
             else:
-                logger.error("AutoHotkey (writer) no se pudo iniciar")
+                logger.error("AutoHotkey (writer) no se pudo iniciar - proceso terminado")
             return is_running
+            
         except Exception as e:
             logger.error(f"Error iniciando AutoHotkey (writer): {e}")
             return False
@@ -92,6 +132,8 @@ Loop {
                 logger.warning("AutoHotkey (writer) fue forzado a detenerse")
             except Exception as e:
                 logger.error(f"Error deteniendo AutoHotkey (writer): {e}")
+            finally:
+                self.ahk_process = None
                 
     def ejecutar_escritura_ahk(self, x_campo, y_campo, texto):
         """Envía comandos a AutoHotkey para escribir texto en coordenadas específicas"""
@@ -103,31 +145,54 @@ Loop {
                 except:
                     pass
         
+        # Validar parámetros
+        if not texto or str(texto).strip() == '':
+            logger.warning("Texto vacío, no se enviará a AHK")
+            return True
+            
         # Crear archivo de comandos para AHK
-        # Usamos "|" como separador para evitar conflictos con comas en el texto
-        comando = f"{x_campo}|{y_campo}|{texto}"
+        comando = f"{int(x_campo)}|{int(y_campo)}|{texto}"
         
         try:
+            logger.info(f"Enviando comando a AHK: coordenadas ({x_campo}, {y_campo}), texto: '{texto}'")
+            
             with open("ahk_writer_command.txt", "w", encoding="utf-8") as f:
                 f.write(comando)
             
-            logger.info(f"Comando de escritura enviado a AHK: {comando}")
-            
             # Esperar a que AHK complete la acción
-            timeout = 10  # 10 segundos de timeout
+            timeout = 15  # Aumentar timeout
             start_time = time.time()
+            attempt = 0
             
             while not os.path.exists("ahk_writer_done.txt"):
                 if time.time() - start_time > timeout:
-                    logger.error("Timeout esperando respuesta de AHK (writer)")
+                    logger.error(f"Timeout esperando respuesta de AHK (writer) después de {timeout} segundos")
+                    
+                    # Verificar si hay archivo de debug
+                    if os.path.exists("ahk_writer_debug.txt"):
+                        with open("ahk_writer_debug.txt", "r", encoding="utf-8") as f:
+                            debug_content = f.read()
+                        logger.info(f"Contenido debug AHK: {debug_content}")
+                    
                     return False
+                
+                attempt += 1
+                if attempt % 10 == 0:  # Log cada 10 intentos
+                    logger.info(f"Esperando respuesta AHK... ({attempt} intentos)")
                 time.sleep(0.1)
             
-            # Limpiar archivo de confirmación
+            # Leer y limpiar archivo de confirmación
             if os.path.exists("ahk_writer_done.txt"):
                 os.remove("ahk_writer_done.txt")
             
-            logger.info("Escritura completada correctamente")
+            # Verificar archivo de debug
+            if os.path.exists("ahk_writer_debug.txt"):
+                with open("ahk_writer_debug.txt", "r", encoding="utf-8") as f:
+                    debug_content = f.read()
+                logger.info(f"Debug AHK: {debug_content}")
+                # No eliminar el debug para mantener historial
+            
+            logger.info("Escritura completada correctamente via AHK")
             return True
             
         except Exception as e:

@@ -181,12 +181,19 @@ class GEAutomation:
             print("⚠️  Texto adicional vacío, saltando escritura")
             return True
             
-        print(f"📝 Intentando escribir texto: '{texto}'")
+        print(f"📝 Intentando escribir texto: '{texto}' en coordenadas ({x}, {y})")
+        
+        # Verificar que las coordenadas son válidas
+        if x <= 0 or y <= 0:
+            print(f"❌ Coordenadas inválidas: ({x}, {y})")
+            return False
         
         if not self.ahk_writer.start_ahk():
             logger.error("No se pudo iniciar AHK Writer")
+            print("❌ Falló al iniciar AHK Writer")
             return False
         
+        print("🔄 AHK Writer iniciado, enviando comando...")
         success = self.ahk_writer.ejecutar_escritura_ahk(x, y, texto)
         self.ahk_writer.stop_ahk()
         
@@ -194,7 +201,21 @@ class GEAutomation:
             print(f"✅ Texto escrito exitosamente: '{texto}'")
         else:
             print(f"❌ Error al escribir texto: '{texto}'")
-            
+            print("🔄 Intentando método alternativo con pyautogui...")
+            try:
+                # Método de fallback
+                self.click(x, y)
+                time.sleep(1)
+                pyautogui.hotkey('ctrl', 'a')  # Seleccionar todo
+                time.sleep(0.5)
+                pyautogui.press('delete')  # Borrar
+                time.sleep(0.5)
+                pyautogui.write(texto, interval=0.05)  # Escribir
+                print(f"✅ Texto escrito con pyautogui: '{texto}'")
+                success = True
+            except Exception as e:
+                print(f"❌ También falló pyautogui: {e}")
+                
         return success
 
     def presionar_flecha_abajo_ahk(self, veces=1):
