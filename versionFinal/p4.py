@@ -353,33 +353,30 @@ class GEAutomation:
 
             print(f"📊 Total de líneas en CSV: {total_lines}")
 
-            # Realizar el bucle 9 veces
-            for iteration in range(1, 10):
-                row_index = iteration - 1
+            # fila que se va a procesar
+            iteration = 3
+            row_index = iteration - 1
                 
-                # Verificar si debemos saltar esta iteración
-                if row_index >= total_lines:
-                    print(f"⚠️  No hay más líneas en el CSV. Iteración {iteration} saltada.")
-                    continue
+            # Verificar si debemos saltar esta iteración
+            if row_index >= total_lines:
+                print(f"⚠️  No hay más líneas en el CSV. Iteración {iteration} saltada.")
                     
-                # Verificar si los valores del CSV son válidos
-                if not self.verificar_valores_csv(df, row_index):
-                    print(f"⚠️  Valores inválidos en fila {row_index}. Iteración {iteration} saltada.")
-                    continue
                     
-                print(f"🔄 Procesando iteración {iteration}/9")
-                success = self.process_single_iteration(df, 3, total_lines)
+            # Verificar si los valores del CSV son válidos
+            if not self.verificar_valores_csv(df, row_index):
+                print(f"⚠️  Valores inválidos en fila {row_index}. Iteración {iteration} saltada.")
+                    
+                    
+            print(f"🔄 Procesando iteración {iteration}/9")
+            success = self.process_single_iteration(df, iteration, total_lines)
                 
-                if not success:
-                    print(f"⚠️  Iteración {iteration} falló, continuando con la siguiente...")
+            if not success:
+                print(f"⚠️  Iteración {iteration} falló, continuando con la siguiente...")
                 
-                # Guardar cada 10 iteraciones
-                if iteration % 10 == 0:
-                    self.save_progress()
                     
             # Guardar al final
-            self.save_progress()
-            print("✅ Script completado exitosamente!")
+            #self.save_progress()
+            #print("✅ Script completado exitosamente!")
             return True
             
         except Exception as e:
