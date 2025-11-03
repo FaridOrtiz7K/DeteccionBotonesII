@@ -348,7 +348,7 @@ class GEAutomation:
             self.sleep(2)
             
             # 2. Usar detección de ventana de archivo para cargar el archivo con AHK Manager
-            nombre_archivo = f"RA {num_txt_type}.kml"
+            nombre_archivo = f"NM {num_txt_type}.kml"
             success = self.handle_archivo_special_behavior(nombre_archivo)
             
             if not success:
