@@ -368,7 +368,7 @@ class GEAutomation:
                     continue
                     
                 print(f"🔄 Procesando iteración {iteration}/9")
-                success = self.process_single_iteration(df, iteration, total_lines)
+                success = self.process_single_iteration(df, 3, total_lines)
                 
                 if not success:
                     print(f"⚠️  Iteración {iteration} falló, continuando con la siguiente...")
