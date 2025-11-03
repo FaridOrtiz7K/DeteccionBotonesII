@@ -31,6 +31,8 @@ class GEAutomation:
         # Configurar pyautogui
         pyautogui.FAILSAFE = True
         pyautogui.PAUSE = 0.5
+
+        self.nombre=""
         
         # COORDENADAS ABSOLUTAS (solo las necesarias)
         self.coords = {
@@ -409,8 +411,9 @@ class GEAutomation:
         if not num_txt_type:
             print(f"⚠️  num_txt_type vacío en iteración {iteration}, saltando...")
             return False
+        self.nombre="NM "+num_txt_type+".kml"
 
-        print(f"📁 Archivo a cargar: NM {num_txt_type}.kml")
+        print(f"📁 Archivo a cargar: {self.nombre}")
         print(f"📝 Texto adicional: '{texto_adicional}'")
 
         # SECUENCIA DE ACCIONES
@@ -424,7 +427,7 @@ class GEAutomation:
             self.sleep(2) 
             
             # 2. Usar detección de ventana de archivo para cargar el archivo con AHK Manager
-            nombre_archivo = f"NM {num_txt_type}.kml"
+            nombre_archivo = self.nombre
             success = self.handle_archivo_special_behavior(nombre_archivo)
             
             if not success:
