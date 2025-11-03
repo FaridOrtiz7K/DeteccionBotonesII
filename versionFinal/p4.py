@@ -439,6 +439,15 @@ class GEAutomation:
                 pyautogui.press('enter')
             
             self.sleep(3)
+
+            self.click(*self.coords['agregar_ruta'])
+            self.sleep(2)
+
+            self.click(1406, 675) #cargar ruta
+            self.sleep(2)
+
+            self.click(70, 266)#seleccionar lote
+            self.sleep(2)
             
             # 4. Seleccionar en el mapa
             self.click(*self.coords['seleccionar_mapa'])
