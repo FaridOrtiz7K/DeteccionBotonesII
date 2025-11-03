@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 class AHKWriter:
     def __init__(self):
         self.ahk_process = None
-        self.script_path = "ahk_writer.ahk"
+        self.script_path = "ahk_writer2.ahk"
         
     def crear_script_ahk(self):
         """Crea automáticamente el script de AutoHotkey para escribir texto"""
