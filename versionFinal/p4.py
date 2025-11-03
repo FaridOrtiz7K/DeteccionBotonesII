@@ -411,7 +411,7 @@ class GEAutomation:
         if not num_txt_type:
             print(f"⚠️  num_txt_type vacío en iteración {iteration}, saltando...")
             return False
-        self.nombre="NM "+num_txt_type+".kml"
+        self.nombre="NN "+num_txt_type+".kml"
 
         print(f"📁 Archivo a cargar: {self.nombre}")
         print(f"📝 Texto adicional: '{texto_adicional}'")
