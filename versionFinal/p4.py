@@ -464,9 +464,7 @@ class GEAutomation:
                 x_cerrar = base_location[0] + self.coords_texto_relativas['cerrar_ventana_texto'][0]
                 y_cerrar = base_location[1] + self.coords_texto_relativas['cerrar_ventana_texto'][1]
                 
-                # Hacer clic en el campo de texto detectado
-                self.click(x_campo, y_campo)
-                self.sleep(2)
+                print(f"🖥️  Coordenadas campo texto: ({x_campo}, {y_campo})")
                 
                 # Escribir el texto adicional usando AHK Writer SOLO si hay texto
                 if texto_adicional and texto_adicional.strip():
