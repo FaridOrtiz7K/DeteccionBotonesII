@@ -337,8 +337,8 @@ class GEAutomation:
         
         # Obtener valores del CSV
         if len(row) >= 2:
-            num_txt_type = str(row.iloc[0])  # Primera columna para el nombre del archivo
-            texto_adicional = str(row.iloc[1])  # Segunda columna para el texto adicional
+            num_txt_type = str(row.iloc[29])  # Primera columna para el nombre del archivo
+            texto_adicional = str(row.iloc[30])  # Segunda columna para el texto adicional
         else:
             print(f"⚠️  Fila {iteration} no tiene suficientes columnas")
             return
