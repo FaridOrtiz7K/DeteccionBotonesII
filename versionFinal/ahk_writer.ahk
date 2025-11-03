@@ -17,17 +17,18 @@ Loop {
         
         ; Hacer click en las coordenadas especificadas
         Click, %x_campo% %y_campo%
-        Sleep, 300
+        Sleep, 3000
         
         ; Seleccionar y limpiar el campo (opcional)
-        Send, ^a
-        Sleep, 100
-        Send, {Delete}
-        Sleep, 100
+        ;Send, ^a
+        ;Sleep, 100
+        ;Send, {Delete}
+        send {backspace}
+        Sleep, 1000
         
         ; Escribir el texto
         SendInput, %texto%
-        Sleep, 300
+        Sleep, 3000
         
         ; Confirmación para Python
         FileAppend, done, ahk_writer_done.txt
