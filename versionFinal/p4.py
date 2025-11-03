@@ -26,7 +26,7 @@ class GEAutomation:
         self.ahk_writer = AHKWriter()  # Para escritura de texto
         self.ahk_manager = AHKManager()  # Para manejar ventanas de archivo
         self.enter = EnterAHKManager()  # Para presionar Enter
-        self.ahk_click_down = AHKClickDown()  # Para flechas abajo (puede reutilizarse o crearse uno específico)
+        self.ahk_click_down = AHKClickDown()  # Para flechas abajo
         
         # Configurar pyautogui
         pyautogui.FAILSAFE = True
@@ -177,25 +177,34 @@ class GEAutomation:
 
     def escribir_texto_adicional_ahk(self, x, y, texto):
         """Escribe texto adicional usando AHK Writer"""
+        if not texto or pd.isna(texto) or str(texto).strip() == '':
+            print("⚠️  Texto adicional vacío, saltando escritura")
+            return True
+            
+        print(f"📝 Intentando escribir texto: '{texto}'")
+        
         if not self.ahk_writer.start_ahk():
             logger.error("No se pudo iniciar AHK Writer")
             return False
         
         success = self.ahk_writer.ejecutar_escritura_ahk(x, y, texto)
         self.ahk_writer.stop_ahk()
+        
+        if success:
+            print(f"✅ Texto escrito exitosamente: '{texto}'")
+        else:
+            print(f"❌ Error al escribir texto: '{texto}'")
+            
         return success
 
     def presionar_flecha_abajo_ahk(self, veces=1):
         """Presiona flecha abajo usando AHK"""
-        # Para flecha abajo, podemos usar el mismo EnterAHKManager o uno específico
         if not self.ahk_click_down.start_ahk():
             logger.error("No se pudo iniciar AutoHotkey para flecha abajo")
             return False
         
         try:
             for i in range(veces):
-                # Simular flecha abajo - esto depende de cómo esté implementado en tu AHK
-                # Si no hay método específico, podrías necesitar extender la clase
                 pyautogui.press('down')
                 time.sleep(0.5)
             return True
@@ -247,7 +256,7 @@ class GEAutomation:
                 return False, None
             
             print(f"✅ Imagen encontrada con confianza: {max_val:.2f}")
-            return True, max_loc  # Devuelve las coordenadas (x, y) de la esquina superior izquierda
+            return True, max_loc
         except Exception as e:
             print(f"Error en detección de imagen: {e}")
             return False, None
@@ -265,22 +274,44 @@ class GEAutomation:
             
             print(f"⏳ Intento {attempt}/{max_attempts} - Imagen no encontrada")
             
-            # Espera normal de 2 segundos entre intentos
             if attempt < max_attempts:
                 if attempt % 10 == 0:
-                    # Cada 10 intentos, esperar 10 segundos
                     print("⏰ Espera prolongada de 10 segundos...")
                     time.sleep(10)
                 else:
-                    # Espera normal de 2 segundos
                     time.sleep(2)
         
         print("❌ Imagen no encontrada después de 30 intentos. Terminando proceso.")
         return False, None
 
+    def verificar_valores_csv(self, df, row_index):
+        """Verifica si los valores necesarios del CSV existen y son válidos"""
+        try:
+            # Verificar que la fila existe
+            if row_index >= len(df):
+                print(f"❌ Fila {row_index} no existe en el CSV")
+                return False
+            
+            row = df.iloc[row_index]
+            
+            # Verificar columna 28 (num_txt_type)
+            if len(row) <= 28 or pd.isna(row.iloc[28]):
+                print(f"⚠️  Columna 28 vacía o no existe en fila {row_index}, saltando...")
+                return False
+                
+            # Verificar columna 29 (texto_adicional) - puede estar vacía pero debe existir
+            if len(row) <= 29:
+                print(f"⚠️  Columna 29 no existe en fila {row_index}, saltando...")
+                return False
+                
+            return True
+            
+        except Exception as e:
+            print(f"❌ Error verificando valores CSV: {e}")
+            return False
+
     def perform_actions(self):
         """Función principal que realiza todas las acciones"""
-        # Iniciar AHKWriter
         if not self.ahk_writer.start_ahk():
             print("❌ No se pudo iniciar AHKWriter")
             return False
@@ -301,16 +332,27 @@ class GEAutomation:
 
             print(f"📊 Total de líneas en CSV: {total_lines}")
 
-            # Realizar el bucle 9 veces (como en el código original)
+            # Realizar el bucle 9 veces
             for iteration in range(1, 10):
-                if iteration > total_lines:
+                row_index = iteration - 1
+                
+                # Verificar si debemos saltar esta iteración
+                if row_index >= total_lines:
                     print(f"⚠️  No hay más líneas en el CSV. Iteración {iteration} saltada.")
                     continue
                     
+                # Verificar si los valores del CSV son válidos
+                if not self.verificar_valores_csv(df, row_index):
+                    print(f"⚠️  Valores inválidos en fila {row_index}. Iteración {iteration} saltada.")
+                    continue
+                    
                 print(f"🔄 Procesando iteración {iteration}/9")
-                self.process_single_iteration(df, iteration, total_lines)
+                success = self.process_single_iteration(df, iteration, total_lines)
                 
-                # Guardar cada 10 iteraciones (en este caso, solo al final del bucle)
+                if not success:
+                    print(f"⚠️  Iteración {iteration} falló, continuando con la siguiente...")
+                
+                # Guardar cada 10 iteraciones
                 if iteration % 10 == 0:
                     self.save_progress()
                     
@@ -335,11 +377,20 @@ class GEAutomation:
         row_index = iteration - 1
         row = df.iloc[row_index]
         
-        # Obtener valores del CSV
+        # Obtener valores del CSV con verificación
+        try:
+            num_txt_type = str(int(row.iloc[28])) if not pd.isna(row.iloc[28]) else None
+            texto_adicional = str(row.iloc[29]) if not pd.isna(row.iloc[29]) else ""
+        except (ValueError, IndexError) as e:
+            print(f"❌ Error obteniendo valores del CSV: {e}")
+            return False
 
-        num_txt_type = str(int(row.iloc[28]))  # Line columna para el nombre del archivo
-        texto_adicional = str(row.iloc[29])  # Nom Neg columna para el texto adicional
+        if not num_txt_type:
+            print(f"⚠️  num_txt_type vacío en iteración {iteration}, saltando...")
+            return False
 
+        print(f"📁 Archivo a cargar: NM {num_txt_type}.kml")
+        print(f"📝 Texto adicional: '{texto_adicional}'")
 
         # SECUENCIA DE ACCIONES
         try:
@@ -350,16 +401,16 @@ class GEAutomation:
             self.sleep(2)
             self.click(*self.coords['abrir'])
             self.sleep(2) 
+            
             # 2. Usar detección de ventana de archivo para cargar el archivo con AHK Manager
             nombre_archivo = f"NM {num_txt_type}.kml"
             success = self.handle_archivo_special_behavior(nombre_archivo)
             
             if not success:
                 print("❌ No se pudo cargar el archivo. Regresando a agregar_ruta...")
-                # Regresar a agregar_ruta en caso de error
                 self.click(*self.coords['agregar_ruta'])
                 self.sleep(2)
-                return
+                return False
             
             # 3. Presionar Enter con AHK para confirmar la carga del archivo
             if not self.presionar_enter_ahk(1):
@@ -395,13 +446,16 @@ class GEAutomation:
                 # Hacer clic en el campo de texto detectado
                 self.click(x_campo, y_campo)
                 self.sleep(2)
-                # Escribir el texto adicional usando AHK Writer
-                if not self.ahk_writer.start_ahk():
-                    logger.error("No se pudo iniciar AHK Writer")
-                self.ahk_writer.ejecutar_escritura_ahk(x_campo, y_campo, texto_adicional)
-                self.ahk_writer.stop_ahk()
-                print("✅ Texto adicional escrito con AHK Writer")
-                print(texto_adicional)                
+                
+                # Escribir el texto adicional usando AHK Writer SOLO si hay texto
+                if texto_adicional and texto_adicional.strip():
+                    writing_success = self.escribir_texto_adicional_ahk(x_campo, y_campo, texto_adicional)
+                    if not writing_success:
+                        print("⚠️  Falló la escritura con AHK, intentando con pyautogui...")
+                        pyautogui.write(texto_adicional, interval=0.05)
+                else:
+                    print("ℹ️  Texto adicional vacío, no se escribe nada")
+                
                 self.sleep(2)
 
                 # 8. Agregar de texto adicional
@@ -412,9 +466,8 @@ class GEAutomation:
                 self.click(x_cerrar, y_cerrar)
                 self.sleep(2)
             else:
-                # Nota: Las coordenadas fijas fueron eliminadas, usar detección es obligatorio
-                print("❌ No se pudo detectar la imagen y no hay coordenadas de fallback")
-                return
+                print("❌ No se pudo detectar la imagen del campo de texto")
+                return False
             
             # 10. Limpiar trazo
             self.click(*self.coords['limpiar_trazo'])
@@ -435,12 +488,14 @@ class GEAutomation:
             if self.detectar_ventana_error():
                 print("✅ Ventana de error detectada y cerrada")
             
-            print(f"✅ Iteración {iteration} completada")
+            print(f"✅ Iteración {iteration} completada exitosamente")
+            return True
             
         except Exception as e:
             print(f"❌ Error en iteración {iteration}: {e}")
             # Intentar cerrar ventana de error en caso de excepción
             self.detectar_ventana_error()
+            return False
 
     def save_progress(self):
         """Guardar progreso con Ctrl + S"""
@@ -460,6 +515,19 @@ def main():
         return
     
     print(f"✅ Archivo CSV encontrado: {ge_auto.csv_file}")
+    
+    # Verificar que el CSV tiene datos
+    try:
+        df = pd.read_csv(ge_auto.csv_file)
+        if len(df) == 0:
+            print("❌ ERROR: El archivo CSV está vacío")
+            input("Presiona Enter para salir...")
+            return
+        print(f"✅ CSV tiene {len(df)} filas de datos")
+    except Exception as e:
+        print(f"❌ ERROR: No se pudo leer el CSV: {e}")
+        input("Presiona Enter para salir...")
+        return
     
     # Verificar imágenes de referencia
     images_to_check = [
@@ -485,6 +553,7 @@ def main():
     print("  - Usando AHK Enter para presionar Enter")
     print("  - Usando AHK para flechas abajo")
     print("  - 9 iteraciones programadas")
+    print("  - Verificación de CSV: Se saltarán filas vacías o inválidas")
     print()
     
     try:
