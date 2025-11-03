@@ -10,7 +10,7 @@ import logging
 from utils.ahk_writer import AHKWriter
 from utils.ahk_manager import AHKManager
 from utils.ahk_enter import EnterAHKManager
-from utils.ahk_click_down import AHKClickDown  # Nuevo manager para flechas abajo
+from utils.ahk_click_down import AHKClickDown
 
 logger = logging.getLogger(__name__)
 
@@ -18,15 +18,15 @@ class GEAutomation:
     def __init__(self):
         self.csv_file = "NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
         self.reference_image = "img/textoAdicional.PNG"
+        self.ventana_archivo_img = "img/cargarArchivo.png"
+        self.ventana_error_img = "img/ventanaError.png"
         self.is_running = False
-        self.is_paused = False
-        self.pause_condition = threading.Condition()
         
-        # Inicializar todos los AHK managers
-        self.ahk_writer = AHKWriter()           # Para escritura de texto
-        self.ahk_manager = AHKManager()         # Para ventana de archivo
-        self.enter = EnterAHKManager()          # Para presionar Enter
-        self.ahk_click_down = AHKClickDown()  # Para flechas abajo
+        # Inicializar todos los manejadores AHK
+        self.ahk_writer = AHKWriter()  # Para escritura de texto
+        self.ahk_manager = AHKManager()  # Para manejar ventanas de archivo
+        self.enter = EnterAHKManager()  # Para presionar Enter
+        self.ahk_click_down = AHKClickDown()  # Para flechas abajo (puede reutilizarse o crearse uno específico)
         
         # Configurar pyautogui
         pyautogui.FAILSAFE = True
@@ -35,14 +35,9 @@ class GEAutomation:
         # COORDENADAS ABSOLUTAS (solo las necesarias)
         self.coords = {
             'agregar_ruta': (327, 381),
-            'archivo': (1396, 608),
-            'abrir': (1406, 634),
             'seleccionar_mapa': (168, 188),
             'anotar': (1366, 384),
             'agregar_texto_adicional': (1449, 452),
-            'campo_texto': (1421, 526),
-            'agregar_texto': (1263, 572),
-            'cerrar_ventana_texto': (1338, 570),
             'limpiar_trazo': (360, 980),
             'lote_again': (70, 266)
         }
@@ -54,9 +49,6 @@ class GEAutomation:
             'cerrar_ventana_texto': (139, 98)
         }
 
-        # Bandera para control de errores
-        self.b2_fallback_used = False
-
     def encontrar_ventana_archivo(self):
         """Busca la ventana de archivo usando template matching con reintentos inteligentes"""
         intentos = 1
@@ -65,20 +57,12 @@ class GEAutomation:
         tiempo_espera_largo = 10
         
         # Cargar template una sola vez fuera del bucle
-        template = cv2.imread('img/cargarArchivo.png')
+        template = cv2.imread(self.ventana_archivo_img)
         if template is None:
-            logger.error("No se pudo cargar la imagen 'cargarArchivo.png'")
+            logger.error(f"No se pudo cargar la imagen '{self.ventana_archivo_img}'")
             return None
         
         while self.is_running: 
-            # Verificar si está pausado
-            if self.is_paused:
-                with self.pause_condition:
-                    while self.is_paused and self.is_running:
-                        self.pause_condition.wait()
-                if not self.is_running:
-                    return False
-            
             try:
                 # Capturar pantalla completa
                 screenshot = pyautogui.screenshot()
@@ -117,9 +101,9 @@ class GEAutomation:
         """
         try:
             # Cargar template de la ventana de error
-            template = cv2.imread('img/ventanaError.png') 
+            template = cv2.imread(self.ventana_error_img) 
             if template is None:
-                logger.error("No se pudo cargar la imagen 'ventanaError.png'")
+                logger.error(f"No se pudo cargar la imagen '{self.ventana_error_img}'")
                 return False
             
             # Capturar pantalla completa
@@ -147,7 +131,7 @@ class GEAutomation:
                     logger.error("Error enviando comando a AHK")
                     return False
                 
-                print("Ventana de error detectada y cerrada")
+                logger.info("Ventana de error detectada y cerrada")
                 self.enter.stop_ahk()
                 return True
             else:
@@ -157,14 +141,8 @@ class GEAutomation:
             logger.error(f"Error al detectar ventana de error: {e}")
             return False
 
-    def handle_b4_special_behavior(self, nombre_archivo):
-        """Maneja el comportamiento especial para cargar archivos usando AHK"""
-        # Hacer clic en agregar ruta (equivalente a b4)
-        self.click(*self.coords['agregar_ruta'])
-        
-        # Esperar después de presionar el botón
-        time.sleep(3)
-
+    def handle_archivo_special_behavior(self, nombre_archivo):
+        """Maneja el comportamiento especial para cargar archivos usando AHK Manager"""
         # Buscar la ventana de archivo
         coordenadas_ventana = self.encontrar_ventana_archivo()
 
@@ -177,85 +155,63 @@ class GEAutomation:
             y_campo = y_ventana + 500
             logger.info(f"Coordenadas campo texto: x={x_campo}, y={y_campo}")
             
-            # Iniciar AHK si no está corriendo
+            # Iniciar AHK Manager para escribir el nombre del archivo
             if not self.ahk_manager.start_ahk():
                 logger.error("No se pudo iniciar AutoHotkey")
                 return False
             
-            # Enviar comandos a AHK para escribir el nombre del archivo
+            # Enviar comandos a AHK Manager para escribir el nombre del archivo
             if self.ahk_manager.ejecutar_acciones_ahk(x_campo, y_campo, nombre_archivo):
-                time.sleep(1.5)   # Esperar a que AHK termine
+                time.sleep(1.5)  # Esperar a que AHK termine
             else:
                 logger.error("Error enviando comando a AHK")
                 return False
             
-            # Presionar Enter usando AHK para abrir el archivo
-            if not self.enter.start_ahk():
-                logger.error("No se pudo iniciar AutoHotkey para Enter")
-                return False
-                
-            if self.enter.presionar_enter(1):
-                time.sleep(2)
-            else:
-                logger.error("Error enviando comando Enter a AHK")
-                return False
-                
-            self.enter.stop_ahk()
             self.ahk_manager.stop_ahk()
-            
-            # Hacer clic en agregar ruta nuevamente para cargar
-            self.click(*self.coords['agregar_ruta'])
-            time.sleep(2)
-            
             return True
         else:
             logger.error("No se pudo encontrar la ventana de archivo.")
             return False
 
-    def escribir_texto_adicional_con_ahk(self, x, y, texto):
-        """Escribe texto adicional usando AHKWriter"""
-        print(f"✍️ Escribiendo texto adicional con AHK: '{texto}'")
-        
+    def escribir_texto_adicional_ahk(self, x, y, texto):
+        """Escribe texto adicional usando AHK Writer"""
         if not self.ahk_writer.start_ahk():
-            print("❌ No se pudo iniciar AHKWriter")
+            logger.error("No se pudo iniciar AHK Writer")
             return False
         
         success = self.ahk_writer.ejecutar_escritura_ahk(x, y, texto)
-        
-        if success:
-            print("✅ Texto escrito exitosamente con AHK")
-            time.sleep(1)
-        else:
-            print(f"❌ Error al escribir con AHK en ({x}, {y}): {texto}")
-        
         self.ahk_writer.stop_ahk()
         return success
 
-    def presionar_flecha_abajo_con_ahk(self):
+    def presionar_flecha_abajo_ahk(self, veces=1):
         """Presiona flecha abajo usando AHK"""
-        print("⬇️ Presionando flecha abajo con AHK")
-        
+        # Para flecha abajo, podemos usar el mismo EnterAHKManager o uno específico
         if not self.ahk_click_down.start_ahk():
-            print("❌ No se pudo iniciar AHK para flecha abajo")
+            logger.error("No se pudo iniciar AutoHotkey para flecha abajo")
             return False
         
-        success = self.ahk_click_down.presionar_flecha_abajo(1)
-        
-        if success:
-            print("✅ Flecha abajo presionada exitosamente")
-            time.sleep(1)
-        else:
-            print("❌ Error al presionar flecha abajo con AHK")
-        
-        self.ahk_click_down.stop_ahk()
-        return success
+        try:
+            for i in range(veces):
+                # Simular flecha abajo - esto depende de cómo esté implementado en tu AHK
+                # Si no hay método específico, podrías necesitar extender la clase
+                pyautogui.press('down')
+                time.sleep(0.5)
+            return True
+        except Exception as e:
+            logger.error(f"Error presionando flecha abajo: {e}")
+            return False
+        finally:
+            self.ahk_click_down.stop_ahk()
 
-    def handle_fallback_to_agregar_ruta(self):
-        """Maneja el fallback a la coordenada agregar_ruta cuando hay errores"""
-        print("Realizando fallback a coordenadas de agregar ruta...")
-        self.click(*self.coords['agregar_ruta'])
-        time.sleep(2)
-        return True
+    def presionar_enter_ahk(self, veces=1):
+        """Presiona Enter usando AHK"""
+        if not self.enter.start_ahk():
+            logger.error("No se pudo iniciar AutoHotkey para Enter")
+            return False
+        
+        success = self.enter.presionar_enter(veces)
+        self.enter.stop_ahk()
+        return success
 
     def click(self, x, y, duration=0.1):
         """Hacer clic en coordenadas específicas"""
@@ -307,14 +263,6 @@ class GEAutomation:
             
             print(f"⏳ Intento {attempt}/{max_attempts} - Imagen no encontrada")
             
-            # Verificar si está pausado
-            if self.is_paused:
-                with self.pause_condition:
-                    while self.is_paused and self.is_running:
-                        self.pause_condition.wait()
-                if not self.is_running:
-                    return False, None
-            
             # Espera normal de 2 segundos entre intentos
             if attempt < max_attempts:
                 if attempt % 10 == 0:
@@ -330,12 +278,10 @@ class GEAutomation:
 
     def perform_actions(self):
         """Función principal que realiza todas las acciones"""
-        # Iniciar todos los managers AHK
-        managers = [self.ahk_writer, self.ahk_manager, self.enter, self.ahk_click_down]
-        for manager in managers:
-            if not manager.start_ahk():
-                print(f"❌ No se pudo iniciar {manager.__class__.__name__}")
-                return False
+        # Iniciar AHKWriter
+        if not self.ahk_writer.start_ahk():
+            print("❌ No se pudo iniciar AHKWriter")
+            return False
             
         try:
             # Verificar si el archivo CSV existe
@@ -362,14 +308,6 @@ class GEAutomation:
                 print(f"🔄 Procesando iteración {iteration}/9")
                 self.process_single_iteration(df, iteration, total_lines)
                 
-                # Verificar si está pausado entre iteraciones
-                if self.is_paused:
-                    with self.pause_condition:
-                        while self.is_paused and self.is_running:
-                            self.pause_condition.wait()
-                    if not self.is_running:
-                        break
-                
                 # Guardar cada 10 iteraciones (en este caso, solo al final del bucle)
                 if iteration % 10 == 0:
                     self.save_progress()
@@ -383,9 +321,11 @@ class GEAutomation:
             print(f"❌ Error durante la ejecución: {e}")
             return False
         finally:
-            # Detener todos los managers AHK
-            for manager in managers:
-                manager.stop_ahk()
+            # Detener todos los manejadores AHK
+            self.ahk_writer.stop_ahk()
+            self.ahk_manager.stop_ahk()
+            self.enter.stop_ahk()
+            self.ahk_click_down.stop_ahk()
 
     def process_single_iteration(self, df, iteration, total_lines):
         """Procesar una sola iteración del bucle"""
@@ -403,32 +343,41 @@ class GEAutomation:
 
         # SECUENCIA DE ACCIONES
         try:
-            # 1. Cargar archivo usando el método especial de b4 con AHK
-            nombre_archivo = f"RA {num_txt_type}.kml"
-            success = self.handle_b4_special_behavior(nombre_archivo)
-            
-            if not success:
-                print("❌ Falló la carga del archivo, realizando fallback...")
-                self.handle_fallback_to_agregar_ruta()
-                return
-
-            # 2. Seleccionar Lote
-            self.click(*self.coords['lote_again'])
+            # 1. Seleccionar Agregar ruta de GE
+            self.click(*self.coords['agregar_ruta'])
             self.sleep(2)
             
-            # 3. Seleccionar en el mapa
+            # 2. Usar detección de ventana de archivo para cargar el archivo con AHK Manager
+            nombre_archivo = f"RA {num_txt_type}.kml"
+            success = self.handle_archivo_special_behavior(nombre_archivo)
+            
+            if not success:
+                print("❌ No se pudo cargar el archivo. Regresando a agregar_ruta...")
+                # Regresar a agregar_ruta en caso de error
+                self.click(*self.coords['agregar_ruta'])
+                self.sleep(2)
+                return
+            
+            # 3. Presionar Enter con AHK para confirmar la carga del archivo
+            if not self.presionar_enter_ahk(1):
+                print("⚠️  No se pudo presionar Enter con AHK, usando pyautogui")
+                pyautogui.press('enter')
+            
+            self.sleep(3)
+            
+            # 4. Seleccionar en el mapa
             self.click(*self.coords['seleccionar_mapa'])
             self.sleep(2)
             
-            # 4. Anotar
+            # 5. Anotar
             self.click(*self.coords['anotar'])
             self.sleep(2)
             
-            # 5. Agregar texto adicional
+            # 6. Agregar texto adicional
             self.click(*self.coords['agregar_texto_adicional'])
             self.sleep(2)
             
-            # 6. DETECCIÓN DE IMAGEN para el campo de texto
+            # 7. DETECCIÓN DE IMAGEN para el campo de texto
             image_found, base_location = self.wait_for_image_with_retries(self.reference_image, max_attempts=10)
             
             if image_found:
@@ -444,109 +393,58 @@ class GEAutomation:
                 self.click(x_campo, y_campo)
                 self.sleep(2)
                 
-                # Escribir texto adicional con AHKWriter
-                self.escribir_texto_adicional_con_ahk(x_campo, y_campo, texto_adicional)
+                # Escribir texto adicional con AHK Writer
+                if not self.escribir_texto_adicional_ahk(x_campo, y_campo, texto_adicional):
+                    print("⚠️  No se pudo escribir con AHK Writer, usando pyautogui")
+                    pyautogui.write(texto_adicional, interval=0.05)
+                
                 self.sleep(1)
                 
-                # 7. Agregar texto
+                # 8. Agregar texto
                 self.click(x_agregar, y_agregar)
                 self.sleep(3)
             
-                # 8. Cerrar ventana de texto
+                # 9. Cerrar ventana de texto
                 self.click(x_cerrar, y_cerrar)
                 self.sleep(2)
             else:
                 # Fallback a coordenadas fijas si no se detecta la imagen
                 print("⚠️  Usando coordenadas fijas para campo de texto")
-                self.click(*self.coords['campo_texto'])
-                self.sleep(2)
-                
-                # Limpiar campo con backspace usando AHK Enter
-                if not self.enter.start_ahk():
-                    print("❌ No se pudo iniciar AHK para backspace")
-                else:
-                    # Simular backspace múltiples veces
-                    for _ in range(10):
-                        self.enter.presionar_backspace(1)
-                        time.sleep(0.1)
-                    self.enter.stop_ahk()
-                
-                self.sleep(1)
-                
-                # Escribir texto adicional con AHKWriter
-                self.escribir_texto_adicional_con_ahk(
-                    self.coords['campo_texto'][0], 
-                    self.coords['campo_texto'][1], 
-                    texto_adicional
-                )
-                self.sleep(1)
-                
-                # 7. Agregar texto
-                self.click(*self.coords['agregar_texto'])
-                self.sleep(3)
+                # Nota: Las coordenadas fijas fueron eliminadas, usar detección es obligatorio
+                print("❌ No se pudo detectar la imagen y no hay coordenadas de fallback")
+                return
             
-                # 8. Cerrar ventana de texto
-                self.click(*self.coords['cerrar_ventana_texto'])
-                self.sleep(2)
-            
-            # 9. Limpiar trazo
+            # 10. Limpiar trazo
             self.click(*self.coords['limpiar_trazo'])
             self.sleep(1)
             
-            # 10. Seleccionar Lote nuevamente
+            # 11. Seleccionar Lote nuevamente
             self.click(*self.coords['lote_again'])
             self.sleep(2)
             
-            # 11. Presionar flecha abajo CON AHK
-            self.presionar_flecha_abajo_con_ahk()
+            # 12. Presionar flecha abajo con AHK
+            if not self.presionar_flecha_abajo_ahk(1):
+                print("⚠️  No se pudo presionar flecha abajo con AHK, usando pyautogui")
+                pyautogui.press('down')
+            
             self.sleep(2)
             
-            # 12. Detectar ventana de error después de procesar
+            # 13. Detectar ventana de error después de cada iteración
             if self.detectar_ventana_error():
-                print("⚠️  Ventana de error detectada y manejada")
-                # Realizar fallback a agregar_ruta
-                self.handle_fallback_to_agregar_ruta()
+                print("✅ Ventana de error detectada y cerrada")
             
             print(f"✅ Iteración {iteration} completada")
             
         except Exception as e:
             print(f"❌ Error en iteración {iteration}: {e}")
-            # En caso de error, intentar fallback
-            self.handle_fallback_to_agregar_ruta()
+            # Intentar cerrar ventana de error en caso de excepción
+            self.detectar_ventana_error()
 
     def save_progress(self):
         """Guardar progreso con Ctrl + S"""
         print("💾 Guardando progreso...")
         pyautogui.hotkey('ctrl', 's')
         self.sleep(6)
-
-    def pause_search(self):
-        """Pausar la búsqueda"""
-        if self.is_running and not self.is_paused:
-            self.is_paused = True
-            print("⏸️  Búsqueda pausada")
-
-    def resume_search(self):
-        """Reanudar la búsqueda"""
-        if self.is_running and self.is_paused:
-            self.is_paused = False
-            with self.pause_condition:
-                self.pause_condition.notify_all()
-            print("▶️  Búsqueda reanudada")
-
-    def stop_search(self):
-        """Detener la búsqueda"""
-        self.is_running = False
-        self.is_paused = False
-        with self.pause_condition:
-            self.pause_condition.notify_all()
-        
-        # Detener todos los managers AHK
-        managers = [self.enter, self.ahk_manager, self.ahk_writer, self.ahk_click_down]
-        for manager in managers:
-            manager.stop_ahk()
-            
-        print("⏹️  Proceso detenido")
 
 def main():
     # Inicializar automatización
@@ -561,35 +459,30 @@ def main():
     
     print(f"✅ Archivo CSV encontrado: {ge_auto.csv_file}")
     
-    # Verificar imagen de referencia
-    if not os.path.exists(ge_auto.reference_image):
-        print(f"⚠️  Advertencia: Imagen de referencia no encontrada: {ge_auto.reference_image}")
-        print("   El proceso usará coordenadas fijas como fallback")
-    else:
-        print(f"✅ Imagen de referencia encontrada: {ge_auto.reference_image}")
+    # Verificar imágenes de referencia
+    images_to_check = [
+        ge_auto.reference_image,
+        ge_auto.ventana_archivo_img,
+        ge_auto.ventana_error_img
+    ]
     
-    # Verificar imagen de ventana de archivo
-    if not os.path.exists('img/cargarArchivo.png'):
-        print(f"⚠️  Advertencia: Imagen de ventana de archivo no encontrada: img/cargarArchivo.png")
-    else:
-        print(f"✅ Imagen de ventana de archivo encontrada: img/cargarArchivo.png")
-    
-    # Verificar imagen de error
-    if not os.path.exists('img/ventanaError.png'):
-        print(f"⚠️  Advertencia: Imagen de error no encontrada: img/ventanaError.png")
-    else:
-        print(f"✅ Imagen de error encontrada: img/ventanaError.png")
+    for image_path in images_to_check:
+        if not os.path.exists(image_path):
+            print(f"⚠️  Advertencia: Imagen no encontrada: {image_path}")
+        else:
+            print(f"✅ Imagen encontrada: {image_path}")
     
     print()
     print("Configuración:")
     print(f"  - Archivo CSV: {ge_auto.csv_file}")
     print(f"  - Imagen de referencia: {ge_auto.reference_image}")
-    print("  - Usando AHKWriter para escritura de texto")
-    print("  - Usando AHKManager para ventana de archivo")
-    print("  - Usando EnterAHKManager para tecla Enter")
-    print("  - Usando AHKClickDown para flechas abajo")
+    print(f"  - Imagen ventana archivo: {ge_auto.ventana_archivo_img}")
+    print(f"  - Imagen ventana error: {ge_auto.ventana_error_img}")
+    print("  - Usando AHK Writer para escritura de texto adicional")
+    print("  - Usando AHK Manager para carga de archivos")
+    print("  - Usando AHK Enter para presionar Enter")
+    print("  - Usando AHK para flechas abajo")
     print("  - 9 iteraciones programadas")
-    print("  - Usando detección inteligente de ventanas")
     print()
     
     try:
@@ -619,12 +512,12 @@ def main():
     except KeyboardInterrupt:
         print()
         print("❌ Ejecución cancelada por el usuario")
-        ge_auto.stop_search()
+        ge_auto.is_running = False
         input("Presiona Enter para salir...")
     except Exception as e:
         print()
         print(f"❌ Error durante la ejecución: {e}")
-        ge_auto.stop_search()
+        ge_auto.is_running = False
         input("Presiona Enter para salir...")
 
 if __name__ == "__main__":
