@@ -336,19 +336,20 @@ class GEAutomation:
         row = df.iloc[row_index]
         
         # Obtener valores del CSV
-        if len(row) >= 2:
-            num_txt_type = str(row.iloc[29])  # Primera columna para el nombre del archivo
-            texto_adicional = str(row.iloc[30])  # Segunda columna para el texto adicional
-        else:
-            print(f"⚠️  Fila {iteration} no tiene suficientes columnas")
-            return
+
+        num_txt_type = str(row.iloc[28])  # Line columna para el nombre del archivo
+        texto_adicional = str(row.iloc[29])  # Nom Neg columna para el texto adicional
+
 
         # SECUENCIA DE ACCIONES
         try:
             # 1. Seleccionar Agregar ruta de GE
             self.click(*self.coords['agregar_ruta'])
             self.sleep(2)
-            
+            self.click(*self.coords['archivo'])
+            self.sleep(2)
+            self.click(*self.coords['abrir'])
+            self.sleep(2) 
             # 2. Usar detección de ventana de archivo para cargar el archivo con AHK Manager
             nombre_archivo = f"NM {num_txt_type}.kml"
             success = self.handle_archivo_special_behavior(nombre_archivo)
@@ -394,24 +395,19 @@ class GEAutomation:
                 # Hacer clic en el campo de texto detectado
                 self.click(x_campo, y_campo)
                 self.sleep(2)
+                # Escribir el texto adicional usando AHK Writer
+                self.ahk_writer.ejecutar_escritura_ahk(x_campo, y_campo, texto_adicional)
                 
-                # Escribir texto adicional con AHK Writer
-                if not self.escribir_texto_adicional_ahk(x_campo, y_campo, texto_adicional):
-                    print("⚠️  No se pudo escribir con AHK Writer, usando pyautogui")
-                    pyautogui.write(texto_adicional, interval=0.05)
+                self.sleep(2)
                 
-                self.sleep(1)
-                
-                # 8. Agregar texto
+                # 8. Agregar de texto adicional
                 self.click(x_agregar, y_agregar)
                 self.sleep(3)
             
-                # 9. Cerrar ventana de texto
+                # 9. Cerrar ventana de texto adicional
                 self.click(x_cerrar, y_cerrar)
                 self.sleep(2)
             else:
-                # Fallback a coordenadas fijas si no se detecta la imagen
-                print("⚠️  Usando coordenadas fijas para campo de texto")
                 # Nota: Las coordenadas fijas fueron eliminadas, usar detección es obligatorio
                 print("❌ No se pudo detectar la imagen y no hay coordenadas de fallback")
                 return
