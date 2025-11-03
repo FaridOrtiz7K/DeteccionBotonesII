@@ -46,7 +46,7 @@ class GEAutomation:
         
         # Coordenadas relativas para detección de imagen (campo de texto)
         self.coords_texto_relativas = {
-            'campo_texto': (222, 54),
+            'campo_texto': (230, 66),
             'agregar_texto': (64, 100),
             'cerrar_ventana_texto': (139, 98)
         }
@@ -463,8 +463,6 @@ class GEAutomation:
                 y_agregar = base_location[1] + self.coords_texto_relativas['agregar_texto'][1]
                 x_cerrar = base_location[0] + self.coords_texto_relativas['cerrar_ventana_texto'][0]
                 y_cerrar = base_location[1] + self.coords_texto_relativas['cerrar_ventana_texto'][1]
-                
-                print(f"🖥️  Coordenadas campo texto: ({x_campo}, {y_campo})")
                 
                 # Escribir el texto adicional usando AHK Writer SOLO si hay texto
                 if texto_adicional and texto_adicional.strip():
