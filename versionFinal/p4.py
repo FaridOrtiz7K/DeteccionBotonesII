@@ -337,7 +337,7 @@ class GEAutomation:
         
         # Obtener valores del CSV
 
-        num_txt_type = str(row.iloc[28])  # Line columna para el nombre del archivo
+        num_txt_type = str(int(row.iloc[28]))  # Line columna para el nombre del archivo
         texto_adicional = str(row.iloc[29])  # Nom Neg columna para el texto adicional
 
 
