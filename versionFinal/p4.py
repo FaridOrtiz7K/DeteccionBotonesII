@@ -220,16 +220,14 @@ class GEAutomation:
                 
         return success
 
-    def presionar_flecha_abajo_ahk(self, veces=1):
+    def presionar_flecha_abajo_ahk(self, x,y,veces=1):
         """Presiona flecha abajo usando AHK"""
         if not self.ahk_click_down.start_ahk():
             logger.error("No se pudo iniciar AutoHotkey para flecha abajo")
             return False
         
         try:
-            for i in range(veces):
-                pyautogui.press('down')
-                time.sleep(0.5)
+            self.ahk_click_down.ejecutar_click_down(x, y, veces)  # Coordenadas dummy
             return True
         except Exception as e:
             logger.error(f"Error presionando flecha abajo: {e}")
@@ -507,9 +505,11 @@ class GEAutomation:
             self.sleep(2)
             
             # 12. Presionar flecha abajo con AHK
-            if not self.presionar_flecha_abajo_ahk(1):
+            if not self.presionar_flecha_abajo_ahk(*self.coords['lote_again'],1):
                 print("⚠️  No se pudo presionar flecha abajo con AHK, usando pyautogui")
                 pyautogui.press('down')
+            else:
+                print("✅ Flecha abajo presionada con AHK")
             
             self.sleep(2)
             
