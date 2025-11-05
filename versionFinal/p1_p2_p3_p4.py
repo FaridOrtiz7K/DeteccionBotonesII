@@ -858,7 +858,9 @@ class GEAutomation:
             'anotar': (1366, 384),
             'agregar_texto_adicional': (1449, 452),
             'limpiar_trazo': (360, 980),
-            'lote_again': (70, 266)
+            'lote_again': (70, 266),
+            'cerrar_ventana_archivo': (1530, 555)
+
         }
         
         # Coordenadas relativas para detección de imagen (campo de texto)
@@ -1328,7 +1330,12 @@ class GEAutomation:
             if self.detectar_ventana_error():
                 print("✅ Ventana de error detectada y cerrada")
             
+            #14. Cerrar_ventana_archivo
+            self.click(*self.coords['cerrar_ventana_archivo'])
+            self.sleep(2)
+
             print(f"✅ Línea {linea_especifica} completada exitosamente")
+
             return True
             
         except Exception as e:
