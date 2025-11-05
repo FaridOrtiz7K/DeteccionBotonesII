@@ -372,7 +372,7 @@ class NSEAutomation:
         self.sleep(2)
 
 def ejecutar_programa1():
-    """Ejecuta el primer programa (ProcesadorCSV)"""
+    """Ejecuta el primer programa (ProcesadorCSV) automáticamente"""
     print("=" * 60)
     print("INICIANDO PROGRAMA 1 - PROCESADOR CSV")
     print("=" * 60)
@@ -381,30 +381,35 @@ def ejecutar_programa1():
     pyautogui.PAUSE = 0.5
     pyautogui.FAILSAFE = True
     
-    # Nombre del archivo CSV - cambia esto por tu archivo real
-    archivo_csv = "NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"  # Cambia por el nombre real de tu CSV
+    # Nombre del archivo CSV
+    archivo_csv = "NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
     
     # Crear procesador
     procesador = ProcesadorCSV(archivo_csv)
     
-    # Ejecutar procesamiento
-    print("Iniciando procesamiento...")
+    # Ejecutar procesamiento automáticamente
+    print("Iniciando procesamiento automático del Programa 1...")
     print("Asegúrate de que la ventana objetivo esté activa")
     print("Presiona Ctrl+C para cancelar")
     
     try:
-        input("Presiona Enter para comenzar el Programa 1...")
+        print("Iniciando en 3 segundos...")
         time.sleep(3)  # Tiempo para cambiar a la ventana correcta
-        procesador.procesar_todo()
+        resultado = procesador.procesar_todo()
+        if resultado:
+            print("✅ Programa 1 completado exitosamente")
+        else:
+            print("❌ Programa 1 falló")
+        return resultado
     except KeyboardInterrupt:
-        print("\nProceso cancelado por el usuario")
+        print("\n❌ Proceso cancelado por el usuario")
+        return False
     except Exception as e:
-        print(f"Error: {e}")
-    finally:
-        print("Programa 1 finalizado")
+        print(f"❌ Error en Programa 1: {e}")
+        return False
 
 def ejecutar_programa2():
-    """Ejecuta el segundo programa (NSEAutomation)"""
+    """Ejecuta el segundo programa (NSEAutomation) automáticamente"""
     print("\n" + "=" * 60)
     print("INICIANDO PROGRAMA 2 - AUTOMATIZACIÓN NSE")
     print("=" * 60)
@@ -416,8 +421,7 @@ def ejecutar_programa2():
     # Verificar archivo CSV
     if not os.path.exists(nse.csv_file):
         print(f"❌ ERROR: Archivo CSV no encontrado: {nse.csv_file}")
-        input("Presiona Enter para salir...")
-        return
+        return False
     
     print(f"✅ Archivo CSV encontrado: {nse.csv_file}")
     
@@ -437,14 +441,9 @@ def ejecutar_programa2():
     print()
     
     try:
-        input("Presiona Enter para INICIAR el Programa 2 (Automatización NSE)...")
+        print("Iniciando Programa 2 en 3 segundos...")
+        time.sleep(3)
         
-        # Cuenta regresiva
-        for i in range(3, 0, -1):
-            print(f"▶️  Iniciando en {i}...")
-            time.sleep(1)
-        
-        print()
         print("🚀 INICIANDO AUTOMATIZACIÓN NSE ...")
         print("   Presiona Ctrl+C en cualquier momento para detener")
         print()
@@ -452,45 +451,71 @@ def ejecutar_programa2():
         # Ejecutar script NSE
         nse.execute_nse_script()
         
-        print()
-        print("Programa 2 finalizado exitosamente")
+        print("✅ Programa 2 finalizado exitosamente")
+        return True
         
     except KeyboardInterrupt:
         print()
         print("❌ Ejecución cancelada por el usuario")
         nse.is_running = False
+        return False
     except Exception as e:
         print()
         print(f"❌ Error durante la ejecución: {e}")
         nse.is_running = False
+        return False
 
 # Función principal combinada
 def main():
-    """Función principal que ejecuta ambos programas secuencialmente"""
-    print("COMBINACIÓN DE PROGRAMAS")
-    print("Este script ejecutará ambos programas de forma secuencial")
+    """Función principal que ejecuta ambos programas secuencialmente sin pausas"""
+    print("COMBINACIÓN DE PROGRAMAS - EJECUCIÓN AUTOMÁTICA")
+    print("Este script ejecutará ambos programas de forma secuencial automáticamente")
+    print("Presiona Ctrl+C para cancelar en cualquier momento")
     
     try:
+        # Cuenta regresiva inicial
+        print("\nIniciando ejecución automática en:")
+        for i in range(5, 0, -1):
+            print(f"⏰ {i}...")
+            time.sleep(1)
+        
         # Ejecutar Programa 1
-        ejecutar_programa1()
+        resultado_programa1 = ejecutar_programa1()
         
         # Pequeña pausa entre programas
+        if resultado_programa1:
+            print("\n" + "=" * 60)
+            print("TRANSICIÓN ENTRE PROGRAMAS")
+            print("=" * 60)
+            print("Iniciando Programa 2 en 3 segundos...")
+            time.sleep(3)
+            
+            # Ejecutar Programa 2
+            resultado_programa2 = ejecutar_programa2()
+        else:
+            print("❌ Programa 1 falló, saltando Programa 2")
+            resultado_programa2 = False
+        
+        # Resultado final
         print("\n" + "=" * 60)
-        print("TRANSICIÓN ENTRE PROGRAMAS")
+        if resultado_programa1 and resultado_programa2:
+            print("🎉 EJECUCIÓN COMPLETADA - AMBOS PROGRAMAS FINALIZADOS EXITOSAMENTE")
+        elif resultado_programa1 and not resultado_programa2:
+            print("⚠️  EJECUCIÓN PARCIAL - Programa 1 OK, Programa 2 Falló")
+        elif not resultado_programa1 and resultado_programa2:
+            print("⚠️  EJECUCIÓN PARCIAL - Programa 1 Falló, Programa 2 OK")
+        else:
+            print("❌ EJECUCIÓN FALLIDA - Ambos programas fallaron")
         print("=" * 60)
-        time.sleep(2)
         
-        # Ejecutar Programa 2
-        ejecutar_programa2()
-        
-        print("\n" + "=" * 60)
-        print("EJECUCIÓN COMPLETADA - AMBOS PROGRAMAS FINALIZADOS")
-        print("=" * 60)
-        
+    except KeyboardInterrupt:
+        print("\n❌ Ejecución cancelada por el usuario")
     except Exception as e:
-        print(f"Error general en la ejecución combinada: {e}")
+        print(f"\n❌ Error general en la ejecución combinada: {e}")
     finally:
-        input("Presiona Enter para salir...")
+        # Pausa final breve para que el usuario pueda ver los resultados
+        print("\nEjecución finalizada. El programa se cerrará en 5 segundos...")
+        time.sleep(5)
 
 if __name__ == "__main__":
     main()
