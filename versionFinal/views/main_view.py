@@ -1,102 +1,172 @@
+# view.py
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
-from datetime import datetime
+from tkinter import ttk, filedialog, messagebox, simpledialog
 
-class MainView(tk.Tk):
-    def __init__(self, controller):
-        super().__init__()
-        self.controller = controller
-        self.title("Script Automatización SIGP")
-        self.geometry("600x500")
-        self.protocol("WM_DELETE_WINDOW", self.on_closing)
+class VistaAutomation:
+    def __init__(self, root, controlador):
+        self.root = root
+        self.controlador = controlador
+        self.root.title("Sistema de Automatización NSE/GE")
+        self.root.geometry("800x600")
         
-        self.create_widgets()
-        self.bind_events()
+        # Variables
+        self.csv_file = tk.StringVar()
+        self.linea_maxima = tk.IntVar(value=1)
+        self.estado = tk.StringVar(value="Listo")
+        self.linea_actual = tk.StringVar(value="0")
+        self.lineas_restantes = tk.StringVar(value="0")
         
-    def create_widgets(self):
+        self.setup_ui()
+        
+    def setup_ui(self):
         # Frame principal
-        main_frame = ttk.Frame(self, padding="20")
+        main_frame = ttk.Frame(self.root, padding="10")
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
         # Configurar grid weights
-        self.columnconfigure(0, weight=1)
-        self.rowconfigure(0, weight=1)
+        self.root.columnconfigure(0, weight=1)
+        self.root.rowconfigure(0, weight=1)
         main_frame.columnconfigure(1, weight=1)
-        main_frame.rowconfigure(5, weight=1)
         
-        # Selección de archivo CSV
-        ttk.Label(main_frame, text="Archivo CSV:").grid(row=0, column=0, sticky=tk.W, pady=5)
-        self.csv_path = tk.StringVar()
-        ttk.Entry(main_frame, textvariable=self.csv_path, state="readonly").grid(row=0, column=1, sticky=(tk.W, tk.E), pady=5)
-        ttk.Button(main_frame, text="Examinar", command=self.controller.load_csv_file).grid(row=0, column=2, padx=5)
+        # Sección CSV
+        csv_frame = ttk.LabelFrame(main_frame, text="Configuración CSV", padding="5")
+        csv_frame.grid(row=0, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=5)
+        csv_frame.columnconfigure(1, weight=1)
         
-        # Configuración de inicio
-        ttk.Label(main_frame, text="Iniciar en línea:").grid(row=1, column=0, sticky=tk.W, pady=5)
-        self.start_count = tk.IntVar(value=1)
-        ttk.Entry(main_frame, textvariable=self.start_count, width=10).grid(row=1, column=1, sticky=tk.W, pady=5)
+        ttk.Label(csv_frame, text="Archivo CSV:").grid(row=0, column=0, sticky=tk.W, padx=5)
+        ttk.Entry(csv_frame, textvariable=self.csv_file, width=50).grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5)
+        ttk.Button(csv_frame, text="Seleccionar", command=self.controlador.seleccionar_csv).grid(row=0, column=2, padx=5)
         
-        ttk.Label(main_frame, text="Número de lotes:").grid(row=2, column=0, sticky=tk.W, pady=5)
-        self.loop_count = tk.IntVar(value=589)
-        ttk.Entry(main_frame, textvariable=self.loop_count, width=10).grid(row=2, column=1, sticky=tk.W, pady=5)
+        # Sección ejecución
+        exec_frame = ttk.LabelFrame(main_frame, text="Control de Ejecución", padding="5")
+        exec_frame.grid(row=1, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=5)
         
-        # Información del estado
-        self.status_label = ttk.Label(main_frame, text="Estado: Listo")
-        self.status_label.grid(row=3, column=0, columnspan=3, sticky=tk.W, pady=5)
+        ttk.Label(exec_frame, text="Línea máxima a ejecutar:").grid(row=0, column=0, sticky=tk.W, padx=5)
+        self.spin_linea_maxima = ttk.Spinbox(exec_frame, from_=1, to=10000, textvariable=self.linea_maxima, width=10)
+        self.spin_linea_maxima.grid(row=0, column=1, sticky=tk.W, padx=5)
+        
+        ttk.Label(exec_frame, text="Línea actual:").grid(row=1, column=0, sticky=tk.W, padx=5)
+        ttk.Label(exec_frame, textvariable=self.linea_actual).grid(row=1, column=1, sticky=tk.W, padx=5)
+        
+        ttk.Label(exec_frame, text="Líneas restantes:").grid(row=2, column=0, sticky=tk.W, padx=5)
+        ttk.Label(exec_frame, textvariable=self.lineas_restantes).grid(row=2, column=1, sticky=tk.W, padx=5)
         
         # Botones de control
-        button_frame = ttk.Frame(main_frame)
-        button_frame.grid(row=4, column=0, columnspan=3, pady=20)
+        control_frame = ttk.Frame(main_frame)
+        control_frame.grid(row=2, column=0, columnspan=3, pady=10)
         
-        self.start_button = ttk.Button(button_frame, text="Iniciar", command=self.controller.start_script)
-        self.start_button.pack(side=tk.LEFT, padx=5)
+        self.btn_iniciar = ttk.Button(control_frame, text="Iniciar Proceso", command=self.controlador.iniciar_proceso)
+        self.btn_iniciar.grid(row=0, column=0, padx=5)
         
-        self.pause_button = ttk.Button(button_frame, text="Pausar", command=self.controller.pause_script, state="disabled")
-        self.pause_button.pack(side=tk.LEFT, padx=5)
+        self.btn_pausar = ttk.Button(control_frame, text="Pausar (F2)", command=self.controlador.pausar_proceso, state=tk.DISABLED)
+        self.btn_pausar.grid(row=0, column=1, padx=5)
         
-        self.stop_button = ttk.Button(button_frame, text="Detener", command=self.controller.stop_script, state="disabled")
-        self.stop_button.pack(side=tk.LEFT, padx=5)
+        self.btn_reanudar = ttk.Button(control_frame, text="Reanudar (F3)", command=self.controlador.reanudar_proceso, state=tk.DISABLED)
+        self.btn_reanudar.grid(row=0, column=2, padx=5)
         
-        # Estado del script
-        ttk.Label(main_frame, text="Log de ejecución:").grid(row=5, column=0, sticky=tk.W, pady=(10, 0))
+        self.btn_detener = ttk.Button(control_frame, text="Detener (F4)", command=self.controlador.detener_proceso, state=tk.DISABLED)
+        self.btn_detener.grid(row=0, column=3, padx=5)
         
-        self.status_text = tk.Text(main_frame, height=15, width=70, state="disabled")
-        self.status_text.grid(row=6, column=0, columnspan=3, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
+        # Botones adicionales
+        extra_frame = ttk.Frame(main_frame)
+        extra_frame.grid(row=3, column=0, columnspan=3, pady=10)
         
-        # Scrollbar para el texto
-        scrollbar = ttk.Scrollbar(main_frame, orient="vertical", command=self.status_text.yview)
-        scrollbar.grid(row=6, column=3, sticky=(tk.N, tk.S))
-        self.status_text.configure(yscrollcommand=scrollbar.set)
+        ttk.Button(extra_frame, text="Escribir PRUEBA A", command=self.controlador.escribir_prueba_a).grid(row=0, column=0, padx=5)
+        ttk.Button(extra_frame, text="Configurar KML", command=self.controlador.configurar_kml).grid(row=0, column=1, padx=5)
         
-    def bind_events(self):
-        self.bind('<Escape>', lambda e: self.controller.toggle_pause())
+        # Estado
+        estado_frame = ttk.LabelFrame(main_frame, text="Estado", padding="5")
+        estado_frame.grid(row=4, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=5)
         
-    def update_status(self, message):
-        self.status_text.configure(state="normal")
-        timestamp = datetime.now().strftime("%H:%M:%S")
-        self.status_text.insert(tk.END, f"[{timestamp}] {message}\n")
-        self.status_text.see(tk.END)
-        self.status_text.configure(state="disabled")
+        self.estado_label = ttk.Label(estado_frame, textvariable=self.estado, foreground="blue")
+        self.estado_label.grid(row=0, column=0, sticky=tk.W)
         
-    def update_status_label(self, message):
-        self.status_label.config(text=f"Estado: {message}")
+        # Log
+        log_frame = ttk.LabelFrame(main_frame, text="Log de Ejecución", padding="5")
+        log_frame.grid(row=5, column=0, columnspan=3, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
+        log_frame.columnconfigure(0, weight=1)
+        log_frame.rowconfigure(0, weight=1)
         
-    def update_buttons(self, running, paused):
-        if running:
-            self.start_button.config(state="disabled")
-            self.pause_button.config(state="normal")
-            self.stop_button.config(state="normal")
-            if paused:
-                self.pause_button.config(text="Continuar")
-                self.update_status_label("Pausado")
-            else:
-                self.pause_button.config(text="Pausar")
-                self.update_status_label("Ejecutando")
-        else:
-            self.start_button.config(state="normal")
-            self.pause_button.config(state="disabled")
-            self.stop_button.config(state="disabled")
-            self.pause_button.config(text="Pausar")
-            self.update_status_label("Listo")
+        self.log_text = tk.Text(log_frame, height=15, width=80)
+        scrollbar = ttk.Scrollbar(log_frame, orient=tk.VERTICAL, command=self.log_text.yview)
+        self.log_text.configure(yscrollcommand=scrollbar.set)
+        
+        self.log_text.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+        
+        # Configurar peso para expansión
+        main_frame.rowconfigure(5, weight=1)
+    
+    def log(self, mensaje):
+        """Agregar mensaje al log"""
+        self.log_text.insert(tk.END, f"{mensaje}\n")
+        self.log_text.see(tk.END)
+        self.root.update()
+    
+    def clear_log(self):
+        """Limpiar el log"""
+        self.log_text.delete(1.0, tk.END)
+    
+    def actualizar_estado_botones(self, estado_programa):
+        """Actualizar estado de los botones según el estado del proceso"""
+        if estado_programa.ejecutando:
+            self.btn_iniciar.config(state=tk.DISABLED)
+            self.btn_detener.config(state=tk.NORMAL)
             
-    def on_closing(self):
-        self.controller.handle_app_close()
+            if estado_programa.pausado:
+                self.btn_pausar.config(state=tk.DISABLED)
+                self.btn_reanudar.config(state=tk.NORMAL)
+            else:
+                self.btn_pausar.config(state=tk.NORMAL)
+                self.btn_reanudar.config(state=tk.DISABLED)
+        else:
+            self.btn_iniciar.config(state=tk.NORMAL)
+            self.btn_pausar.config(state=tk.DISABLED)
+            self.btn_reanudar.config(state=tk.DISABLED)
+            self.btn_detener.config(state=tk.DISABLED)
+    
+    def actualizar_estado_lineas(self, estado_programa):
+        """Actualizar display de líneas actuales y restantes"""
+        self.linea_actual.set(str(estado_programa.linea_actual))
+        lineas_rest = max(0, estado_programa.linea_maxima - estado_programa.linea_actual)
+        self.lineas_restantes.set(str(lineas_rest))
+    
+    def actualizar_estado_general(self, estado_programa):
+        """Actualizar estado general del programa"""
+        self.estado.set(estado_programa.estado)
+        
+        # Cambiar color según estado
+        if estado_programa.estado == "Ejecutando...":
+            self.estado_label.configure(foreground="green")
+        elif estado_programa.estado == "Pausado":
+            self.estado_label.configure(foreground="orange")
+        elif estado_programa.estado == "Detenido":
+            self.estado_label.configure(foreground="red")
+        elif estado_programa.estado == "Completado":
+            self.estado_label.configure(foreground="green")
+        else:
+            self.estado_label.configure(foreground="blue")
+    
+    def mostrar_mensaje(self, titulo, mensaje, tipo="info"):
+        """Mostrar mensaje al usuario"""
+        if tipo == "info":
+            messagebox.showinfo(titulo, mensaje)
+        elif tipo == "error":
+            messagebox.showerror(titulo, mensaje)
+        elif tipo == "warning":
+            messagebox.showwarning(titulo, mensaje)
+    
+    def pedir_configuracion_kml(self, valor_actual):
+        """Pedir configuración de nombre KML"""
+        return simpledialog.askstring(
+            "Configurar KML", 
+            "Ingrese el nuevo nombre para archivos KML:",
+            initialvalue=valor_actual
+        )
+    
+    def pedir_seleccion_csv(self):
+        """Pedir selección de archivo CSV"""
+        return filedialog.askopenfilename(
+            title="Seleccionar archivo CSV",
+            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")]
+        )
