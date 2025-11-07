@@ -1,525 +1,350 @@
-import tkinter.messagebox as messagebox
+# controller.py
 import threading
 import time
-import pyautogui
 import pandas as pd
-from tkinter import filedialog
-from datetime import datetime
+import keyboard
+from models.modelo import EstadoPrograma, ProcesadorCSV, NSEAutomation, NSEServicesAutomation, GEAutomation
+from versionFinal.utils.ahk_writer import AHKWriter
 
-class ScriptController:
+class ControladorAutomation:
     def __init__(self):
-        from models.modelo import ScriptModel
-        self.model = ScriptModel()
-        self.view = None
-        self.login_view = None
-        self.pause_dialog = None
-        self.script_thread = None
+        self.modelo = EstadoPrograma()
+        self.vista = None
+        self.hilo_ejecucion = None
         
-    def run(self):
-        from views.main_view import MainView
-        self.view = MainView(self)
-        self.view.withdraw()  # Ocultar ventana principal hasta login
-        self.show_login()
-        
-    def show_login(self):
-        from views.login_view import LoginView
-        self.login_view = LoginView(self.view, self)
-        self.view.wait_window(self.login_view)
-        
-    def handle_login(self, username, password):
-        if self.model.validate_credentials(username, password):
-            self.login_view.destroy()
-            self.view.deiconify()  # Mostrar ventana principal
-            self.view.update_status("Login exitoso. Selecciona un archivo CSV para comenzar.")
-            self.view.update_status_label("Listo")
-        else:
-            messagebox.showerror("Error", "Usuario o contraseña incorrectos")
+    def set_vista(self, vista):
+        self.vista = vista
+        self.setup_bindings()
+    
+    def setup_bindings(self):
+        # Configurar teclas globales
+        keyboard.add_hotkey('esc', self.mostrar_estado_actual)
+        keyboard.add_hotkey('f2', self.pausar_proceso)
+        keyboard.add_hotkey('f3', self.reanudar_proceso)
+        keyboard.add_hotkey('f4', self.detener_proceso)
+    
+    def actualizar_vista(self):
+        """Actualizar todos los elementos de la vista"""
+        if self.vista:
+            self.vista.actualizar_estado_botones(self.modelo)
+            self.vista.actualizar_estado_lineas(self.modelo)
+            self.vista.actualizar_estado_general(self.modelo)
+    
+    def log(self, mensaje):
+        """Agregar mensaje al log"""
+        if self.vista:
+            self.vista.log(mensaje)
+    
+    def seleccionar_csv(self):
+        """Seleccionar archivo CSV"""
+        archivo = self.vista.pedir_seleccion_csv()
+        if archivo:
+            self.modelo.csv_file = archivo
+            self.vista.csv_file.set(archivo)
+            self.log(f"CSV seleccionado: {archivo}")
             
-    def load_csv_file(self):
-        file_path = filedialog.askopenfilename(
-            title="Seleccionar archivo CSV",
-            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")]
-        )
-        if file_path:
-            if self.model.load_csv(file_path):
-                self.view.csv_path.set(file_path)
-                self.view.update_status(f"Archivo CSV cargado: {file_path}")
-                self.view.update_status(f"Total de líneas: {self.model.total_lines}")
-                self.view.update_status_label("CSV Cargado")
+            # Calcular número máximo de líneas
+            try:
+                df = pd.read_csv(archivo)
+                self.modelo.linea_maxima = len(df)
+                self.vista.linea_maxima.set(len(df))
+                self.actualizar_vista()
+            except Exception as e:
+                self.log(f"Error al leer CSV: {e}")
+    
+    def escribir_prueba_a(self):
+        """Escribir PRUEBA A desde la última columna de la primera fila"""
+        if not self.modelo.csv_file:
+            self.vista.mostrar_mensaje("Error", "Primero seleccione un archivo CSV", "error")
+            return
+            
+        try:
+            df = pd.read_csv(self.modelo.csv_file)
+            if len(df) == 0:
+                self.vista.mostrar_mensaje("Error", "El CSV está vacío", "error")
+                return
                 
-    def start_script(self):
-        if self.model.csv_data is None:
-            messagebox.showerror("Error", "Por favor selecciona un archivo CSV primero")
-            return
+            # Obtener última columna de la primera fila
+            ultima_columna = df.iloc[0, -1]
+            texto_a_escribir = str(ultima_columna)
             
-        start_line = self.view.start_count.get()
-        loop_count = self.view.loop_count.get()
-        
-        if start_line < 1 or start_line > self.model.total_lines:
-            messagebox.showerror("Error", f"Línea de inicio debe estar entre 1 y {self.model.total_lines}")
-            return
+            self.log(f"Escribiendo: {texto_a_escribir}")
             
-        if not messagebox.askyesno("Confirmar", 
-            f"¿Iniciar script desde línea {start_line} con {loop_count} lotes?"):
-            return
-            
-        self.model.set_start_parameters(start_line, loop_count)
-        self.model.is_running = True
-        self.model.is_paused = False
-        
-        self.view.update_buttons(True, False)
-        self.view.update_status("Script iniciado. Presiona ESC para pausar.")
-        self.view.update_status_label("Ejecutando")
-        
-        # Iniciar el script en un hilo separado
-        self.script_thread = threading.Thread(target=self.execute_script)
-        self.script_thread.daemon = True
-        self.script_thread.start()
-        
-    def pause_script(self):
-        if self.model.is_running:
-            self.model.is_paused = not self.model.is_paused
-            self.view.update_buttons(True, self.model.is_paused)
-            
-            if self.model.is_paused:
-                self.view.update_status("Script pausado")
-                self.view.update_status_label("Pausado")
-                self.show_pause_dialog()
+            # Usar AHKWriter para escribir
+            ahk_writer = AHKWriter()
+            if ahk_writer.start_ahk():
+                # Coordenadas donde se debe escribir (ajustar según necesidad)
+                exito = ahk_writer.ejecutar_escritura_ahk(100, 100, texto_a_escribir)
+                ahk_writer.stop_ahk()
+                
+                if exito:
+                    self.log("✅ Texto escrito exitosamente")
+                else:
+                    self.log("❌ Error al escribir texto")
             else:
-                self.view.update_status("Script reanudado")
-                self.view.update_status_label("Ejecutando")
-                if self.pause_dialog:
-                    self.pause_dialog.destroy()
-                    self.pause_dialog = None
+                self.log("❌ No se pudo iniciar AHKWriter")
                 
-    def stop_script(self):
-        if self.model.is_running:
-            self.model.is_running = False
-            self.model.is_paused = False
-            self.view.update_buttons(False, False)
-            self.view.update_status("Script detenido por el usuario")
-            self.view.update_status_label("Detenido")
-            if self.pause_dialog:
-                self.pause_dialog.destroy()
-                self.pause_dialog = None
+        except Exception as e:
+            self.log(f"❌ Error al escribir PRUEBA A: {e}")
+    
+    def configurar_kml(self):
+        """Configurar el nombre de los archivos KML"""
+        nuevo_nombre = self.vista.pedir_configuracion_kml(self.modelo.kml_filename)
+        if nuevo_nombre:
+            self.modelo.kml_filename = nuevo_nombre
+            self.log(f"Nombre KML configurado a: {self.modelo.kml_filename}")
+    
+    def mostrar_estado_actual(self):
+        """Mostrar estado actual al presionar ESC"""
+        if self.modelo.ejecutando:
+            lineas_restantes = self.modelo.linea_maxima - self.modelo.linea_actual
+            mensaje = f"Línea actual: {self.modelo.linea_actual}\nLíneas restantes: {lineas_restantes}"
+            self.vista.mostrar_mensaje("Estado Actual", mensaje)
+    
+    def iniciar_proceso(self):
+        """Iniciar el proceso completo"""
+        if not self.modelo.csv_file:
+            self.vista.mostrar_mensaje("Error", "Seleccione un archivo CSV primero", "error")
+            return
             
-    def toggle_pause(self):
-        if self.model.is_running and not self.model.is_paused:
-            self.pause_script()
-            
-    def show_pause_dialog(self):
-        from views.pause_view import PauseDialog
-        if self.pause_dialog is None or not self.pause_dialog.winfo_exists():
-            self.pause_dialog = PauseDialog(self.view, self)
-            
-    def handle_app_close(self):
-        if self.model.is_running:
-            if messagebox.askokcancel("Salir", "El script está en ejecución. ¿Estás seguro de que quieres salir?"):
-                self.stop_script()
-                self.view.destroy()
-        else:
-            self.view.destroy()
-            
-    def execute_script(self):
-        """Ejecuta el script principal de automatización"""
-        cont = self.model.current_line
-        end_line = min(cont + self.model.loop_count, self.model.total_lines)
+        self.modelo.linea_maxima = self.vista.linea_maxima.get()
+        self.modelo.linea_actual = 1
         
-        self.model.add_log(f"Iniciando procesamiento desde línea {cont + 1} hasta {end_line}")
-        self.view.update_status(f"Iniciando desde línea {cont + 1} hasta {end_line}")
+        if self.modelo.linea_actual > self.modelo.linea_maxima:
+            self.vista.mostrar_mensaje("Error", "La línea actual no puede ser mayor que la línea máxima", "error")
+            return
+            
+        self.modelo.ejecutando = True
+        self.modelo.pausado = False
+        self.modelo.estado = "Ejecutando..."
         
-        for i in range(cont, end_line):
-            if not self.model.is_running:
-                break
+        self.actualizar_vista()
+        
+        # Iniciar en hilo separado
+        self.hilo_ejecucion = threading.Thread(target=self.ejecutar_procesos)
+        self.hilo_ejecucion.daemon = True
+        self.hilo_ejecucion.start()
+    
+    def pausar_proceso(self):
+        """Pausar el proceso"""
+        if self.modelo.ejecutando and not self.modelo.pausado:
+            self.modelo.pausado = True
+            self.modelo.estado = "Pausado"
+            self.log("⏸️ Proceso pausado")
+            self.actualizar_vista()
+    
+    def reanudar_proceso(self):
+        """Reanudar el proceso después de 5 segundos"""
+        if self.modelo.ejecutando and self.modelo.pausado:
+            self.modelo.estado = "Reanudando en 5 segundos..."
+            self.actualizar_vista()
+            
+            for i in range(5, 0, -1):
+                self.modelo.estado = f"Reanudando en {i} segundos..."
+                self.actualizar_vista()
+                time.sleep(1)
                 
-            while self.model.is_paused and self.model.is_running:
-                time.sleep(0.1)
-                if not self.model.is_running:
+            self.modelo.pausado = False
+            self.modelo.estado = "Ejecutando..."
+            self.log("▶️ Proceso reanudado")
+            self.actualizar_vista()
+    
+    def detener_proceso(self):
+        """Detener completamente el proceso"""
+        self.modelo.ejecutando = False
+        self.modelo.pausado = False
+        self.modelo.linea_actual = 0
+        self.modelo.estado = "Detenido"
+        
+        self.log("⏹️ Proceso detenido")
+        self.actualizar_vista()
+    
+    def ejecutar_procesos(self):
+        """Ejecutar los procesos secuencialmente para cada línea"""
+        try:
+            while self.modelo.linea_actual <= self.modelo.linea_maxima and self.modelo.ejecutando:
+                # Verificar pausa
+                while self.modelo.pausado and self.modelo.ejecutando:
+                    time.sleep(0.1)
+                    
+                if not self.modelo.ejecutando:
                     break
                     
-            if not self.model.is_running:
-                break
+                self.log(f"🔄 Procesando línea {self.modelo.linea_actual}/{self.modelo.linea_maxima}")
+                self.actualizar_vista()
                 
-            current_row = self.model.get_current_row()
-            if current_row is None:
-                break
+                # Ejecutar Programa 1
+                self.log("Iniciando Programa 1 - Procesador CSV")
+                resultado1, linea_procesada = self.ejecutar_programa1(self.modelo.linea_actual)
                 
-            try:
-                self.process_row(current_row, i + 1)
-                self.model.current_line = i + 1
+                if not resultado1 or not self.modelo.ejecutando:
+                    if not self.modelo.ejecutando:
+                        break
+                    self.log(f"❌ Programa 1 falló en línea {self.modelo.linea_actual}")
+                    self.modelo.linea_actual += 1
+                    continue
                 
-            except Exception as e:
-                error_msg = f"Error en línea {i + 1}: {str(e)}"
-                self.model.add_log(error_msg)
-                self.view.update_status(error_msg)
-                continue
+                # Ejecutar Programa 2
+                self.log("Iniciando Programa 2 - Automatización NSE")
+                resultado2 = self.ejecutar_programa2(linea_procesada)
                 
-        if self.model.is_running:
-            completion_msg = "Script completado exitosamente"
-            self.model.add_log(completion_msg)
-            self.view.update_status(completion_msg)
-            self.view.update_status_label("Completado")
-            self.model.is_running = False
-            self.view.after(0, lambda: self.view.update_buttons(False, False))
+                if not resultado2 or not self.modelo.ejecutando:
+                    if not self.modelo.ejecutando:
+                        break
+                    self.log(f"❌ Programa 2 falló en línea {self.modelo.linea_actual}")
+                    self.modelo.linea_actual += 1
+                    continue
+                
+                # Ejecutar Programa 3
+                self.log("Iniciando Programa 3 - Servicios NSE")
+                resultado3 = self.ejecutar_programa3(linea_procesada)
+                
+                if not resultado3 or not self.modelo.ejecutando:
+                    if not self.modelo.ejecutando:
+                        break
+                    self.log(f"❌ Programa 3 falló en línea {self.modelo.linea_actual}")
+                    self.modelo.linea_actual += 1
+                    continue
+                
+                # Ejecutar Programa 4
+                self.log("Iniciando Programa 4 - Automatización GE")
+                resultado4 = self.ejecutar_programa4(linea_procesada, self.modelo.kml_filename)
+                
+                if resultado4:
+                    self.log(f"✅ Línea {self.modelo.linea_actual} procesada exitosamente")
+                else:
+                    self.log(f"⚠️ Línea {self.modelo.linea_actual} completada con advertencias")
+                
+                self.modelo.linea_actual += 1
+                self.actualizar_vista()
+                
+                # Pequeña pausa entre líneas
+                time.sleep(2)
             
-    def process_row(self, row, line_number):
-        """Procesa una fila individual del CSV - IMPLEMENTACIÓN COMPLETA DEL SCRIPT ORIGINAL"""
-        self.model.add_log(f"Procesando línea {line_number}")
-        self.view.update_status(f"Procesando línea {line_number}")
+            if self.modelo.ejecutando and self.modelo.linea_actual > self.modelo.linea_maxima:
+                self.log("🎉 Proceso completado exitosamente")
+                self.modelo.estado = "Completado"
+                self.modelo.ejecutando = False
+            elif not self.modelo.ejecutando:
+                self.log("Proceso detenido por el usuario")
+                
+        except Exception as e:
+            self.log(f"❌ Error en ejecución: {e}")
+            self.modelo.estado = "Error"
         
+        finally:
+            self.modelo.ejecutando = False
+            self.modelo.pausado = False
+            self.actualizar_vista()
+    
+    def ejecutar_programa1(self, linea_especifica):
+        """Ejecutar Programa 1 - Procesador CSV"""
         try:
-            # 1. Left click at (89, 263) - Select in the list
-            pyautogui.click(89, 263)
-            time.sleep(1.5)
-
-            # 2. Left click at (1483, 519) - Case numero
-            pyautogui.click(1483, 519)
-            time.sleep(1.5)
-
-            # 3. Press delete key
-            pyautogui.press('delete')
-            time.sleep(1)
-
-            # 4. Write the value from column B (index 1)
-            value_b = str(row.iloc[1]) if pd.notna(row.iloc[1]) else ""
-            pyautogui.write(value_b)
-            time.sleep(1.5)
-
-            # 5. Check the value in column D (index 3)
-            if pd.notna(row.iloc[3]) and row.iloc[3] > 0:
-                # Select the point called USO at (1507, 636)
-                pyautogui.click(1507, 650)
-                time.sleep(2.5)
-
-                # Send the number of clicks down based on column D
-                for _ in range(int(row.iloc[3])):
-                    pyautogui.press('down')
-                    time.sleep(2)
-
-            # 6. Press Actualizar at (1290, 349)
-            pyautogui.click(1290, 349)
-            time.sleep(1.5)
-
-            # 7. Check the value in column E (index 4)
-            if pd.notna(row.iloc[4]):
-                if row.iloc[4] == "U":
-                    self.process_u_logic(row)
-                elif row.iloc[4] == "V":
-                    self.process_v_logic(row)
-
-            # 8. Check for services (column 16 index 15)
-            if len(row) > 16 and pd.notna(row.iloc[15]) and row.iloc[15] > 0:
-                self.process_services_logic(row)
-
-            # 9. Left click again at (89, 263)
-            pyautogui.click(89, 263)
+            procesador = ProcesadorCSV(self.modelo.csv_file)
+            
+            # Cargar CSV y configurar línea específica
+            if not procesador.cargar_csv():
+                return False, None
+                
+            # Modificar para usar línea específica
+            procesador.df = procesador.df.iloc[linea_especifica-1:linea_especifica]
+            
+            resultado, linea_procesada = procesador.procesar_todo()
+            
+            if resultado and linea_procesada:
+                self.log(f"✅ Programa 1 completado. Línea procesada: {linea_procesada}")
+                return True, linea_especifica
+            else:
+                self.log("❌ Programa 1 falló")
+                return False, None
+                
+        except Exception as e:
+            self.log(f"❌ Error en Programa 1: {e}")
+            return False, None
+    
+    def ejecutar_programa2(self, linea_especifica):
+        """Ejecutar Programa 2 - Automatización NSE"""
+        try:
+            nse = NSEAutomation(self.modelo.csv_file, linea_especifica=linea_especifica)
+            nse.is_running = True
+            
+            if not self.modelo.csv_file:
+                self.log(f"❌ ERROR: Archivo CSV no encontrado: {self.modelo.csv_file}")
+                return False
+            
+            self.log(f"🎯 Procesando línea: {linea_especifica}")
             time.sleep(3)
-
-            # 10. Press the directional key down
-            pyautogui.press('down')
-            time.sleep(3)
-
-            self.model.add_log(f"Línea {line_number} procesada exitosamente")
+            
+            resultado = nse.execute_nse_script()
+            
+            if resultado:
+                self.log("✅ Programa 2 finalizado exitosamente")
+            else:
+                self.log("❌ Programa 2 falló")
+                
+            return resultado
             
         except Exception as e:
-            error_msg = f"Error procesando línea {line_number}: {str(e)}"
-            self.model.add_log(error_msg)
-            self.view.update_status(error_msg)
-            raise
+            self.log(f"❌ Error en Programa 2: {e}")
+            return False
     
-    def process_u_logic(self, row):
-        """Procesa la lógica para el caso U"""
-        # Left click at (169, 189) Seleccionar en mapa
-        pyautogui.click(169, 189)
-        time.sleep(2)
-
-        # Left click at (1463, 382) Asignar un solo NSE
-        pyautogui.click(1463, 382)
-        time.sleep(2)
-
-        # Left click at (1266, 590) Casilla un solo NSE
-        pyautogui.click(1266, 590)
-        time.sleep(2)
-
-        # Handle "U" logic for columns F to P (indices 5 to 15)
-        coords_select_u = {
-            5: (1268, 637), 6: (1268, 661), 7: (1268, 685), 8: (1268, 709),
-            9: (1268, 733), 10: (1268, 757), 11: (1268, 781), 12: (1268, 825),
-            13: (1268, 856), 14: (1268, 881), 15: (1268, 908)
-        }
-        
-        for col_index in range(5, 16):
-            if len(row) > col_index and pd.notna(row.iloc[col_index]) and row.iloc[col_index] > 0:
-                if col_index in coords_select_u:
-                    x, y = coords_select_u[col_index]
-                    pyautogui.click(x, y)
-                    time.sleep(3)
-
-        # Left click at (1306, 639) Asignar NSE (Confirm)
-        pyautogui.click(1306, 639)
-        time.sleep(2)
+    def ejecutar_programa3(self, linea_especifica):
+        """Ejecutar Programa 3 - Servicios NSE"""
+        try:
+            nse_services = NSEServicesAutomation(self.modelo.csv_file, linea_especifica=linea_especifica)
+            
+            if not self.modelo.csv_file:
+                self.log(f"❌ ERROR: Archivo CSV no encontrado: {self.modelo.csv_file}")
+                return False
+            
+            self.log(f"🎯 Procesando línea: {linea_especifica}")
+            
+            if not nse_services.iniciar_ahk():
+                self.log("❌ No se pudieron iniciar los servicios AHK")
+                return False
+            
+            nse_services.is_running = True
+            resultado = nse_services.procesar_linea_especifica()
+            
+            if resultado:
+                self.log(f"✅ Programa 3 completado exitosamente")
+            else:
+                self.log(f"❌ Programa 3 falló")
+            
+            nse_services.detener_ahk()
+            return resultado
+            
+        except Exception as e:
+            self.log(f"❌ Error en Programa 3: {e}")
+            return False
     
-    def process_v_logic(self, row):
-        """Procesa la lógica para el caso V"""
-        # Left click at (169, 189) Seleccionar en mapa
-        pyautogui.click(169, 189)
-        time.sleep(3)
-
-        # Left click at (1491, 386) Asignar varios NSE
-        pyautogui.click(1491, 386)
-        time.sleep(3)
-
-        # Handle "V" logic for columns F to P (indices 5 to 15)
-        coords_select = {
-            5: (1235, 563), 6: (1235, 602), 7: (1235, 630), 8: (1235, 668),
-            9: (1235, 702), 10: (1600, 563), 11: (1600, 602), 12: (1600, 630),
-            13: (1235, 772), 14: (1235, 804), 15: (1235, 838)
-        }
-        
-        coords_type = {
-            5: (1365, 563), 6: (1365, 602), 7: (1365, 630), 8: (1365, 668),
-            9: (1365, 702), 10: (1730, 563), 11: (1730, 602), 12: (1730, 630),
-            13: (1365, 772), 14: (1365, 804), 15: (1365, 838)
-        }
-        
-        for col_index in range(5, 16):
-            if len(row) > col_index and pd.notna(row.iloc[col_index]) and row.iloc[col_index] > 0:
-                if col_index in coords_select and col_index in coords_type:
-                    # Click en coordenada select
-                    x_cs, y_cs = coords_select[col_index]
-                    pyautogui.click(x_cs, y_cs)
-                    time.sleep(2)
-                    
-                    # Click en coordenada type
-                    x_ct, y_ct = coords_type[col_index]
-                    pyautogui.click(x_ct, y_ct)
-                    time.sleep(2)
-                    
-                    # Escribir valor
-                    pyautogui.write(str(row.iloc[col_index]))
-                    time.sleep(2)
-
-        # Left click at (1648, 752) - Asignar NSE (Confirm)
-        pyautogui.click(1648, 752)
-        time.sleep(2)
-        
-        # Left click at (1598, 823) - Cerrar Asignar NSE 
-        pyautogui.click(1598, 823)
-        time.sleep(2)
-    
-    def process_services_logic(self, row):
-        """Procesa la lógica de servicios administrativos"""
-        # Left click at (1563, 385) Boton Administrar Servicios
-        pyautogui.click(1563, 385)
-        time.sleep(2)
-        
-        # Left click at (100, 114) Selecciona detalle con NSE
-        pyautogui.click(100, 114)
-        time.sleep(2)
-        
-        # Procesar diferentes tipos de servicios
-        service_handlers = {
-            16: self.handle_voz_cobre,    # Columna Q (index 16)
-            17: self.handle_datos_sdom,   # Columna R (index 17)
-            18: self.handle_datos_cobre,  # Columna S (index 18)
-            19: self.handle_datos_fibra,  # Columna T (index 19)
-            20: self.handle_tv_cable,     # Columna U (index 20)
-            21: self.handle_dish,         # Columna V (index 21)
-            22: self.handle_tvs,          # Columna W (index 22)
-            23: self.handle_sky,          # Columna X (index 23)
-            24: self.handle_vetv          # Columna Y (index 24)
-        }
-        
-        for col_index, handler in service_handlers.items():
-            if len(row) > col_index and pd.notna(row.iloc[col_index]) and row.iloc[col_index] > 0:
-                # Siempre comenzar desde la ventana de detalle
-                pyautogui.click(100, 114)
-                time.sleep(2)
-                handler(row, col_index)
-        
-        # Cerrar ventana de administrar servicios
-        pyautogui.click(882, 49)
-        time.sleep(5)
-    
-    def handle_voz_cobre(self, row, col_index):
-        """Maneja VOZ COBRE TELMEX LINEAS DE COBRE"""
-        # El servicio ya está seleccionado por defecto
-        pyautogui.click(127, 383)  # Cantidad
-        time.sleep(2)
-        pyautogui.write(str(row.iloc[col_index]))  # Cantidad de servicios
-        time.sleep(2)
-        pyautogui.click(82, 423)  # Guardar
-        time.sleep(2)
-        self.handle_posible_error()
-    
-    def handle_datos_sdom(self, row, col_index):
-        """Maneja Datos s/dom"""
-        pyautogui.click(138, 269)  # Servicio
-        time.sleep(2)
-        # Seleccionar Datos (2 down)
-        pyautogui.press('down')
-        time.sleep(1)
-        pyautogui.press('down')
-        time.sleep(1)
-        pyautogui.press('enter')
-        time.sleep(2)
-        
-        pyautogui.click(127, 383)  # Cantidad
-        time.sleep(2)
-        pyautogui.write(str(row.iloc[col_index]))  # Cantidad de servicios
-        time.sleep(2)
-        pyautogui.click(82, 423)  # Guardar
-        time.sleep(2)
-        self.handle_posible_error()
-    
-    def handle_datos_cobre(self, row, col_index):
-        """Maneja Datos-cobre-telmex-inf"""
-        pyautogui.click(138, 269)  # Servicio
-        time.sleep(2)
-        # Seleccionar Datos (2 down)
-        pyautogui.press('down')
-        time.sleep(1)
-        pyautogui.press('down')
-        time.sleep(1)
-        pyautogui.press('enter')
-        time.sleep(2)
-        
-        pyautogui.click(159, 355)  # Producto
-        time.sleep(2)
-        pyautogui.press('down')  # Seleccionar producto
-        time.sleep(1)
-        pyautogui.press('enter')
-        time.sleep(2)
-        
-        pyautogui.click(127, 383)  # Cantidad
-        time.sleep(2)
-        pyautogui.write(str(row.iloc[col_index]))  # Cantidad de servicios
-        time.sleep(2)
-        pyautogui.click(82, 423)  # Guardar
-        time.sleep(2)
-        self.handle_posible_error()
-    
-    def handle_datos_fibra(self, row, col_index):
-        """Maneja Datos-fibra-telmex-inf"""
-        pyautogui.click(138, 269)  # Servicio
-        time.sleep(2)
-        # Seleccionar Datos (2 down)
-        pyautogui.press('down')
-        time.sleep(1)
-        pyautogui.press('down')
-        time.sleep(1)
-        pyautogui.press('enter')
-        time.sleep(2)
-        
-        pyautogui.click(152, 294)  # Tipo
-        time.sleep(2)
-        pyautogui.press('down')  # Seleccionar tipo
-        time.sleep(1)
-        pyautogui.press('enter')
-        time.sleep(2)
-        
-        pyautogui.click(150, 323)  # Empresa
-        time.sleep(2)
-        pyautogui.press('down')  # Seleccionar empresa
-        time.sleep(1)
-        pyautogui.press('enter')
-        time.sleep(2)
-        
-        pyautogui.click(127, 383)  # Cantidad
-        time.sleep(2)
-        pyautogui.write(str(row.iloc[col_index]))  # Cantidad de servicios
-        time.sleep(2)
-        pyautogui.click(82, 423)  # Guardar
-        time.sleep(2)
-        self.handle_posible_error()
-    
-    def handle_tv_cable(self, row, col_index):
-        """Maneja TV cable otros"""
-        pyautogui.click(138, 269)  # Servicio
-        time.sleep(2)
-        # Seleccionar TV (3 down)
-        for _ in range(3):
-            pyautogui.press('down')
-            time.sleep(1)
-        pyautogui.press('enter')
-        time.sleep(2)
-        
-        pyautogui.click(150, 323)  # Empresa
-        time.sleep(2)
-        # Seleccionar otros (4 down)
-        for _ in range(4):
-            pyautogui.press('down')
-            time.sleep(1)
-        pyautogui.press('enter')
-        time.sleep(2)
-        
-        pyautogui.click(127, 383)  # Cantidad
-        time.sleep(2)
-        pyautogui.write(str(row.iloc[col_index]))  # Cantidad de servicios
-        time.sleep(2)
-        pyautogui.click(82, 423)  # Guardar
-        time.sleep(2)
-        self.handle_posible_error()
-    
-    def handle_dish(self, row, col_index):
-        """Maneja Dish"""
-        pyautogui.click(138, 269)  # Servicio
-        time.sleep(2)
-        # Seleccionar TV (3 down)
-        for _ in range(3):
-            pyautogui.press('down')
-            time.sleep(1)
-        pyautogui.press('enter')
-        time.sleep(2)
-        
-        pyautogui.click(152, 294)  # Tipo
-        time.sleep(2)
-        # Seleccionar Satelital (2 down)
-        for _ in range(2):
-            pyautogui.press('down')
-            time.sleep(1)
-        pyautogui.press('enter')
-        time.sleep(2)
-        
-        pyautogui.click(150, 323)  # Empresa
-        time.sleep(2)
-        pyautogui.press('down')  # Dish
-        time.sleep(1)
-        pyautogui.press('enter')
-        time.sleep(2)
-        
-        pyautogui.click(127, 383)  # Cantidad
-        time.sleep(2)
-        pyautogui.write(str(row.iloc[col_index]))  # Cantidad de servicios
-        time.sleep(2)
-        pyautogui.click(82, 423)  # Guardar
-        time.sleep(2)
-        self.handle_posible_error()
-    
-    def handle_tvs(self, row, col_index):
-        """Maneja TVS"""
-        pyautogui.click(138, 269)  # Servicio
-        time.sleep(2)
-        # Seleccionar TV (3 down)
-        for _ in range(3):
-            pyautogui.press('down')
-            time.sleep(1)
-        pyautogui.press('enter')
-        time.sleep(2)
-        
-        pyautogui.click(152, 294)  # Tipo
-        time.sleep(2)
-        # Seleccionar Satelital (2 down)
-        for _ in range(2):
-            pyautogui.press('down')
-            time.sleep(1)
-        pyautogui.press('enter')
-        time.sleep(2)
-        
-        pyautogui.click(150, 323)  # Empresa
-        time.sleep(2)
-        # Seleccionar otro (2 down)
-        for _ in range(2):
-            pyautogui.press('down')
-            time.sleep(1)
-        pyautogui
+    def ejecutar_programa4(self, linea_especifica, kml_filename):
+        """Ejecutar Programa 4 - Automatización GE"""
+        try:
+            ge_auto = GEAutomation(self.modelo.csv_file, linea_especifica=linea_especifica)
+            ge_auto.is_running = True
+            
+            # Actualizar nombre KML
+            ge_auto.set_kml_filename(kml_filename)
+            
+            if not self.modelo.csv_file:
+                self.log(f"❌ ERROR: Archivo CSV no encontrado: {self.modelo.csv_file}")
+                return False
+            
+            self.log(f"🎯 Procesando línea: {linea_especifica}")
+            self.log(f"📁 Archivo KML: {kml_filename}")
+            
+            time.sleep(3)
+            
+            success = ge_auto.perform_actions()
+            
+            if success:
+                self.log("✅ Programa 4 finalizado exitosamente")
+            else:
+                self.log("❌ Programa 4 falló")
+                
+            return success
+            
+        except Exception as e:
+            self.log(f"❌ Error en Programa 4: {e}")
+            return False
