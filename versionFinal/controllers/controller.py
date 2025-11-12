@@ -4,7 +4,7 @@ import time
 import pandas as pd
 import keyboard
 from models.modelo import EstadoPrograma, ProcesadorCSV, NSEAutomation, NSEServicesAutomation, GEAutomation
-from versionFinal.utils.ahk_writer import AHKWriter
+from utils.ahk_writer import AHKWriter
 
 class ControladorAutomation:
     def __init__(self):
