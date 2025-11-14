@@ -594,10 +594,22 @@ class ProcesadorCSV:
             if not id_obtenido:
                 logger.error("No se pudo obtener el ID")
                 return False, None
-                
+            
             id_obtenido = int(id_obtenido)
             logger.info(f"ID obtenido: {id_obtenido}")
             
+            # Escribir de nuevo el ID obtenido (1483,519)
+            self.ahk_writer.ejecutar_escritura_ahk(1483, 519, str(id_obtenido))
+            time.sleep(1)
+            
+            id_obtenido = self.ahk_manager.ejecutar_acciones_ahk(1483, 519)
+            
+            if not id_obtenido:
+                logger.error("No se pudo obtener el ID")
+                return False, None
+            
+            id_obtenido = int(id_obtenido)
+            logger.info(f"ID obtenido: {id_obtenido}")
             # Paso 4: Buscar el ID en el CSV
             logger.info(f"Paso 4: Buscando ID {id_obtenido} en CSV")
             registro = self.buscar_por_id(id_obtenido)
