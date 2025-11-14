@@ -1634,6 +1634,10 @@ class GEAutomation:
                 return False
             
             row = df.iloc[row_index]
+            #Verificar columna 27 (QTY Nom Neg) si es 1 hace el proceso si no lo salta 
+            if len(row) <= 27 or pd.isna(row.iloc[27]) or row.iloc[27] != 1:
+                print(f"⚠️  Columna 27 vacía, no es 1 o no existe en fila {row_index}, saltando...")
+                return False
             
             # Verificar columna 28 (num_txt_type)
             if len(row) <= 28 or pd.isna(row.iloc[28]):
