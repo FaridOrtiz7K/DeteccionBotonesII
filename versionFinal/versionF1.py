@@ -1637,6 +1637,14 @@ class GEAutomation:
             #Verificar columna 27 (QTY Nom Neg) si es 1 hace el proceso si no lo salta 
             if len(row) <= 27 or pd.isna(row.iloc[27]) or row.iloc[27] != 1:
                 print(f"⚠️  Columna 27 vacía, no es 1 o no existe en fila {row_index}, saltando...")
+                #Ejecuta ultimos pasos para pasar a la siguiente linea pasos 12
+                # 12. Presionar flecha abajo con AHK
+                if not self.presionar_flecha_abajo_ahk(70, 266,1):
+                    print("⚠️  No se pudo presionar flecha abajo con AHK, usando pyautogui")
+                    pyautogui.press('down')
+                else:
+                    print("✅ Flecha abajo presionada con AHK")
+                self.sleep(2)
                 return False
             
             # Verificar columna 28 (num_txt_type)
