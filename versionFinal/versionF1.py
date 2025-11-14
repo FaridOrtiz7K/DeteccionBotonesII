@@ -1650,11 +1650,29 @@ class GEAutomation:
             # Verificar columna 28 (num_txt_type)
             if len(row) <= 28 or pd.isna(row.iloc[28]):
                 print(f"⚠️  Columna 28 vacía o no existe en fila {row_index}, saltando...")
+                #Ejecuta ultimos pasos para pasar a la siguiente linea pasos 12
+                # 12. Presionar flecha abajo con AHK
+                if not self.presionar_flecha_abajo_ahk(70, 266,1):
+                    print("⚠️  No se pudo presionar flecha abajo con AHK, usando pyautogui")
+                    pyautogui.press('down')
+                else:
+                    print("✅ Flecha abajo presionada con AHK")
+                self.sleep(2)
+                return False
                 return False
                 
             # Verificar columna 29 (texto_adicional) - puede estar vacía pero debe existir
             if len(row) <= 29:
                 print(f"⚠️  Columna 29 no existe en fila {row_index}, saltando...")
+                #Ejecuta ultimos pasos para pasar a la siguiente linea pasos 12
+                # 12. Presionar flecha abajo con AHK
+                if not self.presionar_flecha_abajo_ahk(70, 266,1):
+                    print("⚠️  No se pudo presionar flecha abajo con AHK, usando pyautogui")
+                    pyautogui.press('down')
+                else:
+                    print("✅ Flecha abajo presionada con AHK")
+                self.sleep(2)
+                return False
                 return False
                 
             return True
