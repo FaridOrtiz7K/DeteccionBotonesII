@@ -317,6 +317,7 @@ class InterfazAutomation:
     
     def ejecutar_procesos(self):
         """Ejecutar los procesos secuencialmente para cada línea"""
+        # MOVER LA DECLARACIÓN GLOBAL AL INICIO DE LA FUNCIÓN
         global EJECUTANDO, PAUSADO, LINEA_ACTUAL, LINEA_MAXIMA, KML_FILENAME
         
         try:
@@ -392,11 +393,10 @@ class InterfazAutomation:
             self.estado_label.configure(foreground="red")
         
         finally:
-            global EJECUTANDO, PAUSADO
+            # LAS VARIABLES GLOBALES YA ESTÁN DECLARADAS AL INICIO
             EJECUTANDO = False
             PAUSADO = False
             self.actualizar_estado_botones()
-
 # Funciones de interfaz para los programas existentes
 def ejecutar_programa1_interfaz(linea_especifica, log_func):
     """Versión del Programa 1 para la interfaz"""
