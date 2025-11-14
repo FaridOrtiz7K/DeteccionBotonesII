@@ -597,7 +597,7 @@ class ProcesadorCSV:
             
             id_obtenido = int(id_obtenido)
             logger.info(f"ID obtenido: {id_obtenido}")
-            
+
             # Escribir de nuevo el ID obtenido (1483,519)
             self.ahk_writer.ejecutar_escritura_ahk(1483, 519, str(id_obtenido))
             time.sleep(1)
@@ -1152,49 +1152,61 @@ class NSEServicesAutomation:
                     
                 # Llamar a funciones de servicios
                 servicios_procesados = 0
-                
+                logger.info(f"Procesando servicios para línea {self.current_line}")
+                # mostrar datos de la línea en el log de la columna 18 a 26
+                logger.info(f"Datos de la línea {self.current_line}: {row[18:27].tolist()}")
+             
                 if pd.notna(row[18]) and row[18] > 0:  # VOZ COBRE TELMEX
                     print(f"  └─ Procesando VOZ COBRE TELMEX: {row[18]}")
+                    logger.info(f"  └─ Procesando VOZ COBRE TELMEX: {row[18]}")
                     self.handle_voz_cobre(row[18])
                     servicios_procesados += 1
                     
                 if pd.notna(row[19]) and row[19] > 0:  # Datos s/dom
                     print(f"  └─ Procesando DATOS S/DOM: {row[19]}")
+                    logger.info(f"  └─ Procesando DATOS S/DOM: {row[19]}")
                     self.handle_datos_sdom(row[19])
                     servicios_procesados += 1
                     
                 if pd.notna(row[20]) and row[20] > 0:  # Datos-cobre-telmex-inf
                     print(f"  └─ Procesando DATOS COBRE TELMEX: {row[20]}")
+                    logger.info(f"  └─ Procesando DATOS COBRE TELMEX: {row[20]}")
                     self.handle_datos_cobre_telmex(row[20])
                     servicios_procesados += 1
                     
                 if pd.notna(row[21]) and row[21] > 0:  # Datos-fibra-telmex-inf
                     print(f"  └─ Procesando DATOS FIBRA TELMEX: {row[21]}")
+                    logger.info(f"  └─ Procesando DATOS FIBRA TELMEX: {row[21]}")
                     self.handle_datos_fibra_telmex(row[21])
                     servicios_procesados += 1
                     
                 if pd.notna(row[22]) and row[22] > 0:  # TV cable otros
                     print(f"  └─ Procesando TV CABLE OTROS: {row[22]}")
+                    logger.info(f"  └─ Procesando TV CABLE OTROS: {row[22]}")
                     self.handle_tv_cable_otros(row[22])
                     servicios_procesados += 1
                     
                 if pd.notna(row[23]) and row[23] > 0:  # Dish
                     print(f"  └─ Procesando DISH: {row[23]}")
+                    logger.info(f"  └─ Procesando DISH: {row[23]}")
                     self.handle_dish(row[23])
                     servicios_procesados += 1
                     
                 if pd.notna(row[24]) and row[24] > 0:  # TVS
                     print(f"  └─ Procesando TVS: {row[24]}")
+                    logger.info(f"  └─ Procesando TVS: {row[24]}")
                     self.handle_tvs(row[24])
                     servicios_procesados += 1
                     
                 if pd.notna(row[25]) and row[25] > 0:  # SKY
                     print(f"  └─ Procesando SKY: {row[25]}")
+                    logger.info(f"  └─ Procesando SKY: {row[25]}")
                     self.handle_sky(row[25])
                     servicios_procesados += 1
                     
                 if pd.notna(row[26]) and row[26] > 0:  # VETV
                     print(f"  └─ Procesando VETV: {row[26]}")
+                    logger.info(f"  └─ Procesando VETV: {row[26]}")
                     self.handle_vetv(row[26])
                     servicios_procesados += 1
                 
