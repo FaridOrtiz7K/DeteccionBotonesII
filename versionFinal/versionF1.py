@@ -1127,7 +1127,8 @@ class NSEServicesAutomation:
             row = df.iloc[linea_idx]
             
             # Solo procesar servicios si la columna 18 tiene valor > 0
-            if pd.notna(row[17]) and row[17] > 0:
+            # CAMBIO: row[17] -> row.iloc[17]
+            if pd.notna(row.iloc[17]) and row.iloc[17] > 0:
                 print(f"✅ Línea {self.current_line} tiene servicios para procesar")
                 
                 self.click(*self.coords['inicio_servicios'])
@@ -1154,60 +1155,62 @@ class NSEServicesAutomation:
                 servicios_procesados = 0
                 logger.info(f"Procesando servicios para línea {self.current_line}")
                 # mostrar datos de la línea en el log de la columna 18 a 26
-                logger.info(f"Datos de la línea {self.current_line}: {row[18:27].tolist()}")
-             
-                if pd.notna(row[18]) and row[18] > 0:  # VOZ COBRE TELMEX
-                    print(f"  └─ Procesando VOZ COBRE TELMEX: {row[18]}")
-                    logger.info(f"  └─ Procesando VOZ COBRE TELMEX: {row[18]}")
-                    self.handle_voz_cobre(row[18])
+                # CAMBIO: row[18:27] -> row.iloc[18:27]
+                logger.info(f"Datos de la línea {self.current_line}: {row.iloc[18:27].tolist()}")
+            
+                # CAMBIAR TODOS LOS row[n] POR row.iloc[n]
+                if pd.notna(row.iloc[18]) and row.iloc[18] > 0:  # VOZ COBRE TELMEX
+                    print(f"  └─ Procesando VOZ COBRE TELMEX: {row.iloc[18]}")
+                    logger.info(f"  └─ Procesando VOZ COBRE TELMEX: {row.iloc[18]}")
+                    self.handle_voz_cobre(row.iloc[18])
                     servicios_procesados += 1
                     
-                if pd.notna(row[19]) and row[19] > 0:  # Datos s/dom
-                    print(f"  └─ Procesando DATOS S/DOM: {row[19]}")
-                    logger.info(f"  └─ Procesando DATOS S/DOM: {row[19]}")
-                    self.handle_datos_sdom(row[19])
+                if pd.notna(row.iloc[19]) and row.iloc[19] > 0:  # Datos s/dom
+                    print(f"  └─ Procesando DATOS S/DOM: {row.iloc[19]}")
+                    logger.info(f"  └─ Procesando DATOS S/DOM: {row.iloc[19]}")
+                    self.handle_datos_sdom(row.iloc[19])
                     servicios_procesados += 1
                     
-                if pd.notna(row[20]) and row[20] > 0:  # Datos-cobre-telmex-inf
-                    print(f"  └─ Procesando DATOS COBRE TELMEX: {row[20]}")
-                    logger.info(f"  └─ Procesando DATOS COBRE TELMEX: {row[20]}")
-                    self.handle_datos_cobre_telmex(row[20])
+                if pd.notna(row.iloc[20]) and row.iloc[20] > 0:  # Datos-cobre-telmex-inf
+                    print(f"  └─ Procesando DATOS COBRE TELMEX: {row.iloc[20]}")
+                    logger.info(f"  └─ Procesando DATOS COBRE TELMEX: {row.iloc[20]}")
+                    self.handle_datos_cobre_telmex(row.iloc[20])
                     servicios_procesados += 1
                     
-                if pd.notna(row[21]) and row[21] > 0:  # Datos-fibra-telmex-inf
-                    print(f"  └─ Procesando DATOS FIBRA TELMEX: {row[21]}")
-                    logger.info(f"  └─ Procesando DATOS FIBRA TELMEX: {row[21]}")
-                    self.handle_datos_fibra_telmex(row[21])
+                if pd.notna(row.iloc[21]) and row.iloc[21] > 0:  # Datos-fibra-telmex-inf
+                    print(f"  └─ Procesando DATOS FIBRA TELMEX: {row.iloc[21]}")
+                    logger.info(f"  └─ Procesando DATOS FIBRA TELMEX: {row.iloc[21]}")
+                    self.handle_datos_fibra_telmex(row.iloc[21])
                     servicios_procesados += 1
                     
-                if pd.notna(row[22]) and row[22] > 0:  # TV cable otros
-                    print(f"  └─ Procesando TV CABLE OTROS: {row[22]}")
-                    logger.info(f"  └─ Procesando TV CABLE OTROS: {row[22]}")
-                    self.handle_tv_cable_otros(row[22])
+                if pd.notna(row.iloc[22]) and row.iloc[22] > 0:  # TV cable otros
+                    print(f"  └─ Procesando TV CABLE OTROS: {row.iloc[22]}")
+                    logger.info(f"  └─ Procesando TV CABLE OTROS: {row.iloc[22]}")
+                    self.handle_tv_cable_otros(row.iloc[22])
                     servicios_procesados += 1
                     
-                if pd.notna(row[23]) and row[23] > 0:  # Dish
-                    print(f"  └─ Procesando DISH: {row[23]}")
-                    logger.info(f"  └─ Procesando DISH: {row[23]}")
-                    self.handle_dish(row[23])
+                if pd.notna(row.iloc[23]) and row.iloc[23] > 0:  # Dish
+                    print(f"  └─ Procesando DISH: {row.iloc[23]}")
+                    logger.info(f"  └─ Procesando DISH: {row.iloc[23]}")
+                    self.handle_dish(row.iloc[23])
                     servicios_procesados += 1
                     
-                if pd.notna(row[24]) and row[24] > 0:  # TVS
-                    print(f"  └─ Procesando TVS: {row[24]}")
-                    logger.info(f"  └─ Procesando TVS: {row[24]}")
-                    self.handle_tvs(row[24])
+                if pd.notna(row.iloc[24]) and row.iloc[24] > 0:  # TVS
+                    print(f"  └─ Procesando TVS: {row.iloc[24]}")
+                    logger.info(f"  └─ Procesando TVS: {row.iloc[24]}")
+                    self.handle_tvs(row.iloc[24])
                     servicios_procesados += 1
                     
-                if pd.notna(row[25]) and row[25] > 0:  # SKY
-                    print(f"  └─ Procesando SKY: {row[25]}")
-                    logger.info(f"  └─ Procesando SKY: {row[25]}")
-                    self.handle_sky(row[25])
+                if pd.notna(row.iloc[25]) and row.iloc[25] > 0:  # SKY
+                    print(f"  └─ Procesando SKY: {row.iloc[25]}")
+                    logger.info(f"  └─ Procesando SKY: {row.iloc[25]}")
+                    self.handle_sky(row.iloc[25])
                     servicios_procesados += 1
                     
-                if pd.notna(row[26]) and row[26] > 0:  # VETV
-                    print(f"  └─ Procesando VETV: {row[26]}")
-                    logger.info(f"  └─ Procesando VETV: {row[26]}")
-                    self.handle_vetv(row[26])
+                if pd.notna(row.iloc[26]) and row.iloc[26] > 0:  # VETV
+                    print(f"  └─ Procesando VETV: {row.iloc[26]}")
+                    logger.info(f"  └─ Procesando VETV: {row.iloc[26]}")
+                    self.handle_vetv(row.iloc[26])
                     servicios_procesados += 1
                 
                 # Usar coordenadas relativas para el cierre
@@ -1224,7 +1227,6 @@ class NSEServicesAutomation:
             print(f"❌ Error procesando línea {self.current_line}: {e}")
             logging.error(f"Error en procesar_linea_especifica: {e}")
             return False
-
     def handle_voz_cobre(self, cantidad):
         # Usar coordenadas relativas
         self.click(*self.coords_relativas['menu_principal'])
