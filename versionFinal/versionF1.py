@@ -797,8 +797,8 @@ class NSEAutomation:
     def should_skip_process(self, row):
         """Determina si se debe saltar el proceso basado en la columna 6"""
         # Columna 6 es el índice 5 en base 0
-        if pd.notna(row[5]):
-            col_value = str(row[5]).strip()
+        if pd.notna(row.iloc[5]):
+            col_value = str(row.iloc[5]).strip()
             # Si la columna 6 tiene algún valor (no vacío y no NaN), se salta el proceso
             if col_value and col_value != "" and col_value != "nan":
                 return True
@@ -833,12 +833,12 @@ class NSEAutomation:
             
             # Verificar si se debe saltar el proceso (columna 6 tiene valor)
             if self.should_skip_process(row):
-                print(f"⏭️  Saltando línea {self.linea_especifica} - Columna 6 tiene valor: {row[5]}")
+                print(f"⏭️  Saltando línea {self.linea_especifica} - Columna 6 tiene valor: {row.iloc[5]}")
                 return True
             
             # Verificar que sea tipo V
-            if str(row[4]).strip().upper() != "V":
-                print(f"⚠️  Saltando línea {self.linea_especifica} - No es tipo V: {row[4]}")
+            if str(row.iloc[4]).strip().upper() != "V":
+                print(f"⚠️  Saltando línea {self.linea_especifica} - No es tipo V: {row.iloc[4]}")
                 return True
             
             # click en el boton seleccionar lote 
@@ -877,7 +877,7 @@ class NSEAutomation:
         # Lógica V para columnas 7-17 con coordenadas relativas
         # Nota: row[6] a row[16] corresponden a columnas 7-17 (índices base 0)
         for col_index in range(7, 18):  # 7 a 17 inclusive
-            if pd.notna(row[col_index-1]) and row[col_index-1] > 0:
+            if pd.notna(row.iloc[col_index-1]) and row.iloc[col_index-1] > 0:
                 # Usar coordenadas relativas de la tabla verde, sumando a la base
                 x_cs_rel, y_cs_rel = self.coords_select[col_index]
                 x_ct_rel, y_ct_rel = self.coords_type[col_index]
@@ -892,7 +892,7 @@ class NSEAutomation:
                 self.sleep(2)
                 
                 # Usar AHKWriter para escribir en lugar de pyautogui
-                texto = str(int(row[col_index-1]))
+                texto = str(int(row.iloc[col_index-1]))
                 self.write_with_ahk(x_ct_abs, y_ct_abs, texto)
                 self.sleep(2)
         
