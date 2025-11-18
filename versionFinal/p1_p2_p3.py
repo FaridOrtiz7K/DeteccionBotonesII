@@ -23,9 +23,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Variable global para almacenar la línea a procesar
-LINEA_A_PROCESAR = None
-
 class ProcesadorCSV:
     def __init__(self, archivo_csv):
         self.archivo_csv = archivo_csv
@@ -88,7 +85,7 @@ class ProcesadorCSV:
             
             if not id_obtenido:
                 logger.error("No se pudo obtener el ID")
-                return False, None
+                return False
                 
             id_obtenido = int(id_obtenido)
             logger.info(f"ID obtenido: {id_obtenido}")
@@ -99,14 +96,7 @@ class ProcesadorCSV:
             
             if registro is None:
                 logger.error(f"ID {id_obtenido} no encontrado en CSV")
-                return False, None
-            
-            # Obtener el número de línea del registro encontrado
-            linea_procesada = None
-            for idx in range(len(self.df)):
-                if self.df.iloc[idx, 0] == id_obtenido:
-                    linea_procesada = idx + 1  # +1 porque las líneas empiezan en 1
-                    break
+                return False
             
             # Paso 5: Escribir valor de columna 2 en (1483, 519)
             if len(registro) >= 2:  # Verificar que existe columna 2
@@ -116,7 +106,7 @@ class ProcesadorCSV:
                 exito_escritura = self.ahk_writer.ejecutar_escritura_ahk(1483, 519, valor_columna_2)
                 if not exito_escritura:
                     logger.error("Error en la escritura")
-                    return False, linea_procesada
+                    return False
             else:
                 logger.warning("No hay columna 2 en el registro")
             
@@ -133,7 +123,7 @@ class ProcesadorCSV:
                     exito_down = self.ahk_click_down.ejecutar_click_down(1507, 636, veces_down)
                     if not exito_down:
                         logger.error("Error en click + down")
-                        return False, linea_procesada
+                        return False
                 else:
                     logger.info("Paso 7: Saltado (columna 4 <= 0)")
             else:
@@ -145,39 +135,41 @@ class ProcesadorCSV:
             time.sleep(1)
             
             logger.info("Procesamiento completado exitosamente")
-            return True, linea_procesada
+            return True
             
         except Exception as e:
             logger.error(f"Error en procesar_registro: {e}")
-            return False, None
+            return False
     
     def procesar_todo(self, pausa_entre_registros=2):
         """Procesa múltiples registros (si es necesario)"""
         if not self.cargar_csv():
-            return False, None
+            return False
             
         if not self.iniciar_ahk():
-            return False, None
+            return False
         
         try:
             # Este método procesa un registro por ejecución
+            # Si necesitas procesar múltiples registros automáticamente,
+            # podemos modificar esta parte
             logger.info("Iniciando procesamiento de registro...")
-            exito, linea_procesada = self.procesar_registro()
+            exito = self.procesar_registro()
             
             if exito:
-                logger.info(f"Procesamiento completado. Línea procesada: {linea_procesada}")
+                logger.info("Procesamiento completado")
             else:
                 logger.error("Procesamiento falló")
                 
-            return exito, linea_procesada
+            return exito
             
         finally:
             # Siempre detener AHK al finalizar
             self.detener_ahk()
 
 class NSEAutomation:
-    def __init__(self, linea_especifica=None):
-        self.linea_especifica = linea_especifica  # Línea específica a procesar (1-indexed)
+    def __init__(self):
+        self.start_count = 4 # Línea específica a procesar (1-indexed)
         self.csv_file = "NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
         self.reference_image = "img/VentanaAsignar.png"
         self.is_running = False
@@ -292,7 +284,7 @@ class NSEAutomation:
         # Iniciar AHKWriter
         if not self.ahk_writer.start_ahk():
             print("❌ No se pudo iniciar AHKWriter")
-            return False
+            return
             
         try:
             # Leer CSV
@@ -301,29 +293,23 @@ class NSEAutomation:
             
             print(f"📊 Total de líneas en CSV: {total_lines}")
             
-            # Validar línea específica
-            if self.linea_especifica is None:
-                print("❌ No se especificó línea a procesar")
-                return False
-                
-            if self.linea_especifica < 1 or self.linea_especifica > total_lines:
-                print(f"❌ Línea {self.linea_especifica} fuera de rango (1-{total_lines})")
-                return False
-            
             # Procesar solo la línea específica (start_count - 1)
-            row = df.iloc[self.linea_especifica - 1]
-            print(f"🔄 Procesando línea {self.linea_especifica}/{total_lines}")
+            if self.start_count - 1 >= total_lines:
+                print(f"❌ Error: No existe la línea {self.start_count} en el CSV")
+                return
+                
+            row = df.iloc[self.start_count - 1]
+            print(f"🔄 Procesando línea {self.start_count}/{total_lines}")
             
             # Verificar si se debe saltar el proceso (columna 6 tiene valor)
             if self.should_skip_process(row):
-                print(f"⏭️  Saltando línea {self.linea_especifica} - Columna 6 tiene valor: {row[5]}")
-                return True
+                print(f"⏭️  Saltando línea {self.start_count} - Columna 6 tiene valor: {row[5]}")
+                return
             
             # Verificar que sea tipo V
             if str(row[4]).strip().upper() != "V":
-                print(f"⚠️  Saltando línea {self.linea_especifica} - No es tipo V: {row[4]}")
-                return True
-            
+                print(f"⚠️  Saltando línea {self.start_count} - No es tipo V: {row[4]}")
+                return
             # click en el boton seleccionar lote 
             self.click(169, 189)
             self.sleep(2)
@@ -336,18 +322,18 @@ class NSEAutomation:
             
             if not image_found:
                 print("❌ No se puede continuar sin detectar la imagen de referencia.")
-                return False
+                return
             
             # Si se encontró la imagen, continuar con el proceso usando las coordenadas base
             print("🎯 Imagen detectada, procediendo con tipo V")
             self.handle_type_v(row, base_location)
             
-            print(f"✅ Línea {self.linea_especifica} completada (hasta CERRAR)")
-            return True
+            print(f"✅ Línea {self.start_count} completada (hasta CERRAR)")
+            print("🎉 AUTOMATIZACIÓN COMPLETADA EXITOSAMENTE!")
             
         except Exception as e:
             print(f"❌ Error durante la ejecución: {e}")
-            return False
+            raise
         finally:
             # Detener AHKWriter
             self.ahk_writer.stop_ahk()
@@ -356,6 +342,7 @@ class NSEAutomation:
         """Manejar tipo V con coordenadas relativas - COLUMNAS 7-17"""
         # Calcular coordenadas absolutas sumando las relativas a la posición base
         base_x, base_y = base_location
+        
         
         # Lógica V para columnas 7-17 con coordenadas relativas
         # Nota: row[6] a row[16] corresponden a columnas 7-17 (índices base 0)
@@ -689,7 +676,7 @@ class NSEServicesAutomation:
                 return True
             else:
                 print(f"⏭️  Línea {self.current_line} no tiene servicios para procesar")
-                return True  # Consideramos éxito si no hay servicios para procesar
+                return False
             
         except Exception as e:
             print(f"❌ Error procesando línea {self.current_line}: {e}")
@@ -826,10 +813,9 @@ class NSEServicesAutomation:
         self.sleep(2)
         self.handle_error_click()
 
+# Funciones de ejecución para los diferentes programas
 def ejecutar_programa1():
     """Ejecuta el primer programa (ProcesadorCSV) automáticamente"""
-    global LINEA_A_PROCESAR
-    
     print("=" * 60)
     print("INICIANDO PROGRAMA 1 - PROCESADOR CSV")
     print("=" * 60)
@@ -852,30 +838,27 @@ def ejecutar_programa1():
     try:
         print("Iniciando en 3 segundos...")
         time.sleep(3)  # Tiempo para cambiar a la ventana correcta
-        resultado, linea_procesada = procesador.procesar_todo()
-        
-        if resultado and linea_procesada:
-            print(f"✅ Programa 1 completado exitosamente. Línea procesada: {linea_procesada}")
-            LINEA_A_PROCESAR = linea_procesada
-            return True, linea_procesada
+        resultado = procesador.procesar_todo()
+        if resultado:
+            print("✅ Programa 1 completado exitosamente")
         else:
-            print("❌ Programa 1 falló o no se pudo determinar la línea procesada")
-            return False, None
+            print("❌ Programa 1 falló")
+        return resultado
     except KeyboardInterrupt:
         print("\n❌ Proceso cancelado por el usuario")
-        return False, None
+        return False
     except Exception as e:
         print(f"❌ Error en Programa 1: {e}")
-        return False, None
+        return False
 
-def ejecutar_programa2(linea_especifica):
-    """Ejecuta el segundo programa (NSEAutomation) automáticamente usando la línea del Programa 1"""
+def ejecutar_programa2():
+    """Ejecuta el segundo programa (NSEAutomation) automáticamente"""
     print("\n" + "=" * 60)
     print("INICIANDO PROGRAMA 2 - AUTOMATIZACIÓN NSE")
     print("=" * 60)
     
-    # Inicializar automatización con la línea especificada
-    nse = NSEAutomation(linea_especifica=linea_especifica)
+    # Inicializar automatización
+    nse = NSEAutomation()
     nse.is_running = True
     
     # Verificar archivo CSV
@@ -884,7 +867,6 @@ def ejecutar_programa2(linea_especifica):
         return False
     
     print(f"✅ Archivo CSV encontrado: {nse.csv_file}")
-    print(f"🎯 Procesando línea: {linea_especifica}")
     
     # Verificar imagen de referencia
     if not os.path.exists(nse.reference_image):
@@ -895,7 +877,7 @@ def ejecutar_programa2(linea_especifica):
     
     print()
     print("Configuración:")
-    print(f"  - Línea a procesar: {linea_especifica}")
+    print(f"  - Línea a procesar: {nse.start_count}")
     print(f"  - Archivo CSV: {nse.csv_file}")
     print(f"  - Imagen de referencia: {nse.reference_image}")
     print("  - Usando AHKWriter para escritura")
@@ -910,14 +892,10 @@ def ejecutar_programa2(linea_especifica):
         print()
         
         # Ejecutar script NSE
-        resultado = nse.execute_nse_script()
+        nse.execute_nse_script()
         
-        if resultado:
-            print("✅ Programa 2 finalizado exitosamente")
-        else:
-            print("❌ Programa 2 falló")
-            
-        return resultado
+        print("✅ Programa 2 finalizado exitosamente")
+        return True
         
     except KeyboardInterrupt:
         print()
@@ -930,46 +908,99 @@ def ejecutar_programa2(linea_especifica):
         nse.is_running = False
         return False
 
-def ejecutar_programa3(linea_especifica):
-    """Ejecuta el tercer programa (NSEServicesAutomation) automáticamente usando la línea del Programa 1"""
+def ejecutar_servicios():
+    """Ejecuta el programa de servicios automáticamente"""
     print("\n" + "=" * 60)
     print("INICIANDO PROGRAMA 3 - SERVICIOS NSE")
     print("=" * 60)
     
-    # Inicializar automatización con la línea especificada
-    nse_services = NSEServicesAutomation(linea_especifica=linea_especifica)
+    clear_screen()
+    print_header()
     
-    # Verificar archivo CSV
-    if not os.path.exists(nse_services.csv_file):
-        print(f"❌ ERROR: Archivo CSV no encontrado: {nse_services.csv_file}")
+    # Solicitar línea específica al usuario
+    try:
+        linea_input = input("🔢 Ingresa el número de línea a procesar (ej: 5): ").strip()
+        if not linea_input:
+            print("❌ No se ingresó número de línea")
+            return False
+            
+        linea_especifica = int(linea_input)
+        if linea_especifica < 1:
+            print("❌ El número de línea debe ser mayor a 0")
+            return False
+    except ValueError:
+        print("❌ Por favor ingresa un número válido")
         return False
     
-    print(f"✅ Archivo CSV encontrado: {nse_services.csv_file}")
-    print(f"🎯 Procesando línea: {linea_especifica}")
+    # Inicializar automatización
+    nse = NSEServicesAutomation(linea_especifica=linea_especifica)
+    
+    # Verificar dependencias
+    print("Verificando dependencias...")
+    try:
+        import pandas as pd
+        import cv2
+        import numpy as np
+        from PIL import ImageGrab
+        print("✅ Dependencias verificadas")
+    except ImportError as e:
+        print(f"❌ Error: {e}")
+        print("Instala las dependencias con: pip install pandas opencv-python pillow numpy")
+        input("Presiona Enter para salir...")
+        return False
+    
+    # Verificar archivo CSV
+    if not os.path.exists(nse.csv_file):
+        print(f"❌ ERROR: Archivo CSV no encontrado: {nse.csv_file}")
+        input("Presiona Enter para salir...")
+        return False
+    
+    print(f"✅ Archivo CSV encontrado: {nse.csv_file}")
+    
+    print()
+    print("Configuración:")
+    print(f"  - Línea a procesar: {linea_especifica}")
+    print(f"  - Archivo CSV: {nse.csv_file}")
+    print()
     
     # Iniciar servicios AHK
     print("🔄 Iniciando servicios AHK...")
-    if not nse_services.iniciar_ahk():
+    if not nse.iniciar_ahk():
         print("❌ No se pudieron iniciar los servicios AHK")
+        input("Presiona Enter para salir...")
         return False
     
+    # Confirmación final antes de ejecutar
+    print("⚠️  ADVERTENCIA: El script ejecutará SOLO la línea especificada")
+    print("   Asegúrate de que ya se ejecutó el programa principal hasta CERRAR")
+    print("   El script comenzará en 3 segundos")
+    print("   Presiona Ctrl+C para cancelar")
+    print()
+    
     try:
-        print("Iniciando Programa 3 en 3 segundos...")
-        time.sleep(3)
+        input("Presiona Enter para INICIAR procesamiento...")
         
-        print("🚀 INICIANDO PROCESAMIENTO DE SERVICIOS NSE ...")
+        # Cuenta regresiva
+        for i in range(3, 0, -1):
+            print(f"▶️  Iniciando en {i}...")
+            time.sleep(1)
+        
+        print()
+        print(f"🚀 INICIANDO PROCESAMIENTO DE LÍNEA {linea_especifica}...")
         print("   Presiona Ctrl+C en cualquier momento para detener")
         print()
         
         # Ejecutar procesamiento de línea específica
-        nse_services.is_running = True
-        resultado = nse_services.procesar_linea_especifica()
+        nse.is_running = True
+        resultado = nse.procesar_linea_especifica()
         
         if resultado:
             print(f"🎉 LÍNEA {linea_especifica} PROCESADA EXITOSAMENTE!")
         else:
             print(f"❌ HUBO PROBLEMAS PROCESANDO LA LÍNEA {linea_especifica}")
         
+        print()
+        input("Presiona Enter para continuar...")
         return resultado
         
     except KeyboardInterrupt:
@@ -981,19 +1012,60 @@ def ejecutar_programa3(linea_especifica):
         print(f"❌ Error durante la ejecución: {e}")
         return False
     finally:
-        nse_services.is_running = False
-        nse_services.detener_ahk()
+        nse.is_running = False
+        nse.detener_ahk()
+
+def clear_screen():
+    """Limpia la pantalla de la consola"""
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def print_header():
+    """Imprime el encabezado del programa"""
+    print("=" * 60)
+    print("     CONTROLADOR NSE - LÍNEA ESPECÍFICA (PYTHON + AHK)")
+    print("=" * 60)
+    print()
 
 # Función principal combinada
 def main():
-    """Función principal que ejecuta los tres programas secuencialmente sin pausas"""
-    global LINEA_A_PROCESAR
+    """Función principal que ejecuta todos los programas con menú"""
+    clear_screen()
+    print("COMBINACIÓN DE PROGRAMAS - EJECUCIÓN AUTOMÁTICA")
+    print("Este script ejecutará los programas de automatización NSE")
+    print("=" * 60)
     
-    print("COMBINACIÓN DE 3 PROGRAMAS - EJECUCIÓN AUTOMÁTICA")
-    print("Este script ejecutará los tres programas de forma secuencial automáticamente")
-    print("El Programa 1 determinará qué línea procesar")
-    print("Los Programas 2 y 3 usarán la misma línea automáticamente")
-    print("Presiona Ctrl+C para cancelar en cualquier momento")
+    while True:
+        print("\nSelecciona una opción:")
+        print("1. Ejecutar Programa 1 (Procesador CSV)")
+        print("2. Ejecutar Programa 2 (Automatización NSE)")
+        print("3. Ejecutar Programa 3 (Servicios NSE)")
+        print("4. Ejecutar todos los programas secuencialmente")
+        print("0. Salir")
+        
+        opcion = input("\nIngresa tu opción (0-4): ").strip()
+        
+        if opcion == "1":
+            ejecutar_programa1()
+        elif opcion == "2":
+            ejecutar_programa2()
+        elif opcion == "3":
+            ejecutar_servicios()
+        elif opcion == "4":
+            ejecutar_todos()
+        elif opcion == "0":
+            print("¡Hasta luego!")
+            break
+        else:
+            print("❌ Opción no válida. Por favor ingresa 0-4.")
+        
+        input("\nPresiona Enter para continuar...")
+        clear_screen()
+
+def ejecutar_todos():
+    """Ejecuta todos los programas secuencialmente"""
+    print("\n" + "=" * 60)
+    print("EJECUTANDO TODOS LOS PROGRAMAS SECUENCIALMENTE")
+    print("=" * 60)
     
     try:
         # Cuenta regresiva inicial
@@ -1002,59 +1074,47 @@ def main():
             print(f"⏰ {i}...")
             time.sleep(1)
         
-        # Ejecutar Programa 1 - Este determina la línea a procesar
-        resultado_programa1, linea_procesada = ejecutar_programa1()
+        # Ejecutar Programa 1
+        resultado_programa1 = ejecutar_programa1()
         
-        # Verificar si el Programa 1 fue exitoso y obtuvo una línea
-        if resultado_programa1 and linea_procesada:
-            print(f"\n📋 Línea determinada por Programa 1: {linea_procesada}")
-            
-            # Pequeña pausa entre programas
+        # Pequeña pausa entre programas
+        if resultado_programa1:
             print("\n" + "=" * 60)
-            print("TRANSICIÓN AL PROGRAMA 2")
+            print("TRANSICIÓN ENTRE PROGRAMAS")
             print("=" * 60)
             print("Iniciando Programa 2 en 3 segundos...")
             time.sleep(3)
             
-            # Ejecutar Programa 2 con la línea del Programa 1
-            resultado_programa2 = ejecutar_programa2(linea_procesada)
-            
-            # Transición al Programa 3
+            # Ejecutar Programa 2
+            resultado_programa2 = ejecutar_programa2()
+        else:
+            print("❌ Programa 1 falló, saltando Programa 2")
+            resultado_programa2 = False
+        
+        # Pausa antes de servicios
+        if resultado_programa2:
             print("\n" + "=" * 60)
-            print("TRANSICIÓN AL PROGRAMA 3")
+            print("TRANSICIÓN A SERVICIOS")
             print("=" * 60)
-            print("Iniciando Programa 3 en 3 segundos...")
+            print("Iniciando Programa 3 (Servicios) en 3 segundos...")
             time.sleep(3)
             
-            # Ejecutar Programa 3 con la línea del Programa 1
-            resultado_programa3 = ejecutar_programa3(linea_procesada)
+            # Ejecutar Programa 3
+            resultado_programa3 = ejecutar_servicios()
         else:
-            print("❌ Programa 1 falló o no determinó una línea, saltando Programas 2 y 3")
-            resultado_programa2 = False
+            print("❌ Programa 2 falló, saltando Programa 3")
             resultado_programa3 = False
         
         # Resultado final
         print("\n" + "=" * 60)
-        print("RESULTADO FINAL DE LA EJECUCIÓN COMBINADA")
-        print("=" * 60)
-        
-        resultados = {
-            "Programa 1 (Procesador CSV)": resultado_programa1,
-            "Programa 2 (Automatización NSE)": resultado_programa2,
-            "Programa 3 (Servicios NSE)": resultado_programa3
-        }
-        
-        for programa, resultado in resultados.items():
-            estado = "✅ EXITOSO" if resultado else "❌ FALLIDO"
-            print(f"  {programa}: {estado}")
-        
-        if all(resultados.values()):
-            print(f"\n🎉 ¡TODOS LOS PROGRAMAS SE EJECUTARON EXITOSAMENTE!")
-            print(f"📊 Línea procesada: {linea_procesada}")
-        else:
-            programas_fallidos = [k for k, v in resultados.items() if not v]
-            print(f"\n⚠️  PROGRAMAS FALLIDOS: {', '.join(programas_fallidos)}")
-        
+        if resultado_programa1 and resultado_programa2 and resultado_programa3:
+            print("🎉 EJECUCIÓN COMPLETADA - TODOS LOS PROGRAMAS FINALIZADOS EXITOSAMENTE")
+        elif resultado_programa1 and resultado_programa2 and not resultado_programa3:
+            print("⚠️  EJECUCIÓN PARCIAL - Programas 1 y 2 OK, Programa 3 Falló")
+        elif resultado_programa1 and not resultado_programa2:
+            print("⚠️  EJECUCIÓN PARCIAL - Programa 1 OK, Programas 2 y 3 Fallaron")
+        elif not resultado_programa1:
+            print("❌ EJECUCIÓN FALLIDA - Todos los programas fallaron")
         print("=" * 60)
         
     except KeyboardInterrupt:
@@ -1063,8 +1123,8 @@ def main():
         print(f"\n❌ Error general en la ejecución combinada: {e}")
     finally:
         # Pausa final breve para que el usuario pueda ver los resultados
-        print("\nEjecución finalizada. El programa se cerrará en 10 segundos...")
-        time.sleep(10)
+        print("\nEjecución finalizada. Continuando en 5 segundos...")
+        time.sleep(5)
 
 if __name__ == "__main__":
     main()
