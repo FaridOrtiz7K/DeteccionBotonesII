@@ -381,7 +381,7 @@ class NSEAutomation:
         self.sleep(2)
 
 class NSEServicesAutomation:
-    def __init__(self, linea_especifica=4):  # Por defecto línea 4, igual que NSEAutomation
+    def __init__(self, linea_especifica=2):  # Por defecto línea 4, igual que NSEAutomation
         self.linea_especifica = linea_especifica
         self.csv_file = "NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
         self.current_line = 0
