@@ -321,7 +321,7 @@ class NSEAutomation:
             image_found, base_location = self.wait_for_image_with_retries(self.reference_image, max_attempts=30)
             
             if not image_found:
-                print("❌ No se puede continuar sin detectar la imagen de referencia.")
+                print("❌ No se puede continuar sanso detectar la imagen de referencia.")
                 return
             
             # Si se encontró la imagen, continuar con el proceso usando las coordenadas base
@@ -381,26 +381,26 @@ class NSEAutomation:
         self.sleep(2)
 
 class NSEServicesAutomation:
-    def __init__(self, linea_especifica=None):
-        self.linea_especifica = linea_especifica  # Línea específica a procesar (empezando desde 1)
+    def __init__(self, linea_especifica=4):  # Por defecto línea 4, igual que NSEAutomation
+        self.linea_especifica = linea_especifica
         self.csv_file = "NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
         self.current_line = 0
         self.is_running = False
-        self.reference_point = None  # Punto de referencia para coordenadas relativas
+        self.reference_point = None
         
         # Inicializar controladores AHK
         self.ahk_writer = AHKWriter()
         self.ahk_click_down = AHKClickDown()
         self.ahk_enter = EnterAHKManager()
         
-        # Configurar coordenadas base (serán actualizadas con coordenadas relativas)
+        # Configurar coordenadas base
         self.coords = {
             'menu_principal': (81, 81),
             'campo_cantidad': (108, 350),
             'boton_guardar': (63, 390),
-            'boton_error': (704, 384),  # Esta no cambia ya que es global
+            'boton_error': (704, 384),
             'cierre': (863, 16),
-            'inicio_servicios': (1563, 385),  # Esta no cambia ya que es para iniciar
+            'inicio_servicios': (1563, 385),
             'casilla_servicio': (121, 236),
             'casilla_tipo': (121, 261),
             'casilla_empresa': (121, 290),
@@ -541,16 +541,14 @@ class NSEServicesAutomation:
             else:
                 click_coords = (x, y)
                 
-            # Usamos AHK Click Down con las veces especificadas
             return self.ahk_click_down.ejecutar_click_down(click_coords[0], click_coords[1], times)
         except Exception as e:
             logging.error(f"Error presionando DOWN {times} veces: {e}")
             return False
 
     def press_enter(self):
-        """Presionar flecha down usando AHK"""
+        """Presionar enter usando AHK"""
         try:                
-            # Usamos AHK Click Down con las veces especificadas
             return self.ahk_enter.presionar_enter(1)
         except Exception as e:
             logging.error(f"Error presionando enter")
@@ -563,7 +561,6 @@ class NSEServicesAutomation:
     def handle_error_click(self):
         """Manejar clics de error"""
         for _ in range(5):
-            # Usar coordenadas relativas si están disponibles para boton_error
             if hasattr(self, 'coords_relativas') and self.coords_relativas:
                 self.click(*self.coords_relativas['boton_error'])
             else:
@@ -588,8 +585,8 @@ class NSEServicesAutomation:
                 print(f"❌ Línea {self.linea_especifica} fuera de rango (1-{total_lines})")
                 return False
             
-            # Obtener la línea específica (ajustar índice ya que CSV empieza en 0 para datos)
-            linea_idx = self.linea_especifica - 1  # Convertir a índice base 0
+            # Obtener la línea específica
+            linea_idx = self.linea_especifica - 1
             self.current_line = self.linea_especifica
             
             print(f"🎯 PROCESANDO LÍNEA ESPECÍFICA: {self.current_line}/{total_lines}")
@@ -684,7 +681,6 @@ class NSEServicesAutomation:
             return False
 
     def handle_voz_cobre(self, cantidad):
-        # Usar coordenadas relativas
         self.click(*self.coords_relativas['menu_principal'])
         self.sleep(2)
         self.write(str(int(cantidad)))
@@ -813,7 +809,7 @@ class NSEServicesAutomation:
         self.sleep(2)
         self.handle_error_click()
 
-# Funciones de ejecución para los diferentes programas
+# Funciones de ejecución
 def ejecutar_programa1():
     """Ejecuta el primer programa (ProcesadorCSV) automáticamente"""
     print("=" * 60)
@@ -837,7 +833,7 @@ def ejecutar_programa1():
     
     try:
         print("Iniciando en 3 segundos...")
-        time.sleep(3)  # Tiempo para cambiar a la ventana correcta
+        time.sleep(3)
         resultado = procesador.procesar_todo()
         if resultado:
             print("✅ Programa 1 completado exitosamente")
@@ -909,50 +905,20 @@ def ejecutar_programa2():
         return False
 
 def ejecutar_servicios():
-    """Ejecuta el programa de servicios automáticamente"""
+    """Ejecuta el programa de servicios automáticamente para la línea 4"""
     print("\n" + "=" * 60)
     print("INICIANDO PROGRAMA 3 - SERVICIOS NSE")
     print("=" * 60)
     
-    clear_screen()
-    print_header()
-    
-    # Solicitar línea específica al usuario
-    try:
-        linea_input = input("🔢 Ingresa el número de línea a procesar (ej: 5): ").strip()
-        if not linea_input:
-            print("❌ No se ingresó número de línea")
-            return False
-            
-        linea_especifica = int(linea_input)
-        if linea_especifica < 1:
-            print("❌ El número de línea debe ser mayor a 0")
-            return False
-    except ValueError:
-        print("❌ Por favor ingresa un número válido")
-        return False
+    # Usar la misma línea que el programa 2 (línea 4)
+    linea_especifica = 4
     
     # Inicializar automatización
     nse = NSEServicesAutomation(linea_especifica=linea_especifica)
     
-    # Verificar dependencias
-    print("Verificando dependencias...")
-    try:
-        import pandas as pd
-        import cv2
-        import numpy as np
-        from PIL import ImageGrab
-        print("✅ Dependencias verificadas")
-    except ImportError as e:
-        print(f"❌ Error: {e}")
-        print("Instala las dependencias con: pip install pandas opencv-python pillow numpy")
-        input("Presiona Enter para salir...")
-        return False
-    
     # Verificar archivo CSV
     if not os.path.exists(nse.csv_file):
         print(f"❌ ERROR: Archivo CSV no encontrado: {nse.csv_file}")
-        input("Presiona Enter para salir...")
         return False
     
     print(f"✅ Archivo CSV encontrado: {nse.csv_file}")
@@ -967,25 +933,12 @@ def ejecutar_servicios():
     print("🔄 Iniciando servicios AHK...")
     if not nse.iniciar_ahk():
         print("❌ No se pudieron iniciar los servicios AHK")
-        input("Presiona Enter para salir...")
         return False
     
-    # Confirmación final antes de ejecutar
-    print("⚠️  ADVERTENCIA: El script ejecutará SOLO la línea especificada")
-    print("   Asegúrate de que ya se ejecutó el programa principal hasta CERRAR")
-    print("   El script comenzará en 3 segundos")
-    print("   Presiona Ctrl+C para cancelar")
-    print()
-    
     try:
-        input("Presiona Enter para INICIAR procesamiento...")
+        print("Iniciando Programa 3 en 3 segundos...")
+        time.sleep(3)
         
-        # Cuenta regresiva
-        for i in range(3, 0, -1):
-            print(f"▶️  Iniciando en {i}...")
-            time.sleep(1)
-        
-        print()
         print(f"🚀 INICIANDO PROCESAMIENTO DE LÍNEA {linea_especifica}...")
         print("   Presiona Ctrl+C en cualquier momento para detener")
         print()
@@ -999,8 +952,6 @@ def ejecutar_servicios():
         else:
             print(f"❌ HUBO PROBLEMAS PROCESANDO LA LÍNEA {linea_especifica}")
         
-        print()
-        input("Presiona Enter para continuar...")
         return resultado
         
     except KeyboardInterrupt:
@@ -1015,57 +966,12 @@ def ejecutar_servicios():
         nse.is_running = False
         nse.detener_ahk()
 
-def clear_screen():
-    """Limpia la pantalla de la consola"""
-    os.system('cls' if os.name == 'nt' else 'clear')
-
-def print_header():
-    """Imprime el encabezado del programa"""
-    print("=" * 60)
-    print("     CONTROLADOR NSE - LÍNEA ESPECÍFICA (PYTHON + AHK)")
-    print("=" * 60)
-    print()
-
 # Función principal combinada
 def main():
-    """Función principal que ejecuta todos los programas con menú"""
-    clear_screen()
+    """Función principal que ejecuta ambos programas secuencialmente sin pausas"""
     print("COMBINACIÓN DE PROGRAMAS - EJECUCIÓN AUTOMÁTICA")
-    print("Este script ejecutará los programas de automatización NSE")
-    print("=" * 60)
-    
-    while True:
-        print("\nSelecciona una opción:")
-        print("1. Ejecutar Programa 1 (Procesador CSV)")
-        print("2. Ejecutar Programa 2 (Automatización NSE)")
-        print("3. Ejecutar Programa 3 (Servicios NSE)")
-        print("4. Ejecutar todos los programas secuencialmente")
-        print("0. Salir")
-        
-        opcion = input("\nIngresa tu opción (0-4): ").strip()
-        
-        if opcion == "1":
-            ejecutar_programa1()
-        elif opcion == "2":
-            ejecutar_programa2()
-        elif opcion == "3":
-            ejecutar_servicios()
-        elif opcion == "4":
-            ejecutar_todos()
-        elif opcion == "0":
-            print("¡Hasta luego!")
-            break
-        else:
-            print("❌ Opción no válida. Por favor ingresa 0-4.")
-        
-        input("\nPresiona Enter para continuar...")
-        clear_screen()
-
-def ejecutar_todos():
-    """Ejecuta todos los programas secuencialmente"""
-    print("\n" + "=" * 60)
-    print("EJECUTANDO TODOS LOS PROGRAMAS SECUENCIALMENTE")
-    print("=" * 60)
+    print("Este script ejecutará ambos programas de forma secuencial automáticamente")
+    print("Presiona Ctrl+C para cancelar en cualquier momento")
     
     try:
         # Cuenta regresiva inicial
@@ -1113,7 +1019,7 @@ def ejecutar_todos():
             print("⚠️  EJECUCIÓN PARCIAL - Programas 1 y 2 OK, Programa 3 Falló")
         elif resultado_programa1 and not resultado_programa2:
             print("⚠️  EJECUCIÓN PARCIAL - Programa 1 OK, Programas 2 y 3 Fallaron")
-        elif not resultado_programa1:
+        else:
             print("❌ EJECUCIÓN FALLIDA - Todos los programas fallaron")
         print("=" * 60)
         
@@ -1123,7 +1029,7 @@ def ejecutar_todos():
         print(f"\n❌ Error general en la ejecución combinada: {e}")
     finally:
         # Pausa final breve para que el usuario pueda ver los resultados
-        print("\nEjecución finalizada. Continuando en 5 segundos...")
+        print("\nEjecución finalizada. El programa se cerrará en 5 segundos...")
         time.sleep(5)
 
 if __name__ == "__main__":
