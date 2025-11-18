@@ -22,8 +22,8 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('nse_automation.log'),
-        logging.StreamHandler()
+        logging.FileHandler('nse_automation.log', encoding='utf-8'),
+        logging.StreamHandler(sys.stdout)  # Usar stdout con encoding UTF-8
     ]
 )
 logger = logging.getLogger(__name__)
