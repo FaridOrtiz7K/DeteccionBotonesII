@@ -1154,12 +1154,12 @@ class NSEServicesAutomation:
                 servicios_procesados = 0
                 logger.info(f"Procesando servicios para línea {self.current_line}")
                 logger.info(f"Datos de la línea {self.current_line}: {row.iloc[18:27].tolist()}")
-             
+                
                 if pd.notna(row.iloc[18]) and row.iloc[18] > 0:  # VOZ COBRE TELMEX
-                    print(f"  └─ Procesando VOZ COBRE TELMEX: {row.iloc[18]}")
                     logger.info(f"  └─ Procesando VOZ COBRE TELMEX: {row.iloc[18]}")
-                    self.handle_voz_cobre(row.iloc[18])
+                    self.handle_voz_cobre(int(row.iloc[18]))
                     servicios_procesados += 1
+                    logger.info(f"  └─ VOZ COBRE TELMEX procesado")
                     
                 if pd.notna(row.iloc[19]) and row.iloc[19] > 0:  # Datos s/dom
                     print(f"  └─ Procesando DATOS S/DOM: {row.iloc[19]}")
@@ -1229,7 +1229,8 @@ class NSEServicesAutomation:
         # Usar coordenadas relativas
         self.click(*self.coords_relativas['menu_principal'])
         self.sleep(2)
-        self.write(str(int(cantidad)))
+        self.write(cantidad)
+        logger.info(f"Escribio cantidad de VOZ COBRE TELMEX: {cantidad}")
         self.sleep(2)
         self.click(*self.coords_relativas['boton_guardar'])
         self.sleep(2)
