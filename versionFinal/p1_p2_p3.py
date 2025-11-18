@@ -168,8 +168,8 @@ class ProcesadorCSV:
             self.detener_ahk()
 
 class NSEAutomation:
-    def __init__(self):
-        self.start_count = 4 # Línea específica a procesar (1-indexed)
+    def __init__(self, start_count=4):
+        self.start_count = start_count  # Línea específica a procesar (1-indexed)
         self.csv_file = "NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
         self.reference_image = "img/VentanaAsignar.png"
         self.is_running = False
@@ -321,7 +321,7 @@ class NSEAutomation:
             image_found, base_location = self.wait_for_image_with_retries(self.reference_image, max_attempts=30)
             
             if not image_found:
-                print("❌ No se puede continuar sanso detectar la imagen de referencia.")
+                print("❌ No se puede continuar sin detectar la imagen de referencia.")
                 return
             
             # Si se encontró la imagen, continuar con el proceso usando las coordenadas base
@@ -381,7 +381,7 @@ class NSEAutomation:
         self.sleep(2)
 
 class NSEServicesAutomation:
-    def __init__(self, linea_especifica=2):  # Por defecto línea 4, igual que NSEAutomation
+    def __init__(self, linea_especifica):
         self.linea_especifica = linea_especifica
         self.csv_file = "NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
         self.current_line = 0
@@ -860,7 +860,7 @@ def ejecutar_programa2():
     # Verificar archivo CSV
     if not os.path.exists(nse.csv_file):
         print(f"❌ ERROR: Archivo CSV no encontrado: {nse.csv_file}")
-        return False
+        return False, None
     
     print(f"✅ Archivo CSV encontrado: {nse.csv_file}")
     
@@ -891,29 +891,26 @@ def ejecutar_programa2():
         nse.execute_nse_script()
         
         print("✅ Programa 2 finalizado exitosamente")
-        return True
+        return True, nse.start_count
         
     except KeyboardInterrupt:
         print()
         print("❌ Ejecución cancelada por el usuario")
         nse.is_running = False
-        return False
+        return False, nse.start_count
     except Exception as e:
         print()
         print(f"❌ Error durante la ejecución: {e}")
         nse.is_running = False
-        return False
+        return False, nse.start_count
 
-def ejecutar_servicios():
-    """Ejecuta el programa de servicios automáticamente para la línea 4"""
+def ejecutar_servicios(linea_especifica):
+    """Ejecuta el programa de servicios automáticamente para la línea especificada"""
     print("\n" + "=" * 60)
     print("INICIANDO PROGRAMA 3 - SERVICIOS NSE")
     print("=" * 60)
     
-    # Usar la misma línea que el programa 2 (línea 4)
-    linea_especifica = 4
-    
-    # Inicializar automatización
+    # Inicializar automatización con la línea específica
     nse = NSEServicesAutomation(linea_especifica=linea_especifica)
     
     # Verificar archivo CSV
@@ -968,7 +965,7 @@ def ejecutar_servicios():
 
 # Función principal combinada
 def main():
-    """Función principal que ejecuta ambos programas secuencialmente sin pausas"""
+    """Función principal que ejecuta todos los programas secuencialmente sin pausas"""
     print("COMBINACIÓN DE PROGRAMAS - EJECUCIÓN AUTOMÁTICA")
     print("Este script ejecutará ambos programas de forma secuencial automáticamente")
     print("Presiona Ctrl+C para cancelar en cualquier momento")
@@ -991,24 +988,25 @@ def main():
             print("Iniciando Programa 2 en 3 segundos...")
             time.sleep(3)
             
-            # Ejecutar Programa 2
-            resultado_programa2 = ejecutar_programa2()
+            # Ejecutar Programa 2 y obtener la línea procesada
+            resultado_programa2, linea_procesada = ejecutar_programa2()
         else:
             print("❌ Programa 1 falló, saltando Programa 2")
             resultado_programa2 = False
+            linea_procesada = None
         
         # Pausa antes de servicios
-        if resultado_programa2:
+        if resultado_programa2 and linea_procesada:
             print("\n" + "=" * 60)
             print("TRANSICIÓN A SERVICIOS")
             print("=" * 60)
-            print("Iniciando Programa 3 (Servicios) en 3 segundos...")
+            print(f"Iniciando Programa 3 (Servicios) para línea {linea_procesada} en 3 segundos...")
             time.sleep(3)
             
-            # Ejecutar Programa 3
-            resultado_programa3 = ejecutar_servicios()
+            # Ejecutar Programa 3 con la misma línea
+            resultado_programa3 = ejecutar_servicios(linea_procesada)
         else:
-            print("❌ Programa 2 falló, saltando Programa 3")
+            print("❌ Programa 2 falló o no hay línea procesada, saltando Programa 3")
             resultado_programa3 = False
         
         # Resultado final
