@@ -1104,7 +1104,177 @@ class NSEServicesAutomation:
                 self.click(*self.coords['boton_error'])
             self.sleep(2)
 
-    def procesar_linea_especifica(self):
+def procesar_linea_especifica(self):
+    """Procesar solo una línea específica del CSV - VERSIÓN DEFINITIVA CORREGIDA"""
+    try:
+        # Leer CSV
+        df = pd.read_csv(self.csv_file, encoding='utf-8')
+        total_lines = len(df)
+        
+        print(f"📊 Total de líneas en CSV: {total_lines}")
+        
+        # Validar línea específica
+        if self.linea_especifica is None:
+            print("❌ No se especificó línea a procesar")
+            return False
+            
+        if self.linea_especifica < 1 or self.linea_especifica > total_lines:
+            print(f"❌ Línea {self.linea_especifica} fuera de rango (1-{total_lines})")
+            return False
+        
+        # Obtener la línea específica
+        linea_idx = self.linea_especifica - 1
+        self.current_line = self.linea_especifica
+        
+        print(f"🎯 PROCESANDO LÍNEA ESPECÍFICA: {self.current_line}/{total_lines}")
+        
+        row = df.iloc[linea_idx]
+        
+        # DEBUG: Mostrar información completa de la línea
+        print(f"🔍 INFORMACIÓN COMPLETA DE LA LÍNEA {self.current_line}:")
+        print(f"   ID: {row.iloc[0] if len(row) > 0 else 'N/A'}")
+        print(f"   Tipo V: {row.iloc[4] if len(row) > 4 else 'N/A'}")
+        print(f"   QTY servicios: {row.iloc[17] if len(row) > 17 else 'N/A'}")
+        
+        # Mostrar TODAS las columnas de servicios
+        print("🔍 VALORES DE TODAS LAS COLUMNAS DE SERVICIOS:")
+        columnas_servicios = [
+            (17, "QTY servicios"),
+            (18, "VOZ"), 
+            (19, "Datos s/dom"),
+            (20, "Datos"),
+            (21, "Datos-fibra-telmex-inf"),
+            (22, "TV Cable"),
+            (23, "DISH"),
+            (24, "TVS"),
+            (25, "SKY"),
+            (26, "VETV")
+        ]
+        
+        for idx, nombre in columnas_servicios:
+            if len(row) > idx:
+                valor = row.iloc[idx]
+                print(f"   Columna {idx} ({nombre}): {valor} (tipo: {type(valor)})")
+            else:
+                print(f"   Columna {idx} ({nombre}): NO EXISTE")
+        
+        # Solo procesar servicios si la columna 18 (QTY servicios) tiene valor > 0
+        if len(row) > 17 and pd.notna(row.iloc[17]) and row.iloc[17] > 0:
+            qty_servicios = row.iloc[17]
+            print(f"✅ Línea {self.current_line} tiene {qty_servicios} servicios para procesar")
+            
+            self.click(*self.coords['inicio_servicios'])
+            self.sleep(2)
+            
+            # BUSCAR IMAGEN Y ACTUALIZAR COORDENADAS
+            print("🔍 Buscando ventana de servicios...")
+            referencia = self.buscar_imagen("img/ventanaAdministracion4.PNG", timeout=30)
+            
+            if referencia is None:
+                print("❌ ERROR: No se pudo encontrar la ventana de servicios")
+                return False
+            
+            # Actualizar coordenadas relativas
+            if not self.actualizar_coordenadas_relativas(referencia):
+                print("❌ ERROR: No se pudieron actualizar las coordenadas relativas")
+                return False
+            
+            # Continuar con el procesamiento normal usando coordenadas relativas
+            self.click(*self.coords_relativas['menu_principal'])
+            self.sleep(2)
+                
+            # Llamar a funciones de servicios - USANDO ÍNDICES CORRECTOS
+            servicios_procesados = 0
+            
+            # VOZ COBRE TELMEX - Columna 19 (índice 18)
+            if len(row) > 18 and pd.notna(row.iloc[18]) and float(row.iloc[18]) > 0:
+                cantidad = float(row.iloc[18])
+                print(f"  └─ Procesando VOZ COBRE TELMEX: {cantidad}")
+                self.handle_voz_cobre(cantidad)
+                servicios_procesados += 1
+                print(f"  └─ ✅ VOZ COBRE TELMEX procesado")
+                
+            # Datos s/dom - Columna 20 (índice 19)
+            if len(row) > 19 and pd.notna(row.iloc[19]) and float(row.iloc[19]) > 0:
+                cantidad = float(row.iloc[19])
+                print(f"  └─ Procesando DATOS S/DOM: {cantidad}")
+                self.handle_datos_sdom(cantidad)
+                servicios_procesados += 1
+                print(f"  └─ ✅ DATOS S/DOM procesado")
+                
+            # Datos-cobre-telmex-inf - Columna 21 (índice 20)
+            if len(row) > 20 and pd.notna(row.iloc[20]) and float(row.iloc[20]) > 0:
+                cantidad = float(row.iloc[20])
+                print(f"  └─ Procesando DATOS COBRE TELMEX: {cantidad}")
+                self.handle_datos_cobre_telmex(cantidad)
+                servicios_procesados += 1
+                print(f"  └─ ✅ DATOS COBRE TELMEX procesado")
+                
+            # Datos-fibra-telmex-inf - Columna 22 (índice 21)
+            if len(row) > 21 and pd.notna(row.iloc[21]) and float(row.iloc[21]) > 0:
+                cantidad = float(row.iloc[21])
+                print(f"  └─ Procesando DATOS FIBRA TELMEX: {cantidad}")
+                self.handle_datos_fibra_telmex(cantidad)
+                servicios_procesados += 1
+                print(f"  └─ ✅ DATOS FIBRA TELMEX procesado")
+                
+            # TV cable otros - Columna 23 (índice 22)
+            if len(row) > 22 and pd.notna(row.iloc[22]) and float(row.iloc[22]) > 0:
+                cantidad = float(row.iloc[22])
+                print(f"  └─ Procesando TV CABLE OTROS: {cantidad}")
+                self.handle_tv_cable_otros(cantidad)
+                servicios_procesados += 1
+                print(f"  └─ ✅ TV CABLE OTROS procesado")
+                
+            # Dish - Columna 24 (índice 23)
+            if len(row) > 23 and pd.notna(row.iloc[23]) and float(row.iloc[23]) > 0:
+                cantidad = float(row.iloc[23])
+                print(f"  └─ Procesando DISH: {cantidad}")
+                self.handle_dish(cantidad)
+                servicios_procesados += 1
+                print(f"  └─ ✅ DISH procesado")
+                
+            # TVS - Columna 25 (índice 24)
+            if len(row) > 24 and pd.notna(row.iloc[24]) and float(row.iloc[24]) > 0:
+                cantidad = float(row.iloc[24])
+                print(f"  └─ Procesando TVS: {cantidad}")
+                self.handle_tvs(cantidad)
+                servicios_procesados += 1
+                print(f"  └─ ✅ TVS procesado")
+                
+            # SKY - Columna 26 (índice 25)
+            if len(row) > 25 and pd.notna(row.iloc[25]) and float(row.iloc[25]) > 0:
+                cantidad = float(row.iloc[25])
+                print(f"  └─ Procesando SKY: {cantidad}")
+                self.handle_sky(cantidad)
+                servicios_procesados += 1
+                print(f"  └─ ✅ SKY procesado")
+                
+            # VETV - Columna 27 (índice 26)
+            if len(row) > 26 and pd.notna(row.iloc[26]) and float(row.iloc[26]) > 0:
+                cantidad = float(row.iloc[26])
+                print(f"  └─ Procesando VETV: {cantidad}")
+                self.handle_vetv(cantidad)
+                servicios_procesados += 1
+                print(f"  └─ ✅ VETV procesado")
+            
+            # Usar coordenadas relativas para el cierre
+            self.click(*self.coords_relativas['cierre'])
+            self.sleep(5)
+            
+            print(f"✅ Línea {self.current_line} completada: {servicios_procesados} servicios procesados")
+            return True
+        else:
+            qty_servicios = row.iloc[17] if len(row) > 17 else 0
+            print(f"⏭️  Línea {self.current_line} no tiene servicios para procesar (QTY servicios={qty_servicios})")
+            return True  # Consideramos éxito si no hay servicios para procesar
+        
+    except Exception as e:
+        print(f"❌ Error procesando línea {self.current_line}: {e}")
+        logging.error(f"Error en procesar_linea_especifica: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
         """Procesar solo una línea específica del CSV - VERSIÓN CORREGIDA"""
         try:
             # Leer CSV
