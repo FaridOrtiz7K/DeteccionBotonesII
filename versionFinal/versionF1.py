@@ -1052,6 +1052,7 @@ class NSEServicesAutomation:
                 
             # Primero hacer clic en el campo de cantidad, luego escribir
             if self.click(*campo_coords):
+                logger.info(f"Escribiendo texto '{str(text)}' en {campo_coords}")
                 return self.ahk_writer.ejecutar_escritura_ahk(
                     campo_coords[0],
                     campo_coords[1],
