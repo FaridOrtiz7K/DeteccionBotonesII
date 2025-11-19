@@ -918,6 +918,505 @@ class NSEServicesAutomation:
         self.is_running = False
         self.reference_point = None
         
+        # Inicializar controladores AHK
+        self.ahk_writer = AHKWriter()
+        self.ahk_click_down = AHKClickDown()
+        self.ahk_enter = EnterAHKManager()
+        
+        # Configurar coordenadas base
+        self.coords = {
+            'menu_principal': (81, 81),
+            'campo_cantidad': (108, 350),
+            'boton_guardar': (63, 390),
+            'boton_error': (704, 384),
+            'cierre': (863, 16),
+            'inicio_servicios': (1563, 385),
+            'casilla_servicio': (121, 236),
+            'casilla_tipo': (121, 261),
+            'casilla_empresa': (121, 290),
+            'casilla_producto': (121, 322),
+        }
+
+    def buscar_imagen(self, imagen_path, timeout=30, confidence=0.8):
+        """Busca una imagen en la pantalla usando OpenCV"""
+        logging.info(f"🔍 Buscando imagen: {imagen_path}")
+        
+        try:
+            # Cargar la imagen template
+            template = cv2.imread(imagen_path)
+            if template is None:
+                logging.error(f"❌ No se pudo cargar la imagen: {imagen_path}")
+                return None
+            
+            template_height, template_width = template.shape[:2]
+            
+            for intento in range(timeout):
+                # Capturar screenshot de toda la pantalla
+                screenshot = ImageGrab.grab()
+                screenshot_cv = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
+                
+                # Realizar la búsqueda de la plantilla
+                result = cv2.matchTemplate(screenshot_cv, template, cv2.TM_CCOEFF_NORMED)
+                min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+                
+                if max_val >= confidence:
+                    # Encontrado - retornar coordenadas de la esquina superior izquierda
+                    x, y = max_loc
+                    logging.info(f"✅ Imagen encontrada en intento {intento + 1} - Coordenadas: ({x}, {y}) - Confianza: {max_val:.2f}")
+                    return (x, y)
+                
+                logging.info(f"⏳ Intento {intento + 1}/{timeout} - Confianza máxima: {max_val:.2f}")
+                time.sleep(1)
+            
+            logging.error(f"❌ No se encontró la imagen después de {timeout} intentos")
+            return None
+            
+        except Exception as e:
+            logging.error(f"❌ Error en búsqueda de imagen: {e}")
+            return None
+
+    def actualizar_coordenadas_relativas(self, referencia):
+        """Actualiza todas las coordenadas para que sean relativas al punto de referencia"""
+        if referencia is None:
+            logging.error("❌ No se puede actualizar coordenadas: referencia es None")
+            return False
+        
+        ref_x, ref_y = referencia
+        
+        # Actualizar coordenadas relativas
+        self.coords_relativas = {
+            'menu_principal': (ref_x + 81, ref_y + 81),
+            'campo_cantidad': (ref_x + 108, ref_y + 350),
+            'boton_guardar': (ref_x + 63, ref_y + 390),
+            'cierre': (ref_x + 863, ref_y + 16),
+            'casilla_servicio': (ref_x + 121, ref_y + 236),
+            'casilla_tipo': (ref_x + 121, ref_y + 261),
+            'casilla_empresa': (ref_x + 121, ref_y + 290),
+            'casilla_producto': (ref_x + 121, ref_y + 322),
+        }
+        
+        # Mantener coordenadas que no cambian
+        self.coords_relativas['boton_error'] = self.coords['boton_error']
+        self.coords_relativas['inicio_servicios'] = self.coords['inicio_servicios']
+        
+        self.reference_point = referencia
+        logging.info("✅ Coordenadas actualizadas a relativas")
+        return True
+
+    def iniciar_ahk(self):
+        """Iniciar todos los servicios AHK"""
+        try:
+            if not self.ahk_writer.start_ahk():
+                logging.error("No se pudo iniciar AHK Writer")
+                return False
+            if not self.ahk_click_down.start_ahk():
+                logging.error("No se pudo iniciar AHK Click Down")
+                return False
+            if not self.ahk_enter.start_ahk():
+                logging.error("No se pudo iniciar AHK Enter")
+                return False
+            logging.info("✅ Todos los servicios AHK iniciados correctamente")
+            return True
+        except Exception as e:
+            logging.error(f"Error iniciando servicios AHK: {e}")
+            return False
+
+    def detener_ahk(self):
+        """Detener todos los servicios AHK"""
+        try:
+            self.ahk_writer.stop_ahk()
+            self.ahk_click_down.stop_ahk()
+            self.ahk_enter.stop_ahk()
+            logging.info("✅ Todos los servicios AHK detenidos correctamente")
+        except Exception as e:
+            logging.error(f"Error deteniendo servicios AHK: {e}")
+
+    def click(self, x, y, duration=0.1):
+        """Hacer clic en coordenadas específicas"""
+        pyautogui.click(x, y, duration=duration)
+        time.sleep(0.5)
+
+    def write(self, text):
+        """Escribir texto usando AHK Writer"""
+        try:
+            # Usar coordenadas relativas si están disponibles
+            if hasattr(self, 'coords_relativas') and self.coords_relativas:
+                campo_coords = self.coords_relativas['campo_cantidad']
+            else:
+                campo_coords = self.coords['campo_cantidad']
+                
+            # Primero hacer clic en el campo de cantidad, luego escribir
+            self.click(*campo_coords)
+            time.sleep(1)
+            
+            # Usar AHKWriter para escribir
+            success = self.ahk_writer.ejecutar_escritura_ahk(
+                campo_coords[0],
+                campo_coords[1],
+                str(text)
+            )
+            
+            if success:
+                logging.info(f"✅ Texto escrito exitosamente: {text}")
+            else:
+                logging.error(f"❌ Error al escribir texto: {text}")
+                
+            return success
+            
+        except Exception as e:
+            logging.error(f"Error escribiendo texto '{text}': {e}")
+            return False
+
+    def press_down(self, x, y, times=1):
+        """Presionar flecha down usando AHK"""
+        try:
+            # Usar coordenadas relativas si están disponibles
+            if hasattr(self, 'coords_relativas') and self.coords_relativas:
+                click_coords = (x, y)
+            else:
+                click_coords = (x, y)
+                
+            # Usamos AHK Click Down con las veces especificadas
+            return self.ahk_click_down.ejecutar_click_down(click_coords[0], click_coords[1], times)
+        except Exception as e:
+            logging.error(f"Error presionando DOWN {times} veces: {e}")
+            return False
+
+    def press_enter(self):
+        """Presionar enter usando AHK"""
+        try:                
+            return self.ahk_enter.presionar_enter(1)
+        except Exception as e:
+            logging.error(f"Error presionando enter: {e}")
+            return False
+
+    def sleep(self, seconds):
+        """Esperar segundos"""
+        time.sleep(seconds)
+
+    def handle_error_click(self):
+        """Manejar clics de error"""
+        for _ in range(5):
+            # Usar coordenadas relativas si están disponibles para boton_error
+            if hasattr(self, 'coords_relativas') and self.coords_relativas:
+                self.click(*self.coords_relativas['boton_error'])
+            else:
+                self.click(*self.coords['boton_error'])
+            self.sleep(2)
+
+    def procesar_linea_especifica(self):
+        """Procesar solo una línea específica del CSV - VERSIÓN CORREGIDA"""
+        try:
+            # Leer CSV
+            df = pd.read_csv(self.csv_file, encoding='utf-8')
+            total_lines = len(df)
+            
+            print(f"📊 Total de líneas en CSV: {total_lines}")
+            
+            # Validar línea específica
+            if self.linea_especifica is None:
+                print("❌ No se especificó línea a procesar")
+                return False
+                
+            if self.linea_especifica < 1 or self.linea_especifica > total_lines:
+                print(f"❌ Línea {self.linea_especifica} fuera de rango (1-{total_lines})")
+                return False
+            
+            # Obtener la línea específica
+            linea_idx = self.linea_especifica - 1
+            self.current_line = self.linea_especifica
+            
+            print(f"🎯 PROCESANDO LÍNEA ESPECÍFICA: {self.current_line}/{total_lines}")
+            
+            row = df.iloc[linea_idx]
+            
+            # DEBUG: Mostrar información de la línea
+            print(f"🔍 Información de la línea {self.current_line}:")
+            print(f"   ID: {row.iloc[0] if len(row) > 0 else 'N/A'}")
+            print(f"   Tipo V: {row.iloc[4] if len(row) > 4 else 'N/A'}")
+            
+            # Solo procesar servicios si la columna 18 (QTY servicios) tiene valor > 0
+            # CORRECCIÓN: La columna 18 es "QTY servicios" (índice 17)
+            if len(row) > 17 and pd.notna(row.iloc[17]) and row.iloc[17] > 0:
+                qty_servicios = row.iloc[17]
+                print(f"✅ Línea {self.current_line} tiene {qty_servicios} servicios para procesar")
+                
+                self.click(*self.coords['inicio_servicios'])
+                self.sleep(2)
+                
+                # BUSCAR IMAGEN Y ACTUALIZAR COORDENADAS
+                print("🔍 Buscando ventana de servicios...")
+                referencia = self.buscar_imagen("img/ventanaAdministracion4.PNG", timeout=30)
+                
+                if referencia is None:
+                    print("❌ ERROR: No se pudo encontrar la ventana de servicios")
+                    return False
+                
+                # Actualizar coordenadas relativas
+                if not self.actualizar_coordenadas_relativas(referencia):
+                    print("❌ ERROR: No se pudieron actualizar las coordenadas relativas")
+                    return False
+                
+                # Continuar con el procesamiento normal usando coordenadas relativas
+                self.click(*self.coords_relativas['menu_principal'])
+                self.sleep(2)
+                    
+                # Llamar a funciones de servicios - CORREGIDO CON ÍNDICES EXACTOS
+                servicios_procesados = 0
+                
+                # DEBUG: Mostrar todos los valores de servicios
+                print("🔍 VALORES DE SERVICIOS EN CSV:")
+                servicios_info = [
+                    (18, "VOZ"),
+                    (19, "Datos s/dom"), 
+                    (20, "Datos"),
+                    (21, "Datos-fibra-telmex-inf"),
+                    (22, "TV Cable"),
+                    (23, "DISH"),
+                    (24, "TVS"),
+                    (25, "SKY"),
+                    (26, "VETV")
+                ]
+                
+                for idx, nombre in servicios_info:
+                    valor = row.iloc[idx] if len(row) > idx else "N/A"
+                    print(f"   Columna {idx+1} ({nombre}): {valor}")
+                
+                # VOZ COBRE TELMEX - Columna 19 (índice 18)
+                if len(row) > 18 and pd.notna(row.iloc[18]) and row.iloc[18] > 0:
+                    cantidad = row.iloc[18]
+                    print(f"  └─ Procesando VOZ COBRE TELMEX: {cantidad}")
+                    self.handle_voz_cobre(cantidad)
+                    servicios_procesados += 1
+                    print(f"  └─ ✅ VOZ COBRE TELMEX procesado")
+                    
+                # Datos s/dom - Columna 20 (índice 19)
+                if len(row) > 19 and pd.notna(row.iloc[19]) and row.iloc[19] > 0:
+                    cantidad = row.iloc[19]
+                    print(f"  └─ Procesando DATOS S/DOM: {cantidad}")
+                    self.handle_datos_sdom(cantidad)
+                    servicios_procesados += 1
+                    print(f"  └─ ✅ DATOS S/DOM procesado")
+                    
+                # Datos-cobre-telmex-inf - Columna 21 (índice 20)
+                if len(row) > 20 and pd.notna(row.iloc[20]) and row.iloc[20] > 0:
+                    cantidad = row.iloc[20]
+                    print(f"  └─ Procesando DATOS COBRE TELMEX: {cantidad}")
+                    self.handle_datos_cobre_telmex(cantidad)
+                    servicios_procesados += 1
+                    print(f"  └─ ✅ DATOS COBRE TELMEX procesado")
+                    
+                # Datos-fibra-telmex-inf - Columna 22 (índice 21)
+                if len(row) > 21 and pd.notna(row.iloc[21]) and row.iloc[21] > 0:
+                    cantidad = row.iloc[21]
+                    print(f"  └─ Procesando DATOS FIBRA TELMEX: {cantidad}")
+                    self.handle_datos_fibra_telmex(cantidad)
+                    servicios_procesados += 1
+                    print(f"  └─ ✅ DATOS FIBRA TELMEX procesado")
+                    
+                # TV cable otros - Columna 23 (índice 22)
+                if len(row) > 22 and pd.notna(row.iloc[22]) and row.iloc[22] > 0:
+                    cantidad = row.iloc[22]
+                    print(f"  └─ Procesando TV CABLE OTROS: {cantidad}")
+                    self.handle_tv_cable_otros(cantidad)
+                    servicios_procesados += 1
+                    print(f"  └─ ✅ TV CABLE OTROS procesado")
+                    
+                # Dish - Columna 24 (índice 23)
+                if len(row) > 23 and pd.notna(row.iloc[23]) and row.iloc[23] > 0:
+                    cantidad = row.iloc[23]
+                    print(f"  └─ Procesando DISH: {cantidad}")
+                    self.handle_dish(cantidad)
+                    servicios_procesados += 1
+                    print(f"  └─ ✅ DISH procesado")
+                    
+                # TVS - Columna 25 (índice 24)
+                if len(row) > 24 and pd.notna(row.iloc[24]) and row.iloc[24] > 0:
+                    cantidad = row.iloc[24]
+                    print(f"  └─ Procesando TVS: {cantidad}")
+                    self.handle_tvs(cantidad)
+                    servicios_procesados += 1
+                    print(f"  └─ ✅ TVS procesado")
+                    
+                # SKY - Columna 26 (índice 25)
+                if len(row) > 25 and pd.notna(row.iloc[25]) and row.iloc[25] > 0:
+                    cantidad = row.iloc[25]
+                    print(f"  └─ Procesando SKY: {cantidad}")
+                    self.handle_sky(cantidad)
+                    servicios_procesados += 1
+                    print(f"  └─ ✅ SKY procesado")
+                    
+                # VETV - Columna 27 (índice 26)
+                if len(row) > 26 and pd.notna(row.iloc[26]) and row.iloc[26] > 0:
+                    cantidad = row.iloc[26]
+                    print(f"  └─ Procesando VETV: {cantidad}")
+                    self.handle_vetv(cantidad)
+                    servicios_procesados += 1
+                    print(f"  └─ ✅ VETV procesado")
+                
+                # Usar coordenadas relativas para el cierre
+                self.click(*self.coords_relativas['cierre'])
+                self.sleep(5)
+                
+                print(f"✅ Línea {self.current_line} completada: {servicios_procesados} servicios procesados")
+                return True
+            else:
+                qty_servicios = row.iloc[17] if len(row) > 17 else 0
+                print(f"⏭️  Línea {self.current_line} no tiene servicios para procesar (QTY servicios={qty_servicios})")
+                return True  # Consideramos éxito si no hay servicios para procesar
+            
+        except Exception as e:
+            print(f"❌ Error procesando línea {self.current_line}: {e}")
+            logging.error(f"Error en procesar_linea_especifica: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+
+    # Los métodos handle_* permanecen iguales
+    def handle_voz_cobre(self, cantidad):
+        """Manejar servicio VOZ COBRE TELMEX"""
+        self.click(*self.coords_relativas['menu_principal'])
+        self.sleep(2)
+        self.write(str(int(cantidad)))
+        self.sleep(2)
+        self.click(*self.coords_relativas['boton_guardar'])
+        self.sleep(2)
+        self.handle_error_click()
+
+    def handle_datos_sdom(self, cantidad):
+        """Manejar servicio DATOS S/DOM"""
+        self.click(*self.coords_relativas['menu_principal'])
+        self.sleep(2)
+        self.press_down(*self.coords_relativas['casilla_servicio'], 2)
+        self.press_enter()
+        self.sleep(2)
+        self.write(str(int(cantidad)))
+        self.sleep(2)
+        self.click(*self.coords_relativas['boton_guardar'])
+        self.sleep(2)
+        self.handle_error_click()
+
+    def handle_datos_cobre_telmex(self, cantidad):
+        """Manejar servicio DATOS COBRE TELMEX"""
+        self.click(*self.coords_relativas['menu_principal'])
+        self.sleep(2)
+        self.press_down(*self.coords_relativas['casilla_servicio'], 2)
+        self.press_enter()
+        self.press_down(*self.coords_relativas['casilla_producto'], 1)
+        self.press_enter()
+        self.sleep(2)
+        self.write(str(int(cantidad)))
+        self.sleep(2)
+        self.click(*self.coords_relativas['boton_guardar'])
+        self.sleep(2)
+        self.handle_error_click()
+
+    def handle_datos_fibra_telmex(self, cantidad):
+        """Manejar servicio DATOS FIBRA TELMEX"""
+        self.click(*self.coords_relativas['menu_principal'])
+        self.sleep(2)
+        self.press_down(*self.coords_relativas['casilla_servicio'], 2)
+        self.press_enter()
+        self.press_down(*self.coords_relativas['casilla_tipo'], 1)
+        self.press_enter()
+        self.press_down(*self.coords_relativas['casilla_empresa'], 1)
+        self.press_enter()
+        self.sleep(2)
+        self.write(str(int(cantidad)))
+        self.sleep(2)
+        self.click(*self.coords_relativas['boton_guardar'])
+        self.sleep(2)
+        self.handle_error_click()
+
+    def handle_tv_cable_otros(self, cantidad):
+        """Manejar servicio TV CABLE OTROS"""
+        self.click(*self.coords_relativas['menu_principal'])
+        self.sleep(2)
+        self.press_down(*self.coords_relativas['casilla_servicio'], 3)
+        self.press_enter()
+        self.press_down(*self.coords_relativas['casilla_empresa'], 4)
+        self.press_enter()
+        self.sleep(2)
+        self.write(str(int(cantidad)))
+        self.sleep(2)
+        self.click(*self.coords_relativas['boton_guardar'])
+        self.sleep(2)
+        self.handle_error_click()
+
+    def handle_dish(self, cantidad):
+        """Manejar servicio DISH"""
+        self.click(*self.coords_relativas['menu_principal'])
+        self.sleep(2)
+        self.press_down(*self.coords_relativas['casilla_servicio'], 3)
+        self.press_enter()
+        self.press_down(*self.coords_relativas['casilla_tipo'], 2)
+        self.press_enter()
+        self.press_down(*self.coords_relativas['casilla_empresa'], 1)
+        self.press_enter()
+        self.sleep(2)
+        self.write(str(int(cantidad)))
+        self.sleep(2)
+        self.click(*self.coords_relativas['boton_guardar'])
+        self.sleep(2)
+        self.handle_error_click()
+
+    def handle_tvs(self, cantidad):
+        """Manejar servicio TVS"""
+        self.click(*self.coords_relativas['menu_principal'])
+        self.sleep(2)
+        self.press_down(*self.coords_relativas['casilla_servicio'], 3)
+        self.press_enter()
+        self.press_down(*self.coords_relativas['casilla_tipo'], 2)
+        self.press_enter()
+        self.press_down(*self.coords_relativas['casilla_empresa'], 2)
+        self.press_enter()
+        self.sleep(2)
+        self.write(str(int(cantidad)))
+        self.sleep(2)
+        self.click(*self.coords_relativas['boton_guardar'])
+        self.sleep(2)
+        self.handle_error_click()
+
+    def handle_sky(self, cantidad):
+        """Manejar servicio SKY"""
+        self.click(*self.coords_relativas['menu_principal'])
+        self.sleep(2)
+        self.press_down(*self.coords_relativas['casilla_servicio'], 3)
+        self.press_enter()
+        self.press_down(*self.coords_relativas['casilla_tipo'], 2)
+        self.press_enter()
+        self.press_down(*self.coords_relativas['casilla_empresa'], 3)
+        self.press_enter()
+        self.sleep(2)
+        self.write(str(int(cantidad)))
+        self.sleep(2)
+        self.click(*self.coords_relativas['boton_guardar'])
+        self.sleep(2)
+        self.handle_error_click()
+
+    def handle_vetv(self, cantidad):
+        """Manejar servicio VETV"""
+        self.click(*self.coords_relativas['menu_principal'])
+        self.sleep(2)
+        self.press_down(*self.coords_relativas['casilla_servicio'], 3)
+        self.press_enter()
+        self.press_down(*self.coords_relativas['casilla_tipo'], 2)
+        self.press_enter()
+        self.press_down(*self.coords_relativas['casilla_empresa'], 5)
+        self.press_enter()
+        self.sleep(2)
+        self.write(str(int(cantidad)))
+        self.sleep(2)
+        self.click(*self.coords_relativas['boton_guardar'])
+        self.sleep(2)
+        self.handle_error_click()
+    def __init__(self, linea_especifica=None):
+        self.linea_especifica = linea_especifica
+        self.csv_file = CSV_FILE
+        self.current_line = 0
+        self.is_running = False
+        self.reference_point = None
+        
         # Inicializar controladores AHK (EXACTAMENTE como en el código individual)
         self.ahk_writer = AHKWriter()
         self.ahk_click_down = AHKClickDown()
