@@ -22,7 +22,7 @@ class ProcesadorCSV:
         """Carga el archivo CSV"""
         try:
             self.df = pd.read_csv(self.archivo_csv)
-            logger.info(f"CSV cargado correctamente: {len(self.df)} registros")
+            logger.info(f"CSV cargado correctamente: {len(self.df)} Lineas")
             return True
         except Exception as e:
             logger.error(f"Error cargando CSV: {e}")
@@ -58,8 +58,8 @@ class ProcesadorCSV:
         logger.info(f"ID {id_buscar} encontrado, datos: {resultado.iloc[0].tolist()}")
         return resultado.iloc[0]
     
-    def procesar_registro(self):
-        """Ejecuta el flujo completo para un registro"""
+    def procesar_linea_especifica(self):
+        """Ejecuta el flujo completo para una sola línea"""
         try:
             # Paso 2: Click en (89, 263)
             logger.info("Paso 2: Click en (89, 263)")
@@ -79,15 +79,15 @@ class ProcesadorCSV:
             
             # Paso 4: Buscar el ID en el CSV
             logger.info(f"Paso 4: Buscando ID {id_obtenido} en CSV")
-            registro = self.buscar_por_id(id_obtenido)
+            linea_especifica = self.buscar_por_id(id_obtenido)
             
-            if registro is None:
+            if linea_especifica is None:
                 logger.error(f"ID {id_obtenido} no encontrado en CSV")
                 return False
             
             # Paso 5: Escribir valor de columna 2 en (1483, 519)
-            if len(registro) >= 2:  # Verificar que existe columna 2
-                valor_columna_2 = str(registro.iloc[1])
+            if len(linea_especifica) >= 2:  # Verificar que existe columna 2
+                valor_columna_2 = str(linea_especifica.iloc[1])
                 logger.info(f"Paso 5: Escribiendo valor '{valor_columna_2}' en (1483, 519)")
                 
                 exito_escritura = self.ahk_writer.ejecutar_escritura_ahk(1483, 519, valor_columna_2)
@@ -95,11 +95,11 @@ class ProcesadorCSV:
                     logger.error("Error en la escritura")
                     return False
             else:
-                logger.warning("No hay columna 2 en el registro")
+                logger.warning("No hay columna 2 en la línea especifica")
             
             # Paso 6: Revisar si columna 4 es mayor a 0
-            if len(registro) >= 4:  # Verificar que existe columna 4
-                valor_columna_4 = registro.iloc[3]
+            if len(linea_especifica) >= 4:  # Verificar que existe columna 4
+                valor_columna_4 = linea_especifica.iloc[3]
                 logger.info(f"Paso 6: Valor columna 4 = {valor_columna_4}")
                 
                 # Paso 7: Si es mayor a 0, usar AHKClickDown
@@ -114,7 +114,7 @@ class ProcesadorCSV:
                 else:
                     logger.info("Paso 7: Saltado (columna 4 <= 0)")
             else:
-                logger.warning("No hay columna 4 en el registro")
+                logger.warning("No hay columna 4 en la línea especifica")
             
             # Paso 8: Click en (1290, 349)
             logger.info("Paso 8: Click en (1290, 349)")
@@ -125,11 +125,11 @@ class ProcesadorCSV:
             return True
             
         except Exception as e:
-            logger.error(f"Error en procesar_registro: {e}")
+            logger.error(f"Error en procesar la linea especifica: {e}")
             return False
     
-    def procesar_todo(self, pausa_entre_registros=2):
-        """Procesa múltiples registros (si es necesario)"""
+    def procesar_todo(self, pausa_entre_lineas=2):
+        """Procesa múltiples lineas (si es necesario)"""
         if not self.cargar_csv():
             return False
             
@@ -137,11 +137,9 @@ class ProcesadorCSV:
             return False
         
         try:
-            # Este método procesa un registro por ejecución
-            # Si necesitas procesar múltiples registros automáticamente,
-            # podemos modificar esta parte
-            logger.info("Iniciando procesamiento de registro...")
-            exito = self.procesar_registro()
+            # Este método procesa un linea por ejecución
+            logger.info("Iniciando procesamiento de linea...")
+            exito = self.procesar_linea_especifica()
             
             if exito:
                 logger.info("Procesamiento completado")

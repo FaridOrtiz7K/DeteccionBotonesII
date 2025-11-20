@@ -354,24 +354,24 @@ class GEAutomation:
             print(f"📊 Total de líneas en CSV: {total_lines}")
 
             # fila que se va a procesar
-            iteration = 3
-            row_index = iteration - 1
+            linea_especifica = 2
+            row_index = linea_especifica - 1
                 
             # Verificar si debemos saltar esta iteración
             if row_index >= total_lines:
-                print(f"⚠️  No hay más líneas en el CSV. Iteración {iteration} saltada.")
+                print(f"⚠️  No hay más líneas en el CSV. Iteración {linea_especifica} saltada.")
                     
                     
             # Verificar si los valores del CSV son válidos
             if not self.verificar_valores_csv(df, row_index):
-                print(f"⚠️  Valores inválidos en fila {row_index}. Iteración {iteration} saltada.")
+                print(f"⚠️  Valores inválidos en fila {row_index}. Iteración {linea_especifica} saltada.")
                     
                     
-            print(f"🔄 Procesando iteración {iteration}/9")
-            success = self.process_single_iteration(df, iteration, total_lines)
+            print(f"🔄 Procesando iteración {linea_especifica}/9")
+            success = self.process_single_iteration(df, linea_especifica, total_lines)
                 
             if not success:
-                print(f"⚠️  Iteración {iteration} falló, continuando con la siguiente...")
+                print(f"⚠️  Iteración {linea_especifica} falló, continuando con la siguiente...")
                 
                     
             # Guardar al final
@@ -389,10 +389,10 @@ class GEAutomation:
             self.enter.stop_ahk()
             self.ahk_click_down.stop_ahk()
 
-    def process_single_iteration(self, df, iteration, total_lines):
+    def process_single_iteration(self, df, linea_especifica, total_lines):
         """Procesar una sola iteración del bucle"""
         # Obtener la fila correspondiente (0-indexed)
-        row_index = iteration - 1
+        row_index = linea_especifica - 1
         row = df.iloc[row_index]
         
         # Obtener valores del CSV con verificación
@@ -404,7 +404,7 @@ class GEAutomation:
             return False
 
         if not num_txt_type:
-            print(f"⚠️  num_txt_type vacío en iteración {iteration}, saltando...")
+            print(f"⚠️  num_txt_type vacío en iteración {linea_especifica}, saltando...")
             return False
         self.nombre="NN "+num_txt_type+".kml"
 
@@ -514,11 +514,11 @@ class GEAutomation:
             if self.detectar_ventana_error():
                 print("✅ Ventana de error detectada y cerrada")
             
-            print(f"✅ Iteración {iteration} completada exitosamente")
+            print(f"✅ Linea {linea_especifica} completada exitosamente")
             return True
             
         except Exception as e:
-            print(f"❌ Error en iteración {iteration}: {e}")
+            print(f"❌ Error en iteración {linea_especifica}: {e}")
             # Intentar cerrar ventana de error en caso de excepción
             self.detectar_ventana_error()
             return False

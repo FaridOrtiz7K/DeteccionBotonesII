@@ -9,7 +9,7 @@ from utils.ahk_writer import AHKWriter
 
 class NSEAutomation:
     def __init__(self):
-        self.start_count = 4 # Línea específica a procesar (1-indexed)
+        self.linea_especifica = 2 # Línea específica a procesar (1-indexed)
         self.csv_file = "NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
         self.reference_image = "img/VentanaAsignar.png"
         self.is_running = False
@@ -133,22 +133,22 @@ class NSEAutomation:
             
             print(f"📊 Total de líneas en CSV: {total_lines}")
             
-            # Procesar solo la línea específica (start_count - 1)
-            if self.start_count - 1 >= total_lines:
-                print(f"❌ Error: No existe la línea {self.start_count} en el CSV")
+            # Procesar solo la línea específica (linea_especifica - 1)
+            if self.linea_especifica - 1 >= total_lines:
+                print(f"❌ Error: No existe la línea {self.linea_especifica} en el CSV")
                 return
                 
-            row = df.iloc[self.start_count - 1]
-            print(f"🔄 Procesando línea {self.start_count}/{total_lines}")
+            row = df.iloc[self.linea_especifica - 1]
+            print(f"🔄 Procesando línea {self.linea_especifica}/{total_lines}")
             
             # Verificar si se debe saltar el proceso (columna 6 tiene valor)
             if self.should_skip_process(row):
-                print(f"⏭️  Saltando línea {self.start_count} - Columna 6 tiene valor: {row[5]}")
+                print(f"⏭️  Saltando línea {self.linea_especifica} - Columna 6 tiene valor: {row[5]}")
                 return
             
             # Verificar que sea tipo V
             if str(row[4]).strip().upper() != "V":
-                print(f"⚠️  Saltando línea {self.start_count} - No es tipo V: {row[4]}")
+                print(f"⚠️  Saltando línea {self.linea_especifica} - No es tipo V: {row[4]}")
                 return
             # click en el boton seleccionar lote 
             self.click(169, 189)
@@ -168,7 +168,7 @@ class NSEAutomation:
             print("🎯 Imagen detectada, procediendo con tipo V")
             self.handle_type_v(row, base_location)
             
-            print(f"✅ Línea {self.start_count} completada (hasta CERRAR)")
+            print(f"✅ Línea {self.linea_especifica} completada (hasta CERRAR)")
             print("🎉 AUTOMATIZACIÓN COMPLETADA EXITOSAMENTE!")
             
         except Exception as e:
@@ -242,7 +242,7 @@ def main():
     
     print()
     print("Configuración:")
-    print(f"  - Línea a procesar: {nse.start_count}")
+    print(f"  - Línea a procesar: {nse.linea_especifica}")
     print(f"  - Archivo CSV: {nse.csv_file}")
     print(f"  - Imagen de referencia: {nse.reference_image}")
     print("  - Usando AHKWriter para escritura")

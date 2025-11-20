@@ -23,7 +23,7 @@ logging.basicConfig(
 
 class NSEServicesAutomation:
     def __init__(self, linea_especifica=None):
-        self.linea_especifica = linea_especifica  # Línea específica a procesar (empezando desde 1)
+        self.linea_especifica = linea_especifica -1  # La línea específica a procesar (ajustada a índice 0)
         self.csv_file = "NCO0004FO_ID Num Uso NSE Serv Nom Neg.csv"
         self.current_line = 0
         self.is_running = False
@@ -469,20 +469,9 @@ def main():
     clear_screen()
     print_header()
     
-    # Solicitar línea específica al usuario
-    try:
-        linea_input = input("🔢 Ingresa el número de línea a procesar (ej: 5): ").strip()
-        if not linea_input:
-            print("❌ No se ingresó número de línea")
-            return
-            
-        linea_especifica = int(linea_input)
-        if linea_especifica < 1:
-            print("❌ El número de línea debe ser mayor a 0")
-            return
-    except ValueError:
-        print("❌ Por favor ingresa un número válido")
-        return
+    # Configuración inicial
+    linea_especifica = 2
+
     
     # Inicializar automatización
     nse = NSEServicesAutomation(linea_especifica=linea_especifica)
