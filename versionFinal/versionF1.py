@@ -468,7 +468,7 @@ def ejecutar_programa3_interfaz(linea_especifica, log_func):
         log_func("INICIANDO PROGRAMA 3 - SERVICIOS NSE")
         log_func("=" * 60)
         
-        nse_services = NSEServicesAutomation(linea_especifica=linea_especifica-1)
+        nse_services = NSEServicesAutomation(linea_especifica=linea_especifica)
         
         if not os.path.exists(nse_services.csv_file):
             log_func(f"❌ ERROR: Archivo CSV no encontrado: {nse_services.csv_file}")
@@ -912,7 +912,7 @@ class NSEAutomation:
 
 class NSEServicesAutomation:
     def __init__(self, linea_especifica=None):
-        self.linea_especifica = linea_especifica
+        self.linea_especifica = linea_especifica-1
         self.csv_file = CSV_FILE
         self.current_line = 0
         self.is_running = False
