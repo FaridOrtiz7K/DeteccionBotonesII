@@ -912,7 +912,7 @@ class NSEAutomation:
 
 class NSEServicesAutomation:
     def __init__(self, linea_especifica=None):
-        self.linea_especifica = linea_especifica-1
+        self.linea_especifica = linea_especifica
         self.csv_file = CSV_FILE
         self.current_line = 0
         self.is_running = False
@@ -1122,7 +1122,7 @@ class NSEServicesAutomation:
             linea_idx = self.linea_especifica - 1  # Convertir a índice base 0
             self.current_line = self.linea_especifica
             
-            print(f"🎯 PROCESANDO LÍNEA ESPECÍFICA: {self.current_line}/{total_lines}")
+            print(f"🎯 PROCESANDO LÍNEA ESPECÍFICA: {linea_idx}/{total_lines}")
             
             row = df.iloc[linea_idx]
             
