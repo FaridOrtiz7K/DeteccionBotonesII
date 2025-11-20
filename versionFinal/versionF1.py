@@ -1119,7 +1119,7 @@ class NSEServicesAutomation:
                 return False
             
             # Obtener la línea específica (ajustar índice ya que CSV empieza en 0 para datos)
-            linea_idx = self.linea_especifica - 1  # Convertir a índice base 0
+            linea_idx = self.linea_especifica - 2  # Convertir a índice base 0
             self.current_line = self.linea_especifica
             
             print(f"🎯 PROCESANDO LÍNEA ESPECÍFICA: {linea_idx}/{total_lines}")
