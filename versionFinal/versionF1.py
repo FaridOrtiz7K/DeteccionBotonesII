@@ -1123,6 +1123,7 @@ class NSEServicesAutomation:
             self.current_line = self.linea_especifica
             
             print(f"🎯 PROCESANDO LÍNEA ESPECÍFICA: {linea_idx}/{total_lines}")
+            logger.info(f"🎯 PROCESANDO LÍNEA ESPECÍFICA: {linea_idx}/{total_lines}")
             
             row = df.iloc[linea_idx]
             
