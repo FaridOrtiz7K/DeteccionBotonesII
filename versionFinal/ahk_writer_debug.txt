@@ -1,2 +1,1 @@
-Texto escrito: 2
-Texto escrito: 3
+Texto escrito: 1
