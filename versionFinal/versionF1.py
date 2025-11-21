@@ -354,19 +354,19 @@ class InterfazAutomation:
                 
                 # Ejecutar Programa 2
                 self.log("Iniciando Programa 2 - Automatización NSE")
-                resultado2 = ejecutar_programa2_interfaz(LINEA_A_PROCESAR, self.log)
+                resultado2 = ejecutar_programa2_interfaz(linea_procesada, self.log)
                 
                 if not resultado2 or not EJECUTANDO:
                     if not EJECUTANDO:
                         break
-                    self.log(f"❌ Programa 2 falló en línea {LINEA_A_PROCESAR}")
+                    self.log(f"❌ Programa 2 falló en línea {LINEA_ACTUAL}")
                     LINEA_EN_PROCESO = False  # LIBERAR LA LÍNEA
                     LINEA_ACTUAL += 1
                     continue
                 
                 # Ejecutar Programa 3
                 self.log("Iniciando Programa 3 - Servicios NSE")
-                resultado3 = ejecutar_programa3_interfaz(LINEA_A_PROCESAR, self.log)
+                resultado3 = ejecutar_programa3_interfaz(linea_procesada, self.log)
                 
                 if not resultado3 or not EJECUTANDO:
                     if not EJECUTANDO:
@@ -378,7 +378,7 @@ class InterfazAutomation:
                 
                 # Ejecutar Programa 4
                 self.log("Iniciando Programa 4 - Automatización GE")
-                resultado4 = ejecutar_programa4_interfaz(LINEA_A_PROCESAR, KML_FILENAME, self.log)
+                resultado4 = ejecutar_programa4_interfaz(linea_procesada, KML_FILENAME, self.log)
                 
                 if resultado4:
                     self.log(f"✅ Línea {LINEA_ACTUAL} procesada exitosamente")
@@ -435,7 +435,6 @@ def ejecutar_programa1_interfaz(linea_especifica, log_func):
         procesador.df = procesador.df.iloc[linea_especifica-1:linea_especifica]
         
         resultado, linea_procesada = procesador.procesar_todo()
-        LINEA_A_PROCESAR = linea_procesada # Actualizar variable global
         
         if resultado and linea_procesada:
             log_func(f"✅ Programa 1 completado. Línea procesada: {linea_procesada}")
