@@ -9584,3 +9584,80 @@ Texto escrito: 9
 2025-11-21 13:40:00,143 - INFO - AutoHotkey detenido correctamente
 2025-11-21 13:40:00,145 - INFO - AutoHotkey detenido correctamente
 2025-11-21 13:40:00,146 - INFO - AutoHotkey (click down) detenido correctamente
+2025-11-21 13:58:12,585 - INFO - CSV cargado correctamente: 110 registros
+2025-11-21 13:58:12,597 - INFO - CSV cargado correctamente: 110 registros
+2025-11-21 13:58:12,598 - INFO - Iniciando procesos AHK...
+2025-11-21 13:58:14,611 - INFO - AutoHotkey iniciado correctamente
+2025-11-21 13:58:17,639 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-11-21 13:58:19,661 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-11-21 13:58:19,663 - INFO - Iniciando procesamiento de registro...
+2025-11-21 13:58:19,664 - INFO - Paso 2: Click en (89, 263)
+2025-11-21 13:58:20,769 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2025-11-21 13:58:20,776 - INFO - Comando enviado a AHK: 1483,519
+2025-11-21 13:58:22,201 - INFO - Valor copiado: 1002
+2025-11-21 13:58:22,202 - INFO - ID obtenido: 1002
+2025-11-21 13:58:22,203 - INFO - Paso 4: Buscando ID 1002 en CSV
+2025-11-21 13:58:22,208 - INFO - ID 1002 encontrado, datos: [np.int64(1002), '150', nan, np.float64(nan), 'V', np.float64(nan), np.float64(1.0), np.float64(2.0), np.float64(3.0), np.float64(1.0), np.float64(4.0), np.float64(5.0), np.float64(6.0), np.float64(7.0), np.float64(8.0), np.float64(9.0), np.float64(10.0), np.int64(2), np.float64(1.0), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(1.0), np.float64(1.0), np.float64(26.0), 'CONST.', np.float64(nan), np.float64(nan)]
+2025-11-21 13:58:22,211 - INFO - Paso 5: Escribiendo valor '150' en (1483, 519)
+2025-11-21 13:58:22,214 - INFO - Enviando comando a AHK: coordenadas (1483, 519), texto: '150'
+2025-11-21 13:58:23,131 - INFO - Esperando respuesta AHK... (10 intentos)
+2025-11-21 13:58:24,152 - INFO - Esperando respuesta AHK... (20 intentos)
+2025-11-21 13:58:25,159 - INFO - Esperando respuesta AHK... (30 intentos)
+2025-11-21 13:58:26,175 - INFO - Debug AHK: Texto escrito: 150
+
+2025-11-21 13:58:26,176 - INFO - Escritura completada correctamente via AHK
+2025-11-21 13:58:26,177 - INFO - Paso 6: Valor columna 4 = nan
+2025-11-21 13:58:26,178 - INFO - Paso 7: Saltado (columna 4 <= 0)
+2025-11-21 13:58:26,180 - INFO - Paso 8: Click en (1290, 349)
+2025-11-21 13:58:27,285 - INFO - Procesamiento completado exitosamente
+2025-11-21 13:58:27,286 - INFO - Procesamiento completado. Línea procesada: 2
+2025-11-21 13:58:27,286 - INFO - Deteniendo procesos AHK...
+2025-11-21 13:58:27,296 - INFO - AutoHotkey detenido correctamente
+2025-11-21 13:58:27,308 - INFO - AutoHotkey (writer) detenido correctamente
+2025-11-21 13:58:27,313 - INFO - AutoHotkey (click down) detenido correctamente
+2025-11-21 13:58:33,368 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-11-21 13:58:42,727 - INFO - Enviando comando a AHK: coordenadas (1355, 661), texto: '1'
+2025-11-21 13:58:43,638 - INFO - Esperando respuesta AHK... (10 intentos)
+2025-11-21 13:58:44,652 - INFO - Esperando respuesta AHK... (20 intentos)
+2025-11-21 13:58:45,666 - INFO - Esperando respuesta AHK... (30 intentos)
+2025-11-21 13:58:46,680 - INFO - Debug AHK: Texto escrito: 1
+
+2025-11-21 13:58:46,681 - INFO - Escritura completada correctamente via AHK
+2025-11-21 13:58:54,713 - INFO - AutoHotkey (writer) detenido correctamente
+2025-11-21 13:58:57,782 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-11-21 13:58:59,805 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-11-21 13:59:01,829 - INFO - AutoHotkey iniciado correctamente
+2025-11-21 13:59:01,830 - INFO - ✅ Todos los servicios AHK iniciados correctamente
+2025-11-21 13:59:01,844 - INFO - 😭 PROCESANDO LÍNEA ESPECÍFICA: 0/110
+2025-11-21 13:59:04,865 - INFO - 🔍 Buscando imagen: img/ventanaAdministracion4.PNG
+2025-11-21 13:59:05,158 - INFO - ✅ Imagen encontrada en intento 1 - Coordenadas: (10, 26) - Confianza: 0.93
+2025-11-21 13:59:05,160 - INFO - ✅ Coordenadas actualizadas a relativas
+2025-11-21 13:59:08,162 - INFO - Procesando servicios para línea 1
+2025-11-21 13:59:08,163 - INFO - 😭Datos de la línea 1: [np.float64(2.0), np.float64(3.0), np.float64(4.0), np.float64(5.0), np.float64(6.0), np.float64(7.0), np.float64(8.0), np.float64(9.0), np.float64(9.0)]
+2025-11-21 13:59:08,165 - INFO -   └─ Procesando VOZ COBRE TELMEX: 2.0
+2025-11-21 13:59:11,169 - INFO - Usando coordenadas relativas para escribir: (118, 376)
+2025-11-21 13:59:11,170 - INFO - Enviando comando a AHK: coordenadas (118, 376), texto: '2'
+2025-11-21 13:59:12,088 - INFO - Esperando respuesta AHK... (10 intentos)
+2025-11-21 13:59:13,096 - INFO - Esperando respuesta AHK... (20 intentos)
+2025-11-21 13:59:14,112 - INFO - Esperando respuesta AHK... (30 intentos)
+2025-11-21 13:59:15,030 - INFO - Debug AHK: Texto escrito: 2
+
+2025-11-21 13:59:15,031 - INFO - Escritura completada correctamente via AHK
+2025-11-21 13:59:15,032 - INFO - ✅ Texto escrito exitosamente: 2
+2025-11-21 13:59:15,033 - INFO - Escribio cantidad de VOZ COBRE TELMEX: 2
+2025-11-21 13:59:35,087 - INFO -   └─ VOZ COBRE TELMEX procesado
+2025-11-21 13:59:35,089 - INFO -   └─ Procesando DATOS S/DOM: 3.0
+2025-11-21 13:59:38,100 - INFO - Comando click+down enviado a AHK: 131|262|2
+2025-11-21 13:59:39,511 - INFO - Click + Down ejecutado correctamente
+2025-11-21 13:59:39,513 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-11-21 13:59:41,515 - INFO - Usando coordenadas relativas para escribir: (118, 376)
+2025-11-21 13:59:41,516 - INFO - Enviando comando a AHK: coordenadas (118, 376), texto: '3'
+2025-11-21 13:59:42,435 - INFO - Esperando respuesta AHK... (10 intentos)
+2025-11-21 13:59:43,444 - INFO - Esperando respuesta AHK... (20 intentos)
+2025-11-21 13:59:44,460 - INFO - Esperando respuesta AHK... (30 intentos)
+2025-11-21 13:59:45,379 - INFO - Debug AHK: Texto escrito: 2
+Texto escrito: 3
+
+2025-11-21 13:59:45,381 - INFO - Escritura completada correctamente via AHK
+2025-11-21 13:59:45,382 - INFO - ✅ Texto escrito exitosamente: 3
+2025-11-21 13:59:45,383 - INFO - Escribio cantidad de DATOS S/DOM: 3.0
