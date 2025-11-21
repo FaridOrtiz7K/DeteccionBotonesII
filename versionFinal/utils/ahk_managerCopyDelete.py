@@ -43,10 +43,7 @@ Loop {
         ; Guardar el valor del portapapeles en un archivo
         ClipboardTemp := Clipboard
         FileAppend, %ClipboardTemp%, ahk_copied_value.txt
-        
-        ; Borrar el valor
-        Send, {Delete}
-        Sleep, 200
+        Sleep, 100
         
         ; Confirmación para Python
         FileAppend, done, ahk_done.txt

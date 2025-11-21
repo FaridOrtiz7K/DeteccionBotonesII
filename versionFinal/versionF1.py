@@ -1889,16 +1889,19 @@ class GEAutomation:
             else:
                 print("❌ No se pudo detectar la imagen del campo de texto")
                 return False
+            #10. Cerrar_ventana_archivo
+            self.click(*self.coords['cerrar_ventana_archivo'])
+            self.sleep(2)
             
-            # 10. Limpiar trazo
+            # 11. Limpiar trazo
             self.click(*self.coords['limpiar_trazo'])
             self.sleep(1)
             
-            # 11. Seleccionar Lote nuevamente
+            # 12. Seleccionar Lote nuevamente
             self.click(*self.coords['lote_again'])
             self.sleep(2)
             
-            # 12. Presionar flecha abajo con AHK
+            # 13. Presionar flecha abajo con AHK
             if not self.presionar_flecha_abajo_ahk(*self.coords['lote_again'],1):
                 print("⚠️  No se pudo presionar flecha abajo con AHK, usando pyautogui")
                 pyautogui.press('down')
@@ -1907,13 +1910,10 @@ class GEAutomation:
             
             self.sleep(2)
             
-            # 13. Detectar ventana de error después de cada iteración
+            # 14. Detectar ventana de error después de cada iteración
             if self.detectar_ventana_error():
                 print("✅ Ventana de error detectada y cerrada")
-            
-            #14. Cerrar_ventana_archivo
-            self.click(*self.coords['cerrar_ventana_archivo'])
-            self.sleep(2)
+        
 
             print(f"✅ Línea {linea_especifica} completada exitosamente")
 
