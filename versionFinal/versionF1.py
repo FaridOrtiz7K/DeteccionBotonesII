@@ -1851,6 +1851,10 @@ class GEAutomation:
             # 5. Anotar
             self.click(*self.coords['anotar'])
             self.sleep(2)
+
+            #10. Cerrar_ventana_archivo
+            self.click(*self.coords['cerrar_ventana_archivo'])
+            self.sleep(2)
             
             # 6. Agregar texto adicional
             self.click(*self.coords['agregar_texto_adicional'])
@@ -1889,10 +1893,7 @@ class GEAutomation:
             else:
                 print("❌ No se pudo detectar la imagen del campo de texto")
                 return False
-            #10. Cerrar_ventana_archivo
-            self.click(*self.coords['cerrar_ventana_archivo'])
-            self.sleep(2)
-            
+                        
             # 11. Limpiar trazo
             self.click(*self.coords['limpiar_trazo'])
             self.sleep(1)
