@@ -37,6 +37,8 @@ PAUSADO = False
 LINEA_ACTUAL = 0
 LINEA_MAXIMA = 0
 HILO_EJECUCION = None
+# Variable para controlar si una línea está siendo procesada actualmente
+LINEA_EN_PROCESO = False
 
 class InterfazAutomation:
     def __init__(self, root):
@@ -221,15 +223,16 @@ class InterfazAutomation:
     
     def mostrar_estado_actual(self):
         """Mostrar estado actual al presionar ESC"""
-        global LINEA_ACTUAL, LINEA_MAXIMA
+        global LINEA_ACTUAL, LINEA_MAXIMA, LINEA_EN_PROCESO
         if EJECUTANDO:
             lineas_restantes = LINEA_MAXIMA - LINEA_ACTUAL
-            mensaje = f"Línea actual: {LINEA_ACTUAL}\nLíneas restantes: {lineas_restantes}"
+            estado_linea = "EN PROCESO" if LINEA_EN_PROCESO else "ESPERANDO"
+            mensaje = f"Línea actual: {LINEA_ACTUAL}\nLíneas restantes: {lineas_restantes}\nEstado línea: {estado_linea}"
             messagebox.showinfo("Estado Actual", mensaje)
     
     def iniciar_proceso(self):
         """Iniciar el proceso completo"""
-        global EJECUTANDO, PAUSADO, LINEA_ACTUAL, LINEA_MAXIMA, CSV_FILE
+        global EJECUTANDO, PAUSADO, LINEA_ACTUAL, LINEA_MAXIMA, CSV_FILE, LINEA_EN_PROCESO
         
         if not self.csv_file.get():
             messagebox.showerror("Error", "Seleccione un archivo CSV primero")
@@ -245,6 +248,7 @@ class InterfazAutomation:
             
         EJECUTANDO = True
         PAUSADO = False
+        LINEA_EN_PROCESO = False
         
         self.actualizar_estado_botones()
         self.estado.set("Ejecutando...")
@@ -284,10 +288,11 @@ class InterfazAutomation:
     
     def detener_proceso(self):
         """Detener completamente el proceso"""
-        global EJECUTANDO, PAUSADO, LINEA_ACTUAL
+        global EJECUTANDO, PAUSADO, LINEA_ACTUAL, LINEA_EN_PROCESO
         EJECUTANDO = False
         PAUSADO = False
         LINEA_ACTUAL = 0
+        LINEA_EN_PROCESO = False
         
         self.estado.set("Detenido")
         self.estado_label.configure(foreground="red")
@@ -318,7 +323,7 @@ class InterfazAutomation:
     def ejecutar_procesos(self):
         """Ejecutar los procesos secuencialmente para cada línea"""
         # MOVER LA DECLARACIÓN GLOBAL AL INICIO DE LA FUNCIÓN
-        global EJECUTANDO, PAUSADO, LINEA_ACTUAL, LINEA_MAXIMA, KML_FILENAME
+        global EJECUTANDO, PAUSADO, LINEA_ACTUAL, LINEA_MAXIMA, KML_FILENAME, LINEA_EN_PROCESO
         
         try:
             while LINEA_ACTUAL <= LINEA_MAXIMA and EJECUTANDO:
@@ -328,6 +333,9 @@ class InterfazAutomation:
                     
                 if not EJECUTANDO:
                     break
+                
+                # MARCAR QUE LA LÍNEA ESTÁ SIENDO PROCESADA
+                LINEA_EN_PROCESO = True
                     
                 self.log(f"🔄 Procesando línea {LINEA_ACTUAL}/{LINEA_MAXIMA}")
                 self.actualizar_estado_lineas()
@@ -340,6 +348,7 @@ class InterfazAutomation:
                     if not EJECUTANDO:
                         break
                     self.log(f"❌ Programa 1 falló en línea {LINEA_ACTUAL}")
+                    LINEA_EN_PROCESO = False  # LIBERAR LA LÍNEA
                     LINEA_ACTUAL += 1
                     continue
                 
@@ -351,6 +360,7 @@ class InterfazAutomation:
                     if not EJECUTANDO:
                         break
                     self.log(f"❌ Programa 2 falló en línea {LINEA_ACTUAL}")
+                    LINEA_EN_PROCESO = False  # LIBERAR LA LÍNEA
                     LINEA_ACTUAL += 1
                     continue
                 
@@ -362,6 +372,7 @@ class InterfazAutomation:
                     if not EJECUTANDO:
                         break
                     self.log(f"❌ Programa 3 falló en línea {LINEA_ACTUAL}")
+                    LINEA_EN_PROCESO = False  # LIBERAR LA LÍNEA
                     LINEA_ACTUAL += 1
                     continue
                 
@@ -374,6 +385,8 @@ class InterfazAutomation:
                 else:
                     self.log(f"⚠️ Línea {LINEA_ACTUAL} completada con advertencias")
                 
+                # LIBERAR LA LÍNEA SOLO DESPUÉS DE COMPLETAR LOS 4 PROGRAMAS
+                LINEA_EN_PROCESO = False
                 LINEA_ACTUAL += 1
                 self.actualizar_estado_lineas()
                 
@@ -391,12 +404,15 @@ class InterfazAutomation:
             self.log(f"❌ Error en ejecución: {e}")
             self.estado.set("Error")
             self.estado_label.configure(foreground="red")
+            LINEA_EN_PROCESO = False  # Asegurar liberación en caso de error
         
         finally:
             # LAS VARIABLES GLOBALES YA ESTÁN DECLARADAS AL INICIO
             EJECUTANDO = False
             PAUSADO = False
+            LINEA_EN_PROCESO = False
             self.actualizar_estado_botones()
+
 # Funciones de interfaz para los programas existentes
 def ejecutar_programa1_interfaz(linea_especifica, log_func):
     """Versión del Programa 1 para la interfaz"""
@@ -529,6 +545,8 @@ def ejecutar_programa4_interfaz(linea_especifica, kml_filename, log_func):
     except Exception as e:
         log_func(f"❌ Error en Programa 4: {e}")
         return False
+
+# [Las clases originales (ProcesadorCSV, NSEAutomation, NSEServicesAutomation, GEAutomation) permanecen igual...]
 
 # Clases originales (sin cambios)
 class ProcesadorCSV:
