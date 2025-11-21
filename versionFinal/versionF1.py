@@ -630,6 +630,7 @@ class ProcesadorCSV:
                 if self.df.iloc[idx, 0] == id_obtenido:
                     linea_procesada = idx + 1  # +1 porque las líneas empiezan en 1
                     break
+            logger.info(f"Línea procesada en CSV: {linea_procesada}")
             
             # Paso 5: Escribir valor de columna 2 en (1483, 519)
             if len(registro) >= 2:  # Verificar que existe columna 2
