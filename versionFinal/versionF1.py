@@ -1114,16 +1114,16 @@ class NSEServicesAutomation:
                 print("❌ No se especificó línea a procesar")
                 return False
                 
-            if self.linea_especifica < 1 or self.linea_especifica > total_lines:
+            if self.linea_especifica <= 1 or self.linea_especifica > total_lines:
                 print(f"❌ Línea {self.linea_especifica} fuera de rango (1-{total_lines})")
                 return False
             
             # Obtener la línea específica (ajustar índice ya que CSV empieza en 0 para datos)
-            linea_idx = self.linea_especifica - 2  # Convertir a índice base 0
+            linea_idx = self.linea_especifica - 1  # Convertir a índice base 0
             self.current_line = self.linea_especifica
             
             print(f"🎯 PROCESANDO LÍNEA ESPECÍFICA: {linea_idx}/{total_lines}")
-            logger.info(f"🎯 PROCESANDO LÍNEA ESPECÍFICA: {linea_idx}/{total_lines}")
+            logger.info(f"😭 PROCESANDO LÍNEA ESPECÍFICA: {linea_idx}/{total_lines}")
             
             row = df.iloc[linea_idx]
             
@@ -1154,7 +1154,7 @@ class NSEServicesAutomation:
                 # Llamar a funciones de servicios
                 servicios_procesados = 0
                 logger.info(f"Procesando servicios para línea {self.current_line}")
-                logger.info(f"Datos de la línea {self.current_line}: {row.iloc[18:27].tolist()}")
+                logger.info(f"😭Datos de la línea {self.current_line}: {row.iloc[18:27].tolist()}")
                 
                 if pd.notna(row.iloc[18]) and row.iloc[18] > 0:  # VOZ COBRE TELMEX
                     logger.info(f"  └─ Procesando VOZ COBRE TELMEX: {row.iloc[18]}")
