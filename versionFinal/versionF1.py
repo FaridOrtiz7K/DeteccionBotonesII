@@ -438,7 +438,7 @@ def ejecutar_programa1_interfaz(linea_especifica, log_func):
         
         if resultado and linea_procesada:
             log_func(f"✅ Programa 1 completado. Línea procesada: {linea_procesada}")
-            return True, linea_especifica
+            return True, linea_procesada
         else:
             log_func("❌ Programa 1 falló")
             return False, None
