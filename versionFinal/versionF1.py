@@ -1843,17 +1843,17 @@ class GEAutomation:
 
             self.click(70, 266)#seleccionar lote
             self.sleep(2)
-            
+
+            #10. Cerrar_ventana_archivo
+            self.click(*self.coords['cerrar_ventana_archivo'])
+            self.sleep(3)
+
             # 4. Seleccionar en el mapa
             self.click(*self.coords['seleccionar_mapa'])
             self.sleep(2)
             
             # 5. Anotar
             self.click(*self.coords['anotar'])
-            self.sleep(2)
-
-            #10. Cerrar_ventana_archivo
-            self.click(*self.coords['cerrar_ventana_archivo'])
             self.sleep(2)
             
             # 6. Agregar texto adicional
