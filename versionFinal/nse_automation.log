@@ -963,3 +963,229 @@ Texto escrito: 1
 2025-11-27 12:35:29,041 - INFO - AutoHotkey (writer) detenido correctamente
 2025-11-27 12:35:29,041 - INFO - AutoHotkey detenido correctamente
 2025-11-27 12:35:29,042 - INFO - AutoHotkey detenido correctamente
+2025-11-27 13:17:01,927 - INFO - CSV cargado correctamente: 110 registros
+2025-11-27 13:17:01,938 - INFO - CSV cargado correctamente: 110 registros
+2025-11-27 13:17:01,940 - INFO - Iniciando procesos AHK...
+2025-11-27 13:17:03,981 - INFO - AutoHotkey iniciado correctamente
+2025-11-27 13:17:07,022 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-11-27 13:17:09,061 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-11-27 13:17:09,063 - INFO - Iniciando procesamiento de registro...
+2025-11-27 13:17:09,064 - INFO - Paso 2: Click en (89, 263)
+2025-11-27 13:17:10,176 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2025-11-27 13:17:10,188 - INFO - Comando enviado a AHK: 1483,519
+2025-11-27 13:17:11,408 - INFO - Valor copiado: 1004
+2025-11-27 13:17:11,408 - INFO - ID obtenido: 1004
+2025-11-27 13:17:11,409 - INFO - Paso 4: Buscando ID 1004 en CSV
+2025-11-27 13:17:11,412 - INFO - ID 1004 encontrado, datos: [np.int64(1004), '1330', nan, np.float64(nan), 'V', np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(1.0), np.float64(2.0), np.float64(10.0), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.int64(4), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(2.0), np.float64(nan), np.float64(nan), np.float64(2.0), np.float64(nan), np.float64(nan), np.float64(1.0), np.float64(1.0), 'CONST.', np.float64(nan), np.float64(nan)]
+2025-11-27 13:17:11,414 - INFO - Paso 5: Escribiendo valor '1330' en (1483, 519)
+2025-11-27 13:17:11,415 - INFO - Enviando comando a AHK: coordenadas (1483, 519), texto: '1330'
+2025-11-27 13:17:12,330 - INFO - Esperando respuesta AHK... (10 intentos)
+2025-11-27 13:17:13,343 - INFO - Esperando respuesta AHK... (20 intentos)
+2025-11-27 13:17:14,362 - INFO - Esperando respuesta AHK... (30 intentos)
+2025-11-27 13:17:15,378 - INFO - Debug AHK: Texto escrito: 1330
+
+2025-11-27 13:17:15,379 - INFO - Escritura completada correctamente via AHK
+2025-11-27 13:17:15,380 - INFO - Paso 6: Valor columna 4 = nan
+2025-11-27 13:17:15,382 - INFO - Paso 7: Saltado (columna 4 <= 0)
+2025-11-27 13:17:15,383 - INFO - Paso 8: Click en (1290, 349)
+2025-11-27 13:17:16,489 - INFO - Procesamiento completado exitosamente
+2025-11-27 13:17:16,490 - INFO - Procesamiento completado. Línea procesada: 4
+2025-11-27 13:17:16,490 - INFO - Deteniendo procesos AHK...
+2025-11-27 13:17:16,498 - INFO - AutoHotkey detenido correctamente
+2025-11-27 13:17:16,505 - INFO - AutoHotkey (writer) detenido correctamente
+2025-11-27 13:17:16,518 - INFO - AutoHotkey (click down) detenido correctamente
+2025-11-27 13:17:22,592 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-11-27 13:17:31,942 - INFO - Enviando comando a AHK: coordenadas (1355, 661), texto: '1'
+2025-11-27 13:17:32,859 - INFO - Esperando respuesta AHK... (10 intentos)
+2025-11-27 13:17:33,871 - INFO - Esperando respuesta AHK... (20 intentos)
+2025-11-27 13:17:34,880 - INFO - Esperando respuesta AHK... (30 intentos)
+2025-11-27 13:17:35,902 - INFO - Debug AHK: Texto escrito: 1
+
+2025-11-27 13:17:35,903 - INFO - Escritura completada correctamente via AHK
+2025-11-27 13:17:40,924 - INFO - Enviando comando a AHK: coordenadas (1355, 695), texto: '2'
+2025-11-27 13:17:41,846 - INFO - Esperando respuesta AHK... (10 intentos)
+2025-11-27 13:17:42,861 - INFO - Esperando respuesta AHK... (20 intentos)
+2025-11-27 13:17:43,882 - INFO - Esperando respuesta AHK... (30 intentos)
+2025-11-27 13:17:44,809 - INFO - Debug AHK: Texto escrito: 1
+Texto escrito: 2
+
+2025-11-27 13:17:44,810 - INFO - Escritura completada correctamente via AHK
+2025-11-27 13:17:49,825 - INFO - Enviando comando a AHK: coordenadas (1720, 556), texto: '10'
+2025-11-27 13:17:50,744 - INFO - Esperando respuesta AHK... (10 intentos)
+2025-11-27 13:17:51,753 - INFO - Esperando respuesta AHK... (20 intentos)
+2025-11-27 13:17:52,762 - INFO - Esperando respuesta AHK... (30 intentos)
+2025-11-27 13:17:53,587 - INFO - Debug AHK: Texto escrito: 1
+Texto escrito: 2
+Texto escrito: 10
+
+2025-11-27 13:17:53,588 - INFO - Escritura completada correctamente via AHK
+2025-11-27 13:18:01,623 - INFO - AutoHotkey (writer) detenido correctamente
+2025-11-27 13:18:04,726 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-11-27 13:18:06,762 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-11-27 13:18:08,797 - INFO - AutoHotkey iniciado correctamente
+2025-11-27 13:18:08,798 - INFO - ✅ Todos los servicios AHK iniciados correctamente
+2025-11-27 13:18:08,812 - INFO - 😭 PROCESANDO LÍNEA ESPECÍFICA: 3/110
+2025-11-27 13:18:11,822 - INFO - 🔍 Buscando imagen: img/ventanaAdministracion4.PNG
+2025-11-27 13:18:12,093 - INFO - ✅ Imagen encontrada en intento 1 - Coordenadas: (10, 26) - Confianza: 0.93
+2025-11-27 13:18:12,095 - INFO - ✅ Coordenadas actualizadas a relativas
+2025-11-27 13:18:15,097 - INFO - Procesando servicios para línea 4
+2025-11-27 13:18:15,099 - INFO - 😭Datos de la línea 4: [np.float64(nan), np.float64(nan), np.float64(nan), np.float64(2.0), np.float64(nan), np.float64(nan), np.float64(2.0), np.float64(nan), np.float64(nan)]
+2025-11-27 13:18:15,101 - INFO -   └─ Procesando DATOS FIBRA TELMEX: 2.0
+2025-11-27 13:18:18,114 - INFO - Comando click+down enviado a AHK: 131|262|2
+2025-11-27 13:18:19,335 - INFO - Click + Down ejecutado correctamente
+2025-11-27 13:18:19,337 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-11-27 13:18:19,339 - INFO - Comando click+down enviado a AHK: 131|287|1
+2025-11-27 13:18:20,554 - INFO - Click + Down ejecutado correctamente
+2025-11-27 13:18:20,555 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-11-27 13:18:20,557 - INFO - Comando click+down enviado a AHK: 131|316|1
+2025-11-27 13:18:21,774 - INFO - Click + Down ejecutado correctamente
+2025-11-27 13:18:21,776 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-11-27 13:18:23,777 - INFO - Usando coordenadas relativas para escribir: (118, 376)
+2025-11-27 13:18:23,778 - INFO - Enviando comando a AHK: coordenadas (118, 376), texto: '2'
+2025-11-27 13:18:24,692 - INFO - Esperando respuesta AHK... (10 intentos)
+2025-11-27 13:18:25,702 - INFO - Esperando respuesta AHK... (20 intentos)
+2025-11-27 13:18:26,719 - INFO - Esperando respuesta AHK... (30 intentos)
+2025-11-27 13:18:27,742 - INFO - Debug AHK: Texto escrito: 2
+
+2025-11-27 13:18:27,743 - INFO - Escritura completada correctamente via AHK
+2025-11-27 13:18:27,744 - INFO - ✅ Texto escrito exitosamente: 2
+2025-11-27 13:18:27,746 - INFO - Escribio cantidad de DATOS FIBRA TELMEX: 2.0
+2025-11-27 13:18:47,786 - INFO -   └─ Procesando TVS: 2.0
+2025-11-27 13:18:50,798 - INFO - Comando click+down enviado a AHK: 131|262|3
+2025-11-27 13:18:52,014 - INFO - Click + Down ejecutado correctamente
+2025-11-27 13:18:52,016 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-11-27 13:18:52,019 - INFO - Comando click+down enviado a AHK: 131|287|2
+2025-11-27 13:18:53,335 - INFO - Click + Down ejecutado correctamente
+2025-11-27 13:18:53,337 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-11-27 13:18:53,341 - INFO - Comando click+down enviado a AHK: 131|316|2
+2025-11-27 13:18:54,653 - INFO - Click + Down ejecutado correctamente
+2025-11-27 13:18:54,657 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-11-27 13:18:56,658 - INFO - Usando coordenadas relativas para escribir: (118, 376)
+2025-11-27 13:18:56,660 - INFO - Enviando comando a AHK: coordenadas (118, 376), texto: '2'
+2025-11-27 13:18:57,578 - INFO - Esperando respuesta AHK... (10 intentos)
+2025-11-27 13:18:58,587 - INFO - Esperando respuesta AHK... (20 intentos)
+2025-11-27 13:18:59,596 - INFO - Esperando respuesta AHK... (30 intentos)
+2025-11-27 13:19:00,419 - INFO - Debug AHK: Texto escrito: 2
+Texto escrito: 2
+
+2025-11-27 13:19:00,423 - INFO - Escritura completada correctamente via AHK
+2025-11-27 13:19:00,424 - INFO - ✅ Texto escrito exitosamente: 2
+2025-11-27 13:19:00,425 - INFO - Escribio cantidad de TVS: 2.0
+2025-11-27 13:19:26,526 - INFO - AutoHotkey (writer) detenido correctamente
+2025-11-27 13:19:26,540 - INFO - AutoHotkey (click down) detenido correctamente
+2025-11-27 13:19:26,547 - INFO - AutoHotkey detenido correctamente
+2025-11-27 13:19:26,548 - INFO - ✅ Todos los servicios AHK detenidos correctamente
+2025-11-27 13:19:32,649 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-11-27 13:19:41,981 - INFO - Ventana encontrada con confianza: 1.00
+2025-11-27 13:19:41,983 - INFO - Coordenadas ventana: x=1040, y=330
+2025-11-27 13:19:41,983 - INFO - Coordenadas campo texto: x=1334, y=830
+2025-11-27 13:19:43,994 - INFO - AutoHotkey iniciado correctamente
+2025-11-27 13:19:44,000 - INFO - Comando enviado a AHK: 1334,830,NN 1.kml
+2025-11-27 13:19:45,525 - INFO - AutoHotkey detenido correctamente
+2025-11-27 13:19:47,560 - INFO - AutoHotkey iniciado correctamente
+2025-11-27 13:19:47,565 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-11-27 13:19:47,594 - INFO - AutoHotkey detenido correctamente
+2025-11-27 13:20:12,937 - INFO - AHK Writer ya está en ejecución
+2025-11-27 13:20:12,937 - INFO - Enviando comando a AHK: coordenadas (1421, 529), texto: 'CONST.'
+2025-11-27 13:20:13,854 - INFO - Esperando respuesta AHK... (10 intentos)
+2025-11-27 13:20:14,870 - INFO - Esperando respuesta AHK... (20 intentos)
+2025-11-27 13:20:15,885 - INFO - Esperando respuesta AHK... (30 intentos)
+2025-11-27 13:20:16,913 - INFO - Debug AHK: Texto escrito: CONST.
+
+2025-11-27 13:20:16,914 - INFO - Escritura completada correctamente via AHK
+2025-11-27 13:20:16,954 - INFO - AutoHotkey (writer) detenido correctamente
+2025-11-27 13:20:33,037 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-11-27 13:20:33,043 - INFO - Comando click+down enviado a AHK: 70|266|1
+2025-11-27 13:20:33,883 - INFO - Click + Down ejecutado correctamente
+2025-11-27 13:20:33,900 - INFO - AutoHotkey (click down) detenido correctamente
+2025-11-27 13:20:36,232 - INFO - Ventana de error detectada con confianza: 0.94
+2025-11-27 13:20:38,245 - INFO - AutoHotkey iniciado correctamente
+2025-11-27 13:20:38,250 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-11-27 13:20:40,751 - INFO - Ventana de error detectada y cerrada
+2025-11-27 13:20:40,777 - INFO - AutoHotkey detenido correctamente
+2025-11-27 13:20:40,785 - INFO - AutoHotkey detenido correctamente
+2025-11-27 13:20:40,786 - INFO - AutoHotkey detenido correctamente
+2025-11-27 13:20:40,787 - INFO - AutoHotkey (click down) detenido correctamente
+2025-11-27 13:20:45,907 - INFO - CSV cargado correctamente: 110 registros
+2025-11-27 13:20:45,918 - INFO - CSV cargado correctamente: 110 registros
+2025-11-27 13:20:45,919 - INFO - Iniciando procesos AHK...
+2025-11-27 13:20:47,955 - INFO - AutoHotkey iniciado correctamente
+2025-11-27 13:20:50,969 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-11-27 13:20:53,007 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-11-27 13:20:53,008 - INFO - Iniciando procesamiento de registro...
+2025-11-27 13:20:53,009 - INFO - Paso 2: Click en (89, 263)
+2025-11-27 13:20:54,528 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2025-11-27 13:20:54,538 - INFO - Comando enviado a AHK: 1483,519
+2025-11-27 13:20:55,557 - INFO - Valor copiado: 1005
+2025-11-27 13:20:55,558 - INFO - ID obtenido: 1005
+2025-11-27 13:20:55,559 - INFO - Paso 4: Buscando ID 1005 en CSV
+2025-11-27 13:20:55,563 - INFO - ID 1005 encontrado, datos: [np.int64(1005), '130', 'BALDIO', np.float64(2.0), nan, np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.int64(0), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), nan, np.float64(nan), np.float64(nan)]
+2025-11-27 13:20:55,567 - INFO - Paso 5: Escribiendo valor '130' en (1483, 519)
+2025-11-27 13:20:55,570 - INFO - Enviando comando a AHK: coordenadas (1483, 519), texto: '130'
+2025-11-27 13:20:56,481 - INFO - Esperando respuesta AHK... (10 intentos)
+2025-11-27 13:20:57,496 - INFO - Esperando respuesta AHK... (20 intentos)
+2025-11-27 13:20:58,513 - INFO - Esperando respuesta AHK... (30 intentos)
+2025-11-27 13:20:59,531 - INFO - Esperando respuesta AHK... (40 intentos)
+2025-11-27 13:20:59,638 - INFO - Debug AHK: Texto escrito: 130
+
+2025-11-27 13:20:59,640 - INFO - Escritura completada correctamente via AHK
+2025-11-27 13:20:59,641 - INFO - Paso 6: Valor columna 4 = 2.0
+2025-11-27 13:20:59,642 - INFO - Paso 7: Ejecutando 2 veces DOWN en (1507, 636)
+2025-11-27 13:20:59,647 - INFO - Comando click+down enviado a AHK: 1507|636|2
+2025-11-27 13:21:00,961 - INFO - Click + Down ejecutado correctamente
+2025-11-27 13:21:00,961 - INFO - Paso 8: Click en (1290, 349)
+2025-11-27 13:21:02,466 - INFO - Procesamiento completado exitosamente
+2025-11-27 13:21:02,467 - INFO - Procesamiento completado. Línea procesada: 5
+2025-11-27 13:21:02,468 - INFO - Deteniendo procesos AHK...
+2025-11-27 13:21:02,489 - INFO - AutoHotkey detenido correctamente
+2025-11-27 13:21:02,518 - INFO - AutoHotkey (writer) detenido correctamente
+2025-11-27 13:21:02,550 - INFO - AutoHotkey (click down) detenido correctamente
+2025-11-27 13:21:08,620 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-11-27 13:21:08,660 - INFO - AutoHotkey (writer) detenido correctamente
+2025-11-27 13:21:11,716 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-11-27 13:21:13,753 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-11-27 13:21:15,801 - INFO - AutoHotkey iniciado correctamente
+2025-11-27 13:21:15,803 - INFO - ✅ Todos los servicios AHK iniciados correctamente
+2025-11-27 13:21:15,816 - INFO - 😭 PROCESANDO LÍNEA ESPECÍFICA: 4/110
+2025-11-27 13:21:15,851 - INFO - AutoHotkey (writer) detenido correctamente
+2025-11-27 13:21:15,863 - INFO - AutoHotkey (click down) detenido correctamente
+2025-11-27 13:21:15,877 - INFO - AutoHotkey detenido correctamente
+2025-11-27 13:21:15,877 - INFO - ✅ Todos los servicios AHK detenidos correctamente
+2025-11-27 13:21:21,940 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-11-27 13:21:23,974 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-11-27 13:21:23,981 - INFO - Comando click+down enviado a AHK: 70|266|1
+2025-11-27 13:21:24,890 - INFO - Click + Down ejecutado correctamente
+2025-11-27 13:21:24,898 - INFO - AutoHotkey (click down) detenido correctamente
+2025-11-27 13:21:26,922 - INFO - AutoHotkey (writer) detenido correctamente
+2025-11-27 13:21:26,923 - INFO - AutoHotkey (click down) detenido correctamente
+2025-11-27 13:21:32,032 - INFO - CSV cargado correctamente: 110 registros
+2025-11-27 13:21:32,045 - INFO - CSV cargado correctamente: 110 registros
+2025-11-27 13:21:32,046 - INFO - Iniciando procesos AHK...
+2025-11-27 13:21:34,080 - INFO - AutoHotkey iniciado correctamente
+2025-11-27 13:21:37,116 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-11-27 13:21:39,152 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-11-27 13:21:39,154 - INFO - Iniciando procesamiento de registro...
+2025-11-27 13:21:39,155 - INFO - Paso 2: Click en (89, 263)
+2025-11-27 13:21:40,670 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2025-11-27 13:21:40,676 - INFO - Comando enviado a AHK: 1483,519
+2025-11-27 13:21:41,812 - INFO - Valor copiado: 1006
+2025-11-27 13:21:41,813 - INFO - ID obtenido: 1006
+2025-11-27 13:21:41,814 - INFO - Paso 4: Buscando ID 1006 en CSV
+2025-11-27 13:21:41,818 - INFO - ID 1006 encontrado, datos: [np.int64(1006), '1360', nan, np.float64(nan), 'V', np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(1.0), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.int64(0), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(nan), np.float64(1.0), np.float64(36.0), 'SIX', np.float64(nan), np.float64(nan)]
+2025-11-27 13:21:41,821 - INFO - Paso 5: Escribiendo valor '1360' en (1483, 519)
+2025-11-27 13:21:41,823 - INFO - Enviando comando a AHK: coordenadas (1483, 519), texto: '1360'
+2025-11-27 13:21:42,735 - INFO - Esperando respuesta AHK... (10 intentos)
+2025-11-27 13:21:43,747 - INFO - Esperando respuesta AHK... (20 intentos)
+2025-11-27 13:21:44,757 - INFO - Esperando respuesta AHK... (30 intentos)
+2025-11-27 13:21:45,771 - INFO - Debug AHK: Texto escrito: 1006 
+
+2025-11-27 13:21:45,772 - INFO - Escritura completada correctamente via AHK
+2025-11-27 13:21:45,773 - INFO - Paso 6: Valor columna 4 = nan
+2025-11-27 13:21:45,774 - INFO - Paso 7: Saltado (columna 4 <= 0)
+2025-11-27 13:21:45,775 - INFO - Paso 8: Click en (1290, 349)
+2025-11-27 13:21:47,296 - INFO - Procesamiento completado exitosamente
+2025-11-27 13:21:47,297 - INFO - Procesamiento completado. Línea procesada: 6
+2025-11-27 13:21:47,298 - INFO - Deteniendo procesos AHK...
+2025-11-27 13:21:47,306 - INFO - AutoHotkey detenido correctamente
+2025-11-27 13:21:47,313 - INFO - AutoHotkey (writer) detenido correctamente
+2025-11-27 13:21:47,321 - INFO - AutoHotkey (click down) detenido correctamente
