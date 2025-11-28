@@ -167,41 +167,54 @@ class InterfazAutomation:
             except Exception as e:
                 self.log(f"Error al leer CSV: {e}")
     
-    def escribir_prueba_a(self):
-        """Escribir PRUEBA A desde la última columna de la primera fila"""
-        if not self.csv_file.get():
-            messagebox.showerror("Error", "Primero seleccione un archivo CSV")
+def escribir_prueba_a(self):
+    """Escribir PRUEBA A desde la última columna de la primera fila en la posición actual del cursor"""
+    if not self.csv_file.get():
+        messagebox.showerror("Error", "Primero seleccione un archivo CSV")
+        return
+        
+    try:
+        df = pd.read_csv(self.csv_file.get())
+        if len(df) == 0:
+            messagebox.showerror("Error", "El CSV está vacío")
             return
             
-        try:
-            df = pd.read_csv(self.csv_file.get())
-            if len(df) == 0:
-                messagebox.showerror("Error", "El CSV está vacío")
-                return
-                
-            # Obtener última columna de la primera fila
-            ultima_columna = df.iloc[0, -1]
-            texto_a_escribir = str(ultima_columna)
+        # Obtener última columna de la primera fila
+        ultima_columna = df.iloc[0, -1]
+        texto_a_escribir = str(ultima_columna)
+        
+        self.log(f"Escribiendo: {texto_a_escribir}")
+        self.log("⚠️ Coloque el cursor en la posición deseada - escribiendo en 5 segundos...")
+        
+        # Esperar 5 segundos para que el usuario posicione el cursor
+        for i in range(5, 0, -1):
+            self.estado.set(f"Escribiendo en {i} segundos...")
+            time.sleep(1)
+        
+        # Obtener la posición actual del cursor
+        x, y = pyautogui.position()
+        self.log(f"Posición del cursor: ({x}, {y})")
+        
+        # Usar AHKWriter para escribir en la posición del cursor
+        ahk_writer = AHKWriter()
+        if ahk_writer.start_ahk():
+            exito = ahk_writer.ejecutar_escritura_ahk(x, y, texto_a_escribir)
+            ahk_writer.stop_ahk()
             
-            self.log(f"Escribiendo: {texto_a_escribir}")
-            
-            # Usar AHKWriter para escribir
-            ahk_writer = AHKWriter()
-            if ahk_writer.start_ahk():
-                # Coordenadas donde se debe escribir (ajustar según necesidad)
-                exito = ahk_writer.ejecutar_escritura_ahk(100, 100, texto_a_escribir)
-                ahk_writer.stop_ahk()
-                
-                if exito:
-                    self.log("✅ Texto escrito exitosamente")
-                else:
-                    self.log("❌ Error al escribir texto")
+            if exito:
+                self.log("✅ Texto escrito exitosamente")
+                self.estado.set("Listo")
             else:
-                self.log("❌ No se pudo iniciar AHKWriter")
-                
-        except Exception as e:
-            self.log(f"❌ Error al escribir PRUEBA A: {e}")
-    
+                self.log("❌ Error al escribir texto")
+                self.estado.set("Error")
+        else:
+            self.log("❌ No se pudo iniciar AHKWriter")
+            self.estado.set("Error")
+            
+    except Exception as e:
+        self.log(f"❌ Error al escribir PRUEBA A: {e}")
+        self.estado.set("Error")
+        
     def configurar_kml(self):
         """Configurar el nombre de los archivos KML"""
         global KML_FILENAME
