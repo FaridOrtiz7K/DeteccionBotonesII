@@ -307,6 +307,18 @@ class InterfazAutomation:
             
             messagebox.showinfo("Estado Actual", mensaje)
     
+    def guardar_progreso_manual(self):
+        """Función para guardar progreso manualmente con Ctrl+S"""
+        try:
+            self.log("💾 Guardando progreso manualmente...")
+            pyautogui.hotkey('ctrl', 's')
+            time.sleep(6)  # Esperar a que se complete el guardado
+            self.log("✅ Progreso guardado exitosamente")
+            return True
+        except Exception as e:
+            self.log(f"❌ Error al guardar progreso: {e}")
+            return False
+    
     def iniciar_proceso(self):
         global EJECUTANDO, PAUSADO, LINEA_ACTUAL, LINEA_MAXIMA, CSV_FILE, LINEA_EN_PROCESO, DETENER_INMEDIATO
         global LOTE_INICIO, LOTE_FIN
@@ -419,6 +431,9 @@ class InterfazAutomation:
     def ejecutar_procesos(self):
         global EJECUTANDO, PAUSADO, LINEA_ACTUAL, LINEA_MAXIMA, KML_FILENAME, LINEA_EN_PROCESO, DETENER_INMEDIATO
         
+        # Variable para contar lotes procesados desde el último guardado
+        lotes_desde_ultimo_guardado = 0
+        
         try:
             while LINEA_ACTUAL <= LINEA_MAXIMA and EJECUTANDO and not DETENER_INMEDIATO:
                 # Verificar pausa
@@ -448,6 +463,7 @@ class InterfazAutomation:
                     self.log(f"❌ Programa 1 falló en línea {LINEA_ACTUAL}")
                     LINEA_EN_PROCESO = False
                     LINEA_ACTUAL += 1
+                    lotes_desde_ultimo_guardado += 1
                     continue
                 
                 # Pequeña pausa entre programas (aumentada a 3 segundos)
@@ -465,6 +481,7 @@ class InterfazAutomation:
                     self.log(f"❌ Programa 2 falló en línea {LINEA_ACTUAL}")
                     LINEA_EN_PROCESO = False
                     LINEA_ACTUAL += 1
+                    lotes_desde_ultimo_guardado += 1
                     continue
                 
                 time.sleep(3)
@@ -481,6 +498,7 @@ class InterfazAutomation:
                     self.log(f"❌ Programa 3 falló en línea {LINEA_ACTUAL}")
                     LINEA_EN_PROCESO = False
                     LINEA_ACTUAL += 1
+                    lotes_desde_ultimo_guardado += 1
                     continue
                 
                 time.sleep(3)
@@ -495,11 +513,36 @@ class InterfazAutomation:
                     self.log(f"⚠️ Línea {LINEA_ACTUAL} completada con advertencias")
                 
                 LINEA_EN_PROCESO = False
+                
+                # Incrementar contador de lotes procesados
+                lotes_desde_ultimo_guardado += 1
+                
+                # Verificar si es necesario guardar (cada 10 lotes)
+                if lotes_desde_ultimo_guardado >= 10:
+                    self.log("📁 Guardando progreso después de 10 lotes...")
+                    try:
+                        pyautogui.hotkey('ctrl', 's')
+                        time.sleep(6)  # Esperar a que se complete el guardado
+                        self.log("✅ Progreso guardado exitosamente")
+                        lotes_desde_ultimo_guardado = 0  # Reiniciar contador
+                    except Exception as e:
+                        self.log(f"⚠️ Error al guardar progreso: {e}")
+                
                 LINEA_ACTUAL += 1
                 self.actualizar_estado_lineas()
                 
                 # Pausa entre líneas (aumentada a 4 segundos)
                 time.sleep(4)
+            
+            # Guardar al final de todos los lotes (si no se detuvo manualmente)
+            if not DETENER_INMEDIATO and LINEA_ACTUAL > LINEA_MAXIMA:
+                self.log("📁 Guardando progreso final al completar todos los lotes...")
+                try:
+                    pyautogui.hotkey('ctrl', 's')
+                    time.sleep(6)  # Esperar a que se complete el guardado
+                    self.log("✅ Progreso final guardado exitosamente")
+                except Exception as e:
+                    self.log(f"⚠️ Error al guardar progreso final: {e}")
             
             if DETENER_INMEDIATO:
                 self.log("🛑 Proceso detenido inmediatamente por usuario")
@@ -1903,11 +1946,6 @@ class GEAutomation:
             print(f"❌ Error en línea {linea_especifica}: {e}")
             self.detectar_ventana_error()
             return False
-
-    def save_progress(self):
-        print("💾 Guardando progreso...")
-        pyautogui.hotkey('ctrl', 's')
-        self.sleep(8)
 
 def main():
     root = tk.Tk()
