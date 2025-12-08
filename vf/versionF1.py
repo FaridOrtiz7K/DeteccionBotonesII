@@ -31,16 +31,69 @@ logger = logging.getLogger(__name__)
 # Variables globales
 CSV_FILE = ""
 KML_FILENAME = "NN"
-EJECUTANDO = False
-PAUSADO = False
+HILO_EJECUCION = None
 LINEA_ACTUAL = 0
 LINEA_MAXIMA = 0
-HILO_EJECUCION = None
-LINEA_EN_PROCESO = False
-DETENER_INMEDIATO = False
 LOTE_INICIO = 1
 LOTE_FIN = 1
 INFO_LOTE_ACTUAL = {}
+
+# Clase para manejar estado de ejecución con threading.Condition
+class EstadoEjecucion:
+    def __init__(self):
+        self.ejecutando = False
+        self.pausado = False
+        self.detener_inmediato = False
+        self.linea_en_proceso = False
+        self.en_cuenta_regresiva = False  # Nueva bandera
+        self.condition = threading.Condition()
+    
+    def set_ejecutando(self, valor):
+        with self.condition:
+            self.ejecutando = valor
+            if not valor:
+                self.pausado = False
+                self.linea_en_proceso = False
+                self.en_cuenta_regresiva = False
+            self.condition.notify_all()
+    
+    def set_pausado(self, valor):
+        with self.condition:
+            self.pausado = valor
+            self.condition.notify_all()
+    
+    def set_detener_inmediato(self, valor):
+        with self.condition:
+            self.detener_inmediato = valor
+            if valor:
+                self.ejecutando = False
+                self.pausado = False
+                self.en_cuenta_regresiva = False
+            self.condition.notify_all()
+    
+    def set_en_cuenta_regresiva(self, valor):
+        with self.condition:
+            self.en_cuenta_regresiva = valor
+            self.condition.notify_all()
+    
+    def set_linea_en_proceso(self, valor):
+        with self.condition:
+            self.linea_en_proceso = valor
+    
+    def esperar_si_pausado(self):
+        """Espera activa si está pausado, usando threading.Condition para respuesta inmediata"""
+        with self.condition:
+            while (self.pausado or self.en_cuenta_regresiva) and self.ejecutando and not self.detener_inmediato:
+                self.condition.wait()
+            return not self.ejecutando or self.detener_inmediato
+    
+    def verificar_continuar(self):
+        """Verifica si debe continuar la ejecución"""
+        with self.condition:
+            return self.ejecutando and not self.detener_inmediato and not self.en_cuenta_regresiva
+
+# Instancia global de estado
+estado_global = EstadoEjecucion()
 
 class InterfazAutomation:
     def __init__(self, root):
@@ -120,7 +173,7 @@ class InterfazAutomation:
         self.btn_iniciar = ttk.Button(control_frame, text="Iniciar Proceso", command=self.iniciar_proceso)
         self.btn_iniciar.grid(row=0, column=0, padx=5)
         
-        self.btn_pausar = ttk.Button(control_frame, text="Pausar (F2)", command=self.pausar_proceso, state=tk.DISABLED)
+        self.btn_pausar = ttk.Button(control_frame, text="Pausar (F2/ESC)", command=self.pausar_proceso, state=tk.DISABLED)
         self.btn_pausar.grid(row=0, column=1, padx=5)
         
         self.btn_reanudar = ttk.Button(control_frame, text="Reanudar (F3)", command=self.reanudar_proceso, state=tk.DISABLED)
@@ -156,7 +209,7 @@ class InterfazAutomation:
         main_frame.rowconfigure(7, weight=1)
         
     def setup_bindings(self):
-        keyboard.add_hotkey('esc', self.mostrar_estado_actual)
+        keyboard.add_hotkey('esc', self.pausar_proceso)  # ESC para pausa inmediata
         keyboard.add_hotkey('f2', self.pausar_proceso)
         keyboard.add_hotkey('f3', self.reanudar_proceso)
         keyboard.add_hotkey('f4', self.detener_proceso)
@@ -296,10 +349,9 @@ class InterfazAutomation:
         self.lineas_restantes.set(str(lineas_rest))
     
     def mostrar_estado_actual(self):
-        global LINEA_ACTUAL, LINEA_MAXIMA, LINEA_EN_PROCESO, INFO_LOTE_ACTUAL
-        if EJECUTANDO:
+        if estado_global.ejecutando:
             lineas_restantes = LINEA_MAXIMA - LINEA_ACTUAL
-            estado_linea = "EN PROCESO" if LINEA_EN_PROCESO else "ESPERANDO"
+            estado_linea = "EN PROCESO" if estado_global.linea_en_proceso else "ESPERANDO"
             mensaje = f"Línea actual: {LINEA_ACTUAL}\nLíneas restantes: {lineas_restantes}\nEstado línea: {estado_linea}"
             
             if INFO_LOTE_ACTUAL:
@@ -320,8 +372,7 @@ class InterfazAutomation:
             return False
     
     def iniciar_proceso(self):
-        global EJECUTANDO, PAUSADO, LINEA_ACTUAL, LINEA_MAXIMA, CSV_FILE, LINEA_EN_PROCESO, DETENER_INMEDIATO
-        global LOTE_INICIO, LOTE_FIN
+        global CSV_FILE, LOTE_INICIO, LOTE_FIN, LINEA_ACTUAL, LINEA_MAXIMA
         
         if not self.csv_file.get():
             messagebox.showerror("Error", "Seleccione un archivo CSV primero")
@@ -354,10 +405,11 @@ class InterfazAutomation:
             self.log(f"❌ Error al leer CSV: {e}")
             return
         
-        EJECUTANDO = True
-        PAUSADO = False
-        LINEA_EN_PROCESO = False
-        DETENER_INMEDIATO = False
+        # Reiniciar estado
+        estado_global.set_ejecutando(True)
+        estado_global.set_pausado(False)
+        estado_global.set_detener_inmediato(False)
+        estado_global.set_linea_en_proceso(False)
         
         self.actualizar_estado_botones()
         self.estado.set("Ejecutando...")
@@ -369,39 +421,79 @@ class InterfazAutomation:
         self.hilo_ejecucion.start()
     
     def pausar_proceso(self):
-        global PAUSADO
-        if EJECUTANDO and not PAUSADO:
-            PAUSADO = True
-            self.estado.set("Pausado")
-            self.estado_label.configure(foreground="orange")
-            self.log("⏸️ Proceso pausado")
-            self.actualizar_estado_botones()
-    
-    def reanudar_proceso(self):
-        global PAUSADO
-        if EJECUTANDO and PAUSADO:
-            self.estado.set("Reanudando en 3 segundos...")
-            self.estado_label.configure(foreground="blue")
-            
-            for i in range(3, 0, -1):
-                if DETENER_INMEDIATO:
-                    break
-                self.estado.set(f"Reanudando en {i} segundos...")
-                time.sleep(1)
-                
-            if not DETENER_INMEDIATO:
-                PAUSADO = False
-                self.estado.set("Ejecutando...")
-                self.estado_label.configure(foreground="green")
-                self.log("▶️ Proceso reanudado")
+        if estado_global.ejecutando and not estado_global.pausado:
+            # Si está en cuenta regresiva, cancelarla
+            if estado_global.en_cuenta_regresiva:
+                estado_global.set_en_cuenta_regresiva(False)
+                self.log("⏸️ Cuenta regresiva cancelada - Proceso permanece pausado")
+            else:
+                estado_global.set_pausado(True)
+                self.estado.set("Pausado")
+                self.estado_label.configure(foreground="orange")
+                self.log("⏸️ Proceso pausado (presione F3 o Reanudar para continuar)")
                 self.actualizar_estado_botones()
     
+    def reanudar_proceso(self):
+        if estado_global.ejecutando and estado_global.pausado:
+            # Deshabilitar botón de reanudar inmediatamente
+            self.btn_reanudar.config(state=tk.DISABLED)
+            
+            # Marcar que estamos en cuenta regresiva
+            estado_global.set_en_cuenta_regresiva(True)
+            
+            self.estado.set("Reanudando en 3 segundos...")
+            self.estado_label.configure(foreground="blue")
+            self.log("Reanudando en 3 segundos...")
+            
+            # Iniciar hilo para la cuenta regresiva (para no bloquear la interfaz)
+            threading.Thread(target=self._cuenta_regresiva_reanudacion, daemon=True).start()
+
+    def _cuenta_regresiva_reanudacion(self):
+        """Maneja la cuenta regresiva en un hilo separado"""
+        try:
+            for i in range(3, 0, -1):
+                # Verificar si se ha solicitado detener durante la cuenta regresiva
+                if estado_global.detener_inmediato:
+                    self.root.after(0, self._cancelar_reanudacion, "Reanudación cancelada (proceso detenido)")
+                    return
+                    
+                # Actualizar interfaz desde el hilo principal
+                self.root.after(0, lambda x=i: self.estado.set(f"Reanudando en {x} segundos..."))
+                self.root.after(0, self.root.update)
+                
+                # Esperar 1 segundo
+                time.sleep(1)
+            
+            # Después de la cuenta regresiva
+            if not estado_global.detener_inmediato:
+                self.root.after(0, self._completar_reanudacion)
+            else:
+                self.root.after(0, self._cancelar_reanudacion, 
+                            "Reanudación cancelada (proceso detenido durante la cuenta regresiva)")
+        except Exception as e:
+            self.root.after(0, self._cancelar_reanudacion, f"Error en cuenta regresiva: {e}")
+
+    def _completar_reanudacion(self):
+        """Completa la reanudación desde el hilo principal"""
+        estado_global.set_en_cuenta_regresiva(False)
+        estado_global.set_pausado(False)
+        self.estado.set("Ejecutando...")
+        self.estado_label.configure(foreground="green")
+        self.log("▶️ Proceso reanudado")
+        self.actualizar_estado_botones()
+
+    def _cancelar_reanudacion(self, mensaje):
+        """Cancela la reanudación desde el hilo principal"""
+        estado_global.set_en_cuenta_regresiva(False)
+        self.log(mensaje)
+        self.actualizar_estado_botones()
+        
     def detener_proceso(self):
-        global EJECUTANDO, PAUSADO, LINEA_ACTUAL, LINEA_EN_PROCESO, DETENER_INMEDIATO
-        DETENER_INMEDIATO = True
-        EJECUTANDO = False
-        PAUSADO = False
-        LINEA_EN_PROCESO = False
+        # Establecer bandera de detención inmediata
+        estado_global.set_detener_inmediato(True)
+        
+        # También marcar como no ejecutando para que salga de los bucles
+        estado_global.set_ejecutando(False)
         
         self.estado.set("Detenido")
         self.estado_label.configure(foreground="red")
@@ -410,13 +502,21 @@ class InterfazAutomation:
         self.actualizar_estado_lineas()
     
     def actualizar_estado_botones(self):
-        global EJECUTANDO, PAUSADO
+        # Verificar si estamos en cuenta regresiva de reanudación
+        estado_actual = self.estado.get()
+        if "Reanudando en" in estado_actual:
+            # Durante cuenta regresiva, deshabilitar todos los botones excepto Detener
+            self.btn_iniciar.config(state=tk.DISABLED)
+            self.btn_pausar.config(state=tk.DISABLED)
+            self.btn_reanudar.config(state=tk.DISABLED)
+            self.btn_detener.config(state=tk.NORMAL)
+            return
         
-        if EJECUTANDO:
+        if estado_global.ejecutando:
             self.btn_iniciar.config(state=tk.DISABLED)
             self.btn_detener.config(state=tk.NORMAL)
             
-            if PAUSADO:
+            if estado_global.pausado:
                 self.btn_pausar.config(state=tk.DISABLED)
                 self.btn_reanudar.config(state=tk.NORMAL)
             else:
@@ -429,21 +529,18 @@ class InterfazAutomation:
             self.btn_detener.config(state=tk.DISABLED)
     
     def ejecutar_procesos(self):
-        global EJECUTANDO, PAUSADO, LINEA_ACTUAL, LINEA_MAXIMA, KML_FILENAME, LINEA_EN_PROCESO, DETENER_INMEDIATO
+        global LINEA_ACTUAL, LINEA_MAXIMA, KML_FILENAME
         
         # Variable para contar lotes procesados desde el último guardado
         lotes_desde_ultimo_guardado = 0
         
         try:
-            while LINEA_ACTUAL <= LINEA_MAXIMA and EJECUTANDO and not DETENER_INMEDIATO:
-                # Verificar pausa
-                while PAUSADO and EJECUTANDO and not DETENER_INMEDIATO:
-                    time.sleep(0.1)
-                    
-                if not EJECUTANDO or DETENER_INMEDIATO:
+            while LINEA_ACTUAL <= LINEA_MAXIMA and estado_global.verificar_continuar():
+                # Verificar pausa - respuesta inmediata
+                if estado_global.esperar_si_pausado():
                     break
                 
-                LINEA_EN_PROCESO = True
+                estado_global.set_linea_en_proceso(True)
                     
                 self.log(f"🔄 Procesando línea {LINEA_ACTUAL}/{LINEA_MAXIMA}")
                 self.actualizar_estado_lineas()
@@ -452,57 +549,72 @@ class InterfazAutomation:
                 self.log("Iniciando Programa 1 - Procesador CSV")
                 resultado1, linea_procesada, datos_lote = ejecutar_programa1_interfaz(LINEA_ACTUAL, self.log)
                 
+                # Verificar si se debe detener durante la ejecución
+                if not estado_global.verificar_continuar():
+                    break
+                    
                 # Actualizar información del lote
                 self.actualizar_info_lote(LINEA_ACTUAL, datos_lote)
                 
-                if not resultado1 or not EJECUTANDO or DETENER_INMEDIATO:
-                    if DETENER_INMEDIATO:
-                        break
-                    if not EJECUTANDO:
-                        break
+                if not resultado1:
                     self.log(f"❌ Programa 1 falló en línea {LINEA_ACTUAL}")
-                    LINEA_EN_PROCESO = False
+                    estado_global.set_linea_en_proceso(False)
                     LINEA_ACTUAL += 1
                     lotes_desde_ultimo_guardado += 1
                     continue
                 
-                # Pequeña pausa entre programas (aumentada a 3 segundos)
-                time.sleep(3)
+                # Pequeña pausa entre programas con verificación de pausa
+                for _ in range(3):
+                    if estado_global.esperar_si_pausado():
+                        break
+                    time.sleep(1)
                 
+                # Verificar si se debe detener
+                if not estado_global.verificar_continuar():
+                    break
+                    
                 # Ejecutar Programa 2
                 self.log("Iniciando Programa 2 - Automatización NSE")
                 resultado2 = ejecutar_programa2_interfaz(linea_procesada, self.log)
                 
-                if not resultado2 or not EJECUTANDO or DETENER_INMEDIATO:
-                    if DETENER_INMEDIATO:
-                        break
-                    if not EJECUTANDO:
-                        break
+                if not resultado2:
                     self.log(f"❌ Programa 2 falló en línea {LINEA_ACTUAL}")
-                    LINEA_EN_PROCESO = False
+                    estado_global.set_linea_en_proceso(False)
                     LINEA_ACTUAL += 1
                     lotes_desde_ultimo_guardado += 1
                     continue
                 
-                time.sleep(3)
+                # Pausa con verificación
+                for _ in range(3):
+                    if estado_global.esperar_si_pausado():
+                        break
+                    time.sleep(1)
                 
+                # Verificar si se debe detener
+                if not estado_global.verificar_continuar():
+                    break
+                    
                 # Ejecutar Programa 3
                 self.log("Iniciando Programa 3 - Servicios NSE")
                 resultado3 = ejecutar_programa3_interfaz(linea_procesada, self.log)
                 
-                if not resultado3 or not EJECUTANDO or DETENER_INMEDIATO:
-                    if DETENER_INMEDIATO:
-                        break
-                    if not EJECUTANDO:
-                        break
+                if not resultado3:
                     self.log(f"❌ Programa 3 falló en línea {LINEA_ACTUAL}")
-                    LINEA_EN_PROCESO = False
+                    estado_global.set_linea_en_proceso(False)
                     LINEA_ACTUAL += 1
                     lotes_desde_ultimo_guardado += 1
                     continue
                 
-                time.sleep(3)
+                # Pausa con verificación
+                for _ in range(3):
+                    if estado_global.esperar_si_pausado():
+                        break
+                    time.sleep(1)
                 
+                # Verificar si se debe detener
+                if not estado_global.verificar_continuar():
+                    break
+                    
                 # Ejecutar Programa 4
                 self.log("Iniciando Programa 4 - Automatización GE")
                 resultado4 = ejecutar_programa4_interfaz(linea_procesada, KML_FILENAME, self.log)
@@ -512,7 +624,7 @@ class InterfazAutomation:
                 else:
                     self.log(f"⚠️ Línea {LINEA_ACTUAL} completada con advertencias")
                 
-                LINEA_EN_PROCESO = False
+                estado_global.set_linea_en_proceso(False)
                 
                 # Incrementar contador de lotes procesados
                 lotes_desde_ultimo_guardado += 1
@@ -522,7 +634,11 @@ class InterfazAutomation:
                     self.log("📁 Guardando progreso después de 10 lotes...")
                     try:
                         pyautogui.hotkey('ctrl', 's')
-                        time.sleep(6)  # Esperar a que se complete el guardado
+                        # Esperar con verificación de pausa
+                        for _ in range(6):
+                            if estado_global.esperar_si_pausado():
+                                break
+                            time.sleep(1)
                         self.log("✅ Progreso guardado exitosamente")
                         lotes_desde_ultimo_guardado = 0  # Reiniciar contador
                     except Exception as e:
@@ -531,11 +647,14 @@ class InterfazAutomation:
                 LINEA_ACTUAL += 1
                 self.actualizar_estado_lineas()
                 
-                # Pausa entre líneas (aumentada a 4 segundos)
-                time.sleep(4)
+                # Pausa entre líneas con verificación
+                for _ in range(4):
+                    if estado_global.esperar_si_pausado():
+                        break
+                    time.sleep(1)
             
             # Guardar al final de todos los lotes (si no se detuvo manualmente)
-            if not DETENER_INMEDIATO and LINEA_ACTUAL > LINEA_MAXIMA:
+            if not estado_global.detener_inmediato and LINEA_ACTUAL > LINEA_MAXIMA:
                 self.log("📁 Guardando progreso final al completar todos los lotes...")
                 try:
                     pyautogui.hotkey('ctrl', 's')
@@ -544,27 +663,25 @@ class InterfazAutomation:
                 except Exception as e:
                     self.log(f"⚠️ Error al guardar progreso final: {e}")
             
-            if DETENER_INMEDIATO:
+            if estado_global.detener_inmediato:
                 self.log("🛑 Proceso detenido inmediatamente por usuario")
                 self.estado.set("Detenido")
                 self.estado_label.configure(foreground="red")
-            elif EJECUTANDO and LINEA_ACTUAL > LINEA_MAXIMA:
+            elif estado_global.ejecutando and LINEA_ACTUAL > LINEA_MAXIMA:
                 self.log("🎉 Proceso completado exitosamente")
                 self.estado.set("Completado")
                 self.estado_label.configure(foreground="green")
-            elif not EJECUTANDO:
+            elif not estado_global.ejecutando:
                 self.log("Proceso detenido por el usuario")
                 
         except Exception as e:
             self.log(f"❌ Error en ejecución: {e}")
             self.estado.set("Error")
             self.estado_label.configure(foreground="red")
-            LINEA_EN_PROCESO = False
+            estado_global.set_linea_en_proceso(False)
         
         finally:
-            EJECUTANDO = False
-            PAUSADO = False
-            LINEA_EN_PROCESO = False
+            estado_global.set_ejecutando(False)
             self.actualizar_estado_botones()
 
 def ejecutar_programa1_interfaz(linea_especifica, log_func):
@@ -577,7 +694,12 @@ def ejecutar_programa1_interfaz(linea_especifica, log_func):
         procesador = ProcesadorCSV(archivo_csv)
         
         log_func("Iniciando procesamiento automático del Programa 1...")
-        time.sleep(3)
+        
+        # Espera con verificación de pausa
+        for _ in range(3):
+            if estado_global.esperar_si_pausado():
+                return False, linea_especifica, None
+            time.sleep(1)
         
         # Cargar CSV y manejar vacío
         if not procesador.cargar_csv():
@@ -632,7 +754,12 @@ def ejecutar_programa2_interfaz(linea_especifica, log_func):
             pass
         
         log_func(f"🎯 Procesando línea: {linea_especifica}")
-        time.sleep(4)
+        
+        # Espera con verificación de pausa
+        for _ in range(4):
+            if estado_global.esperar_si_pausado():
+                return False
+            time.sleep(1)
         
         resultado = nse.execute_nse_script()
         
@@ -710,7 +837,11 @@ def ejecutar_programa4_interfaz(linea_especifica, kml_filename, log_func):
         log_func(f"🎯 Procesando línea: {linea_especifica}")
         log_func(f"📁 Archivo KML: {ge_auto.nombre}")
         
-        time.sleep(4)
+        # Espera con verificación de pausa
+        for _ in range(4):
+            if estado_global.esperar_si_pausado():
+                return False
+            time.sleep(1)
         
         success = ge_auto.perform_actions()
         
@@ -765,6 +896,10 @@ class ProcesadorCSV:
             return None
             
         for intento in range(1, max_intentos + 1):
+            # Verificar pausa antes de cada intento
+            if estado_global.esperar_si_pausado():
+                return None
+                
             resultado = self.df[self.df.iloc[:, 0] == id_buscar]
             
             if len(resultado) > 0:
@@ -774,7 +909,11 @@ class ProcesadorCSV:
                 logger.warning(f"Intento {intento}: ID {id_buscar} no encontrado en el CSV")
                 if intento < max_intentos:
                     logger.info(f"Esperando 2 segundos antes de reintentar...")
-                    time.sleep(2)
+                    # Espera con verificación de pausa
+                    for _ in range(2):
+                        if estado_global.esperar_si_pausado():
+                            return None
+                        time.sleep(1)
         
         logger.error(f"ID {id_buscar} no encontrado después de {max_intentos} intentos")
         return None
@@ -783,7 +922,12 @@ class ProcesadorCSV:
         try:
             logger.info("Paso 2: Click en (89, 263)")
             pyautogui.click(89, 263)
-            time.sleep(2)
+            
+            # Espera con verificación de pausa
+            for _ in range(2):
+                if estado_global.esperar_si_pausado():
+                    return False, None
+                time.sleep(1)
             
             logger.info("Paso 3: Obteniendo ID con AHKManager en (1483, 519)")
             id_obtenido = self.ahk_manager.ejecutar_acciones_ahk(1483, 519)
@@ -816,7 +960,12 @@ class ProcesadorCSV:
                 if not exito_escritura:
                     logger.error("Error en la escritura")
                     return False, linea_procesada
-                time.sleep(2)
+                
+                # Espera con verificación de pausa
+                for _ in range(2):
+                    if estado_global.esperar_si_pausado():
+                        return False, linea_procesada
+                    time.sleep(1)
             else:
                 logger.warning("No hay columna 2 en el registro")
             
@@ -832,7 +981,12 @@ class ProcesadorCSV:
                     if not exito_down:
                         logger.error("Error en click + down")
                         return False, linea_procesada
-                    time.sleep(2)
+                    
+                    # Espera con verificación de pausa
+                    for _ in range(2):
+                        if estado_global.esperar_si_pausado():
+                            return False, linea_procesada
+                        time.sleep(1)
                 else:
                     logger.info("Paso 7: Saltado (columna 4 <= 0)")
             else:
@@ -840,7 +994,12 @@ class ProcesadorCSV:
             
             logger.info("Paso 8: Click en (1290, 349)")
             pyautogui.click(1290, 349)
-            time.sleep(2)
+            
+            # Espera con verificación de pausa
+            for _ in range(2):
+                if estado_global.esperar_si_pausado():
+                    return False, linea_procesada
+                time.sleep(1)
             
             logger.info("Procesamiento completado exitosamente")
             return True, linea_procesada
@@ -903,17 +1062,29 @@ class NSEAutomation:
 
     def click(self, x, y, duration=0.2):
         pyautogui.click(x, y, duration=duration)
-        time.sleep(1)
+        # Espera con verificación de pausa
+        for _ in range(1):
+            if estado_global.esperar_si_pausado():
+                return
+            time.sleep(1)
 
     def write_with_ahk(self, x, y, text):
         success = self.ahk_writer.ejecutar_escritura_ahk(x, y, text)
         if not success:
             print(f"❌ Error al escribir con AHK en ({x}, {y}): {text}")
-        time.sleep(1.5)
+        # Espera con verificación de pausa
+        for _ in range(1):
+            if estado_global.esperar_si_pausado():
+                return False
+            time.sleep(1.5)
         return success
 
     def sleep(self, seconds):
-        time.sleep(seconds * 1.5)
+        # Reemplazar time.sleep con verificación de pausa
+        for _ in range(int(seconds * 1.5)):
+            if estado_global.esperar_si_pausado():
+                return
+            time.sleep(1)
 
     def detect_image_with_cv2(self, image_path, confidence=0.6):
         try:
@@ -942,6 +1113,10 @@ class NSEAutomation:
         print(f"🔍 Buscando imagen: {image_path}")
         
         for attempt in range(1, max_attempts + 1):
+            # Verificar pausa antes de cada intento
+            if estado_global.esperar_si_pausado():
+                return False, None
+                
             found, location = self.detect_image_with_cv2(image_path, confidence)
             
             if found:
@@ -953,9 +1128,17 @@ class NSEAutomation:
             if attempt < max_attempts:
                 if attempt % 10 == 0:
                     print("⏰ Espera prolongada de 15 segundos...")
-                    time.sleep(15)
+                    # Espera larga con verificación de pausa
+                    for _ in range(15):
+                        if estado_global.esperar_si_pausado():
+                            return False, None
+                        time.sleep(1)
                 else:
-                    time.sleep(3)
+                    # Espera normal con verificación de pausa
+                    for _ in range(3):
+                        if estado_global.esperar_si_pausado():
+                            return False, None
+                        time.sleep(1)
         
         print("❌ Imagen no encontrada después de 30 intentos. Terminando proceso.")
         return False, None
@@ -1032,6 +1215,10 @@ class NSEAutomation:
         base_x, base_y = base_location
         
         for col_index in range(7, 18):
+            # Verificar pausa antes de procesar cada columna
+            if estado_global.esperar_si_pausado():
+                return
+                
             if pd.notna(row.iloc[col_index-1]) and row.iloc[col_index-1] > 0:
                 x_cs_rel, y_cs_rel = self.coords_select[col_index]
                 x_ct_rel, y_ct_rel = self.coords_type[col_index]
@@ -1097,6 +1284,10 @@ class NSEServicesAutomation:
             template_height, template_width = template.shape[:2]
             
             for intento in range(timeout):
+                # Verificar pausa antes de cada intento
+                if estado_global.esperar_si_pausado():
+                    return None
+                    
                 screenshot = ImageGrab.grab()
                 screenshot_cv = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
                 
@@ -1109,7 +1300,12 @@ class NSEServicesAutomation:
                     return (x, y)
                 
                 logging.info(f"⏳ Intento {intento + 1}/{timeout} - Confianza máxima: {max_val:.2f}")
-                time.sleep(2)
+                
+                # Espera con verificación de pausa
+                for _ in range(2):
+                    if estado_global.esperar_si_pausado():
+                        return None
+                    time.sleep(1)
             
             logging.error(f"❌ No se encontró la imagen después de {timeout} intentos")
             return None
@@ -1171,7 +1367,11 @@ class NSEServicesAutomation:
 
     def click(self, x, y, duration=0.2):
         pyautogui.click(x, y, duration=duration)
-        time.sleep(1)
+        # Espera con verificación de pausa
+        for _ in range(1):
+            if estado_global.esperar_si_pausado():
+                return
+            time.sleep(1)
 
     def write(self, text):
         try:
@@ -1189,7 +1389,11 @@ class NSEServicesAutomation:
             )
             if success:
                 logging.info(f"✅ Texto escrito exitosamente: {text}")
-                time.sleep(2)
+                # Espera con verificación de pausa
+                for _ in range(2):
+                    if estado_global.esperar_si_pausado():
+                        return False
+                    time.sleep(1)
             else:
                 logging.error(f"❌ Error al escribir texto: {text}")
             return success
@@ -1218,10 +1422,18 @@ class NSEServicesAutomation:
             return False
 
     def sleep(self, seconds):
-        time.sleep(seconds * 1.5)
+        # Reemplazar time.sleep con verificación de pausa
+        for _ in range(int(seconds * 1.5)):
+            if estado_global.esperar_si_pausado():
+                return
+            time.sleep(1)
 
     def handle_error_click(self):
         for _ in range(5):
+            # Verificar pausa antes de cada clic de error
+            if estado_global.esperar_si_pausado():
+                return
+                
             if hasattr(self, 'coords_relativas') and self.coords_relativas:
                 self.click(*self.coords_relativas['boton_error'])
             else:
@@ -1274,58 +1486,29 @@ class NSEServicesAutomation:
                 servicios_procesados = 0
                 logger.info(f"Procesando servicios para línea {self.current_line}")
                 
-                if pd.notna(row.iloc[18]) and row.iloc[18] > 0:
-                    logger.info(f"  └─ Procesando VOZ COBRE TELMEX: {row.iloc[18]}")
-                    self.handle_voz_cobre(int(row.iloc[18]))
-                    servicios_procesados += 1
-                    
-                if pd.notna(row.iloc[19]) and row.iloc[19] > 0:
-                    print(f"  └─ Procesando DATOS S/DOM: {row.iloc[19]}")
-                    logger.info(f"  └─ Procesando DATOS S/DOM: {row.iloc[19]}")
-                    self.handle_datos_sdom(row.iloc[19])
-                    servicios_procesados += 1
-                    
-                if pd.notna(row.iloc[20]) and row.iloc[20] > 0:
-                    print(f"  └─ Procesando DATOS COBRE TELMEX: {row.iloc[20]}")
-                    logger.info(f"  └─ Procesando DATOS COBRE TELMEX: {row.iloc[20]}")
-                    self.handle_datos_cobre_telmex(row.iloc[20])
-                    servicios_procesados += 1
-                    
-                if pd.notna(row.iloc[21]) and row.iloc[21] > 0:
-                    print(f"  └─ Procesando DATOS FIBRA TELMEX: {row.iloc[21]}")
-                    logger.info(f"  └─ Procesando DATOS FIBRA TELMEX: {row.iloc[21]}")
-                    self.handle_datos_fibra_telmex(row.iloc[21])
-                    servicios_procesados += 1
-                    
-                if pd.notna(row.iloc[22]) and row.iloc[22] > 0:
-                    print(f"  └─ Procesando TV CABLE OTROS: {row.iloc[22]}")
-                    logger.info(f"  └─ Procesando TV CABLE OTROS: {row.iloc[22]}")
-                    self.handle_tv_cable_otros(row.iloc[22])
-                    servicios_procesados += 1
-                    
-                if pd.notna(row.iloc[23]) and row.iloc[23] > 0:
-                    print(f"  └─ Procesando DISH: {row.iloc[23]}")
-                    logger.info(f"  └─ Procesando DISH: {row.iloc[23]}")
-                    self.handle_dish(row.iloc[23])
-                    servicios_procesados += 1
-                    
-                if pd.notna(row.iloc[24]) and row.iloc[24] > 0:
-                    print(f"  └─ Procesando TVS: {row.iloc[24]}")
-                    logger.info(f"  └─ Procesando TVS: {row.iloc[24]}")
-                    self.handle_tvs(row.iloc[24])
-                    servicios_procesados += 1
-                    
-                if pd.notna(row.iloc[25]) and row.iloc[25] > 0:
-                    print(f"  └─ Procesando SKY: {row.iloc[25]}")
-                    logger.info(f"  └─ Procesando SKY: {row.iloc[25]}")
-                    self.handle_sky(row.iloc[25])
-                    servicios_procesados += 1
-                    
-                if pd.notna(row.iloc[26]) and row.iloc[26] > 0:
-                    print(f"  └─ Procesando VETV: {row.iloc[26]}")
-                    logger.info(f"  └─ Procesando VETV: {row.iloc[26]}")
-                    self.handle_vetv(row.iloc[26])
-                    servicios_procesados += 1
+                # Lista de servicios a procesar con sus métodos
+                servicios = [
+                    (18, self.handle_voz_cobre, "VOZ COBRE TELMEX"),
+                    (19, self.handle_datos_sdom, "DATOS S/DOM"),
+                    (20, self.handle_datos_cobre_telmex, "DATOS COBRE TELMEX"),
+                    (21, self.handle_datos_fibra_telmex, "DATOS FIBRA TELMEX"),
+                    (22, self.handle_tv_cable_otros, "TV CABLE OTROS"),
+                    (23, self.handle_dish, "DISH"),
+                    (24, self.handle_tvs, "TVS"),
+                    (25, self.handle_sky, "SKY"),
+                    (26, self.handle_vetv, "VETV"),
+                ]
+                
+                for col_idx, metodo, nombre in servicios:
+                    # Verificar pausa antes de procesar cada servicio
+                    if estado_global.esperar_si_pausado():
+                        return False
+                        
+                    if pd.notna(row.iloc[col_idx]) and row.iloc[col_idx] > 0:
+                        print(f"  └─ Procesando {nombre}: {row.iloc[col_idx]}")
+                        logger.info(f"  └─ Procesando {nombre}: {row.iloc[col_idx]}")
+                        metodo(row.iloc[col_idx])
+                        servicios_procesados += 1
                 
                 self.click(*self.coords_relativas['cierre'])
                 self.sleep(5)
@@ -1529,6 +1712,10 @@ class GEAutomation:
         
         while self.is_running: 
             try:
+                # Verificar pausa antes de cada intento
+                if estado_global.esperar_si_pausado():
+                    return None
+                    
                 screenshot = pyautogui.screenshot()
                 pantalla = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
                 
@@ -1542,14 +1729,26 @@ class GEAutomation:
                     if intentos % 10 == 0 and intentos > 0:
                         logger.info(f"Intento {intentos}: Mejor coincidencia: {max_val:.2f}")
                         logger.info("Esperando 12 segundos...")
-                        time.sleep(tiempo_espera_largo)
+                        # Espera larga con verificación de pausa
+                        for _ in range(12):
+                            if estado_global.esperar_si_pausado():
+                                return None
+                            time.sleep(1)
                     else:
-                        time.sleep(tiempo_espera_base)
+                        # Espera normal con verificación de pausa
+                        for _ in range(int(tiempo_espera_base)):
+                            if estado_global.esperar_si_pausado():
+                                return None
+                            time.sleep(1)
                     intentos += 1
                     
             except Exception as e:
                 logger.error(f"Error durante la búsqueda: {e}")
-                time.sleep(tiempo_espera_base)
+                # Espera con verificación de pausa
+                for _ in range(int(tiempo_espera_base)):
+                    if estado_global.esperar_si_pausado():
+                        return None
+                    time.sleep(1)
                 intentos += 1
 
         return None
@@ -1577,7 +1776,12 @@ class GEAutomation:
                     return False
                     
                 if self.enter.presionar_enter(1):
-                    time.sleep(3)
+                    # Espera con verificación de pausa
+                    for _ in range(3):
+                        if estado_global.esperar_si_pausado():
+                            self.enter.stop_ahk()
+                            return True
+                        time.sleep(1)
                 else:
                     logger.error("Error enviando comando a AHK")
                     return False
@@ -1608,7 +1812,12 @@ class GEAutomation:
                 return False
             
             if self.ahk_manager.ejecutar_acciones_ahk(x_campo, y_campo, nombre_archivo):
-                time.sleep(2)
+                # Espera con verificación de pausa
+                for _ in range(2):
+                    if estado_global.esperar_si_pausado():
+                        self.ahk_manager.stop_ahk()
+                        return False
+                    time.sleep(1)
             else:
                 logger.error("Error enviando comando a AHK")
                 return False
@@ -1646,11 +1855,23 @@ class GEAutomation:
             print("🔄 Intentando método alternativo con pyautogui...")
             try:
                 self.click(x, y)
-                time.sleep(1.5)
+                # Espera con verificación de pausa
+                for _ in range(1):
+                    if estado_global.esperar_si_pausado():
+                        return False
+                    time.sleep(1.5)
                 pyautogui.hotkey('ctrl', 'a')
-                time.sleep(1)
+                # Espera con verificación de pausa
+                for _ in range(1):
+                    if estado_global.esperar_si_pausado():
+                        return False
+                    time.sleep(1)
                 pyautogui.press('delete')
-                time.sleep(1)
+                # Espera con verificación de pausa
+                for _ in range(1):
+                    if estado_global.esperar_si_pausado():
+                        return False
+                    time.sleep(1)
                 pyautogui.write(texto, interval=0.1)
                 print(f"✅ Texto escrito con pyautogui: '{texto}'")
                 success = True
@@ -1684,10 +1905,18 @@ class GEAutomation:
 
     def click(self, x, y, duration=0.2):
         pyautogui.click(x, y, duration=duration)
-        time.sleep(1)
+        # Espera con verificación de pausa
+        for _ in range(1):
+            if estado_global.esperar_si_pausado():
+                return
+            time.sleep(1)
 
     def sleep(self, seconds):
-        time.sleep(seconds * 1.5)
+        # Reemplazar time.sleep con verificación de pausa
+        for _ in range(int(seconds * 1.5)):
+            if estado_global.esperar_si_pausado():
+                return
+            time.sleep(1)
 
     def detect_image_with_cv2(self, image_path, confidence=0.7):
         try:
@@ -1716,6 +1945,10 @@ class GEAutomation:
         print(f"🔍 Buscando imagen: {image_path}")
         
         for attempt in range(1, max_attempts + 1):
+            # Verificar pausa antes de cada intento
+            if estado_global.esperar_si_pausado():
+                return False, None
+                
             found, location = self.detect_image_with_cv2(image_path, confidence)
             
             if found:
@@ -1727,9 +1960,17 @@ class GEAutomation:
             if attempt < max_attempts:
                 if attempt % 10 == 0:
                     print("⏰ Espera prolongada de 12 segundos...")
-                    time.sleep(12)
+                    # Espera larga con verificación de pausa
+                    for _ in range(12):
+                        if estado_global.esperar_si_pausado():
+                            return False, None
+                        time.sleep(1)
                 else:
-                    time.sleep(3)
+                    # Espera normal con verificación de pausa
+                    for _ in range(3):
+                        if estado_global.esperar_si_pausado():
+                            return False, None
+                        time.sleep(1)
         
         print("❌ Imagen no encontrada después de 30 intentos. Terminando proceso.")
         return False, None
