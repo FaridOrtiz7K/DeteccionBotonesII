@@ -1,0 +1,88 @@
+2025-12-08 14:31:31,443 - INFO - CSV cargado correctamente: 110 registros
+2025-12-08 14:31:31,447 - INFO - CSV cargado correctamente: 110 registros
+2025-12-08 14:31:31,448 - INFO - Iniciando procesos AHK...
+2025-12-08 14:31:32,951 - INFO - Script de AutoHotkey creado automáticamente
+2025-12-08 14:31:34,977 - INFO - AutoHotkey iniciado correctamente
+2025-12-08 14:31:34,980 - INFO - Script de AutoHotkey (writer) creado automáticamente
+2025-12-08 14:31:37,989 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-12-08 14:31:37,992 - INFO - Script de AutoHotkey (click down) creado automáticamente
+2025-12-08 14:31:40,004 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-12-08 14:31:40,004 - INFO - Iniciando procesamiento de registro...
+2025-12-08 14:31:40,005 - INFO - Paso 2: Click en (89, 263)
+2025-12-08 14:31:49,495 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2025-12-08 14:31:49,497 - INFO - Comando enviado a AHK: 1483,519
+2025-12-08 14:31:50,503 - ERROR - Error en ejecutar_acciones_ahk: 'utf-8' codec can't decode byte 0xf3 in position 1030: invalid continuation byte
+2025-12-08 14:31:50,505 - ERROR - No se pudo obtener el ID
+2025-12-08 14:31:50,505 - ERROR - Procesamiento falló
+2025-12-08 14:31:50,505 - INFO - Deteniendo procesos AHK...
+2025-12-08 14:31:50,510 - INFO - AutoHotkey detenido correctamente
+2025-12-08 14:31:50,516 - INFO - AutoHotkey (writer) detenido correctamente
+2025-12-08 14:31:50,521 - INFO - AutoHotkey (click down) detenido correctamente
+2025-12-08 14:32:02,392 - INFO - CSV cargado correctamente: 110 registros
+2025-12-08 14:32:02,398 - INFO - CSV cargado correctamente: 110 registros
+2025-12-08 14:32:02,399 - INFO - Iniciando procesos AHK...
+2025-12-08 14:32:05,907 - INFO - AutoHotkey iniciado correctamente
+2025-12-08 14:32:08,914 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-12-08 14:32:10,918 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-12-08 14:32:10,918 - INFO - Iniciando procesamiento de registro...
+2025-12-08 14:32:10,919 - INFO - Paso 2: Click en (89, 263)
+2025-12-08 14:42:49,092 - INFO - CSV cargado correctamente: 158 registros
+2025-12-08 14:42:49,099 - INFO - CSV cargado correctamente: 158 registros
+2025-12-08 14:42:49,099 - INFO - Iniciando procesos AHK...
+2025-12-08 14:42:52,616 - INFO - AutoHotkey iniciado correctamente
+2025-12-08 14:42:55,622 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-12-08 14:42:57,633 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-12-08 14:42:57,633 - INFO - Iniciando procesamiento de registro...
+2025-12-08 14:42:57,634 - INFO - Paso 2: Click en (89, 263)
+2025-12-08 14:43:00,523 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2025-12-08 14:43:00,524 - INFO - Comando enviado a AHK: 1483,519
+2025-12-08 14:43:01,731 - ERROR - Error en ejecutar_acciones_ahk: 'utf-8' codec can't decode byte 0xf3 in position 115: invalid continuation byte
+2025-12-08 14:43:01,733 - ERROR - No se pudo obtener el ID
+2025-12-08 14:43:01,734 - ERROR - Procesamiento falló
+2025-12-08 14:43:01,735 - INFO - Deteniendo procesos AHK...
+2025-12-08 14:43:01,746 - INFO - AutoHotkey detenido correctamente
+2025-12-08 14:43:01,756 - INFO - AutoHotkey (writer) detenido correctamente
+2025-12-08 14:43:01,768 - INFO - AutoHotkey (click down) detenido correctamente
+2025-12-08 14:43:06,292 - INFO - CSV cargado correctamente: 158 registros
+2025-12-08 14:43:06,299 - INFO - CSV cargado correctamente: 158 registros
+2025-12-08 14:43:06,299 - INFO - Iniciando procesos AHK...
+2025-12-08 14:43:09,804 - INFO - AutoHotkey iniciado correctamente
+2025-12-08 14:43:12,812 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-12-08 14:43:14,820 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-12-08 14:43:14,820 - INFO - Iniciando procesamiento de registro...
+2025-12-08 14:43:14,821 - INFO - Paso 2: Click en (89, 263)
+2025-12-08 14:43:20,580 - ERROR - Procesamiento falló
+2025-12-08 14:43:20,580 - INFO - Deteniendo procesos AHK...
+2025-12-08 14:43:20,586 - INFO - AutoHotkey detenido correctamente
+2025-12-08 14:43:20,591 - INFO - AutoHotkey (writer) detenido correctamente
+2025-12-08 14:43:20,596 - INFO - AutoHotkey (click down) detenido correctamente
+2025-12-08 14:43:34,438 - INFO - CSV cargado correctamente: 158 registros
+2025-12-08 14:43:34,440 - INFO - CSV cargado correctamente: 158 registros
+2025-12-08 14:43:34,440 - INFO - Iniciando procesos AHK...
+2025-12-08 14:43:37,948 - INFO - AutoHotkey iniciado correctamente
+2025-12-08 14:43:40,952 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-12-08 14:43:42,960 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-12-08 14:43:42,960 - INFO - Iniciando procesamiento de registro...
+2025-12-08 14:43:42,961 - INFO - Paso 2: Click en (89, 263)
+2025-12-08 14:43:43,068 - ERROR - Procesamiento falló
+2025-12-08 14:43:43,069 - INFO - Deteniendo procesos AHK...
+2025-12-08 14:43:43,074 - INFO - AutoHotkey detenido correctamente
+2025-12-08 14:43:43,078 - INFO - AutoHotkey (writer) detenido correctamente
+2025-12-08 14:43:43,081 - INFO - AutoHotkey (click down) detenido correctamente
+2025-12-08 14:43:50,484 - INFO - CSV cargado correctamente: 158 registros
+2025-12-08 14:43:50,486 - INFO - CSV cargado correctamente: 158 registros
+2025-12-08 14:43:50,486 - INFO - Iniciando procesos AHK...
+2025-12-08 14:43:53,990 - INFO - AutoHotkey iniciado correctamente
+2025-12-08 14:43:56,998 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-12-08 14:43:59,002 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-12-08 14:43:59,002 - INFO - Iniciando procesamiento de registro...
+2025-12-08 14:43:59,002 - INFO - Paso 2: Click en (89, 263)
+2025-12-08 14:44:01,109 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2025-12-08 14:44:01,111 - INFO - Comando enviado a AHK: 1483,519
+2025-12-08 14:44:02,520 - ERROR - Error en ejecutar_acciones_ahk: 'utf-8' codec can't decode byte 0xf3 in position 115: invalid continuation byte
+2025-12-08 14:44:02,522 - ERROR - No se pudo obtener el ID
+2025-12-08 14:44:02,523 - ERROR - Procesamiento falló
+2025-12-08 14:44:02,523 - INFO - Deteniendo procesos AHK...
+2025-12-08 14:44:02,530 - INFO - AutoHotkey detenido correctamente
+2025-12-08 14:44:02,534 - INFO - AutoHotkey (writer) detenido correctamente
+2025-12-08 14:44:02,541 - INFO - AutoHotkey (click down) detenido correctamente
