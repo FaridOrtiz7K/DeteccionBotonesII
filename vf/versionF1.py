@@ -1146,7 +1146,7 @@ class NSEAutomation:
     def should_skip_process(self, row):
         if pd.notna(row.iloc[5]):
             col_value = str(row.iloc[5]).strip()
-            if col_value and col_value != "" and col_value != "nan":
+            if col_value and col_value != "" and col_value != "  ":
                 return True
         return False
 
