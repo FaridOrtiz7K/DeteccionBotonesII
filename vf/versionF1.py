@@ -1945,6 +1945,8 @@ class GEAutomation:
                 else:
                     print("✅ Flecha abajo presionada con AHK")
                 self.sleep(3)
+                self.presionar_enter_ahk(1)
+                self.sleep(1)
                 return False
             
             if len(row) <= 28 or pd.isna(row.iloc[28]):
@@ -1954,7 +1956,9 @@ class GEAutomation:
                     pyautogui.press('down')
                 else:
                     print("✅ Flecha abajo presionada con AHK")
-                self.sleep(3)
+                self.sleep(2)
+                self.presionar_enter_ahk(1)
+                self.sleep(1)
                 return False
                 
             if len(row) <= 29:
@@ -1964,7 +1968,9 @@ class GEAutomation:
                     pyautogui.press('down')
                 else:
                     print("✅ Flecha abajo presionada con AHK")
-                self.sleep(3)
+                self.sleep(2)
+                self.presionar_enter_ahk(1)
+                self.sleep(1)
                 return False
                 
             return True
@@ -2133,7 +2139,8 @@ class GEAutomation:
             if self.detectar_ventana_error():
                 print("✅ Ventana de error detectada y cerrada")
         
-
+            self.presionar_enter_ahk(1)
+            self.sleep(1)
             print(f"✅ Línea {linea_especifica} completada exitosamente")
 
             return True
