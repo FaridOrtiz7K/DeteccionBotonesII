@@ -800,10 +800,10 @@ def ejecutar_programa1_interfaz(linea_especifica, log_func):
         
         log_func("Iniciando procesamiento automático del Programa 1...")
         
-        for _ in range(3):
-            if estado_global.esperar_si_pausado():
-                return False, linea_especifica, None
-            time.sleep(1)
+        
+        if estado_global.esperar_si_pausado():
+            return False, linea_especifica, None
+        time.sleep(0.5)
         
         if not procesador.cargar_csv():
             log_func("⚠️ CSV vacío detectado. Continuando sin procesar...")
@@ -852,10 +852,10 @@ def ejecutar_programa2_interfaz(linea_especifica, log_func):
         
         log_func(f"🎯 Procesando línea: {linea_especifica}")
         
-        for _ in range(4):
+        for _ in range(1):
             if estado_global.esperar_si_pausado():
                 return False
-            time.sleep(1)
+            time.sleep(0.5)
         
         resultado = nse.execute_nse_script()
         
@@ -929,10 +929,10 @@ def ejecutar_programa4_interfaz(linea_especifica, kml_filename, log_func):
         log_func(f"🎯 Procesando línea: {linea_especifica}")
         log_func(f"📁 Archivo KML: {ge_auto.nombre}")
         
-        for _ in range(4):
+        for _ in range(1):
             if estado_global.esperar_si_pausado():
                 return False
-            time.sleep(1)
+            time.sleep(0.5)
         
         success = ge_auto.perform_actions()
         
