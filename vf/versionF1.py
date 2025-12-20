@@ -1594,7 +1594,7 @@ class NSEServicesAutomation:
                     if pd.notna(row.iloc[col_idx]) and row.iloc[col_idx] > 0:
                         print(f"  └─ Procesando {nombre}: {row.iloc[col_idx]}")
                         logger.info(f"  └─ Procesando {nombre}: {row.iloc[col_idx]}")
-                        metodo(row.iloc[col_idx])
+                        metodo(str(int(row.iloc[col_idx])))
                         servicios_procesados += 1
                 
                 self.click(*self.coords_relativas['cierre'])
