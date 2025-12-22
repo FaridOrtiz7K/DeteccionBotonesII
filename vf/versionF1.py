@@ -1065,6 +1065,10 @@ class ProcesadorCSV:
                         logger.error("Error en la escritura")
                         return False, linea_procesada
                 else:
+                    exito_escritura = self.ahk_writer.ejecutar_escritura_ahk(1483, 519, "")
+                    if not exito_escritura:
+                        logger.error("Error en la escritura")
+                        return False, linea_procesada
                     logger.info("Columna 2 vacía, no se escribe nada")
                 
                 for _ in range(2):
