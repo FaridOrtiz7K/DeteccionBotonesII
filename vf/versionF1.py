@@ -954,6 +954,7 @@ class ProcesadorCSV:
         self.ahk_manager = AHKManagerCD()
         self.ahk_writer = AHKWriter()
         self.ahk_click_down = AHKClickDown()
+        self.ahk_enter = EnterAHKManager()
         
     def cargar_csv(self):
         try:
@@ -972,13 +973,15 @@ class ProcesadorCSV:
         time.sleep(1.5)
         return (self.ahk_manager.start_ahk() and 
                 self.ahk_writer.start_ahk() and 
-                self.ahk_click_down.start_ahk())
+                self.ahk_click_down.start_ahk()and
+                self.ahk_enter.start_ahk())
     
     def detener_ahk(self):
         logger.info("Deteniendo procesos AHK...")
         self.ahk_manager.stop_ahk()
         self.ahk_writer.stop_ahk()
         self.ahk_click_down.stop_ahk()
+        self.ahk_enter.stop_ahk()
         time.sleep(1.5)
     
     def buscar_por_id(self, id_buscar, max_intentos=2):
@@ -1012,11 +1015,18 @@ class ProcesadorCSV:
             logger.info("Paso 2: Click en (89, 263)")
             pyautogui.click(89, 263)
             
-            for _ in range(2):
+            for _ in range(1):
                 if estado_global.esperar_si_pausado():
                     return False, None
-                time.sleep(1)
-            
+                time.sleep(0.5)
+            # precionar enter
+            self.ahk_enter.presionar_enter(1)
+            time.sleep(1)
+            # precionar seleccionar en el mapa
+            pyautogui.click(168, 188)
+            if estado_global.esperar_si_pausado():
+                return False, None
+            time.sleep(0.5)
             logger.info("Paso 3: Obteniendo ID con AHKManager en (1483, 519)")
             id_obtenido = self.ahk_manager.ejecutar_acciones_ahk(1483, 519)
             
