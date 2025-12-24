@@ -412,7 +412,7 @@ class InterfazAutomation:
                 messagebox.showerror("Error", "El CSV está vacío")
                 return
                 
-            ultima_columna = df.iloc[0, -1]
+            ultima_columna = df.columns[-1]
             if pd.isna(ultima_columna):
                 texto_a_escribir = ""
             else:

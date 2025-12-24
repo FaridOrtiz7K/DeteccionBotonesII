@@ -86,3 +86,33 @@
 2025-12-08 14:44:02,530 - INFO - AutoHotkey detenido correctamente
 2025-12-08 14:44:02,534 - INFO - AutoHotkey (writer) detenido correctamente
 2025-12-08 14:44:02,541 - INFO - AutoHotkey (click down) detenido correctamente
+2025-12-23 16:07:28,951 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-12-23 16:07:28,953 - WARNING - Texto vacío, no se enviará a AHK
+2025-12-23 16:07:28,957 - INFO - AutoHotkey (writer) detenido correctamente
+2025-12-23 16:11:10,789 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-12-23 16:11:10,789 - INFO - Enviando comando a AHK: coordenadas (982, 545), texto: 'PRUEBA A/?-'
+2025-12-23 16:11:11,693 - INFO - Esperando respuesta AHK... (10 intentos)
+2025-12-23 16:11:12,697 - INFO - Esperando respuesta AHK... (20 intentos)
+2025-12-23 16:11:13,701 - INFO - Esperando respuesta AHK... (30 intentos)
+2025-12-23 16:11:14,605 - INFO - Debug AHK: Texto escrito: PRUEBA A/?-
+
+2025-12-23 16:11:14,605 - INFO - Escritura completada correctamente via AHK
+2025-12-23 16:11:14,610 - INFO - AutoHotkey (writer) detenido correctamente
+2025-12-23 16:12:41,766 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-12-23 16:12:41,767 - INFO - Enviando comando a AHK: coordenadas (1656, 458), texto: 'PRUEBA A/?-'
+2025-12-23 16:12:42,673 - INFO - Esperando respuesta AHK... (10 intentos)
+2025-12-23 16:12:43,680 - INFO - Esperando respuesta AHK... (20 intentos)
+2025-12-23 16:12:44,685 - INFO - Esperando respuesta AHK... (30 intentos)
+2025-12-23 16:12:45,490 - INFO - Debug AHK: Texto escrito: PRUEBA A/?-
+
+2025-12-23 16:12:45,490 - INFO - Escritura completada correctamente via AHK
+2025-12-23 16:12:45,494 - INFO - AutoHotkey (writer) detenido correctamente
+2025-12-23 16:21:18,700 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-12-23 16:21:18,701 - INFO - Enviando comando a AHK: coordenadas (1144, 413), texto: 'PRUEBA A/?-'
+2025-12-23 16:21:19,608 - INFO - Esperando respuesta AHK... (10 intentos)
+2025-12-23 16:21:20,614 - INFO - Esperando respuesta AHK... (20 intentos)
+2025-12-23 16:21:21,620 - INFO - Esperando respuesta AHK... (30 intentos)
+2025-12-23 16:21:22,426 - INFO - Debug AHK: Texto escrito: PRUEBA A/?-
+
+2025-12-23 16:21:22,426 - INFO - Escritura completada correctamente via AHK
+2025-12-23 16:21:22,432 - INFO - AutoHotkey (writer) detenido correctamente
