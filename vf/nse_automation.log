@@ -44,3 +44,42 @@
 2025-12-24 14:06:42,037 - INFO - AutoHotkey (click down) detenido correctamente
 2025-12-24 14:06:42,045 - INFO - AutoHotkey detenido correctamente
 2025-12-24 14:06:42,046 - INFO - ✅ Todos los servicios AHK detenidos correctamente
+2025-12-24 14:14:19,918 - INFO - CSV cargado correctamente: 349 registros
+2025-12-24 14:14:19,932 - INFO - CSV cargado correctamente: 349 registros
+2025-12-24 14:14:19,933 - INFO - Iniciando procesos AHK...
+2025-12-24 14:14:23,601 - INFO - AutoHotkey iniciado correctamente
+2025-12-24 14:14:26,762 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-12-24 14:14:28,910 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-12-24 14:14:31,064 - INFO - AutoHotkey iniciado correctamente
+2025-12-24 14:14:31,066 - INFO - Iniciando procesamiento de registro...
+2025-12-24 14:14:31,067 - INFO - Paso 1: Click en (83, 266)
+2025-12-24 14:14:32,175 - INFO - Paso 2: Presionando ENTER
+2025-12-24 14:14:32,179 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2025-12-24 14:14:32,180 - INFO - Paso 2.1: Click en (168, 188)
+2025-12-24 14:14:32,785 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2025-12-24 14:14:32,792 - INFO - Comando enviado a AHK: 1483,519
+2025-12-24 14:14:33,801 - INFO - Valor copiado: 90001
+2025-12-24 14:14:33,802 - INFO - ID obtenido: 90001
+2025-12-24 14:14:33,802 - INFO - Paso 4: Buscando ID 90001 en CSV (2 intentos máx)
+2025-12-24 14:14:33,804 - INFO - ID 90001 encontrado en intento 1
+2025-12-24 14:14:33,805 - INFO - Paso 5: Escribiendo valor '1' en (1483, 519)
+2025-12-24 14:14:33,805 - INFO - Enviando comando a AHK: coordenadas (1483, 519), texto: '1'
+2025-12-24 14:14:34,747 - INFO - Esperando respuesta AHK... (10 intentos)
+2025-12-24 14:14:35,754 - INFO - Esperando respuesta AHK... (20 intentos)
+2025-12-24 14:14:36,763 - INFO - Esperando respuesta AHK... (30 intentos)
+2025-12-24 14:14:37,773 - INFO - Esperando respuesta AHK... (40 intentos)
+2025-12-24 14:14:37,880 - INFO - Debug AHK: Texto escrito: 1
+
+2025-12-24 14:14:37,881 - INFO - Escritura completada correctamente via AHK
+2025-12-24 14:14:39,883 - INFO - Paso 6: Valor columna 4 = 
+2025-12-24 14:14:39,885 - INFO - Paso 7: Saltado (columna 4 <= 0 o vacía)
+2025-12-24 14:14:39,886 - INFO - Paso 8: Click en (1290, 349)
+2025-12-24 14:14:41,990 - INFO - Procesamiento completado exitosamente
+2025-12-24 14:14:41,991 - INFO - Procesamiento completado. Línea procesada: 1
+2025-12-24 14:14:41,992 - INFO - Deteniendo procesos AHK...
+2025-12-24 14:14:42,015 - INFO - AutoHotkey detenido correctamente
+2025-12-24 14:14:42,037 - INFO - AutoHotkey (writer) detenido correctamente
+2025-12-24 14:14:42,050 - INFO - AutoHotkey (click down) detenido correctamente
+2025-12-24 14:14:42,061 - INFO - AutoHotkey detenido correctamente
+2025-12-24 14:14:50,296 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-12-24 14:14:50,312 - INFO - AutoHotkey (writer) detenido correctamente
