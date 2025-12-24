@@ -1012,23 +1012,25 @@ class ProcesadorCSV:
     
     def procesar_registro(self):
         try:
-            logger.info("Paso 2: Click en (89, 263)")
-            pyautogui.click(89, 263)
+            logger.info("Paso 1: Click en (83, 266)")
+            pyautogui.click(83, 266)
             
             for _ in range(1):
                 if estado_global.esperar_si_pausado():
                     return False, None
                 time.sleep(0.5)
             # precionar enter
+            logger.info("Paso 2: Presionando ENTER")
             self.ahk_enter.presionar_enter(1)
             time.sleep(1)
             # precionar seleccionar en el mapa
+            logger.info("Paso 2.1: Click en (168, 188)")
             pyautogui.click(168, 188)
             if estado_global.esperar_si_pausado():
                 return False, None
             time.sleep(0.5)
             logger.info("Paso 3: Obteniendo ID con AHKManager en (1483, 519)")
-            id_obtenido = self.ahk_manager.ejecutar_acciones_ahk(1483, 519)
+            id_obtenido = self.ahk_manager.ejecutar_acciones_ahk(1526, 646)
             
             if not id_obtenido:
                 logger.error("No se pudo obtener el ID")
