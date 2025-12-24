@@ -1030,7 +1030,7 @@ class ProcesadorCSV:
                 return False, None
             time.sleep(0.5)
             logger.info("Paso 3: Obteniendo ID con AHKManager en (1483, 519)")
-            id_obtenido = self.ahk_manager.ejecutar_acciones_ahk(1526, 646)
+            id_obtenido = self.ahk_manager.ejecutar_acciones_ahk(1483, 519)
             
             if not id_obtenido:
                 logger.error("No se pudo obtener el ID")
@@ -1091,7 +1091,7 @@ class ProcesadorCSV:
                     veces_down = int(float(valor_columna_4))
                     logger.info(f"Paso 7: Ejecutando {veces_down} veces DOWN en (1507, 636)")
                     
-                    exito_down = self.ahk_click_down.ejecutar_click_down(1507, 636, veces_down)
+                    exito_down = self.ahk_click_down.ejecutar_click_down(1526, 646, veces_down)
                     if not exito_down:
                         logger.error("Error en click + down")
                         return False, linea_procesada
