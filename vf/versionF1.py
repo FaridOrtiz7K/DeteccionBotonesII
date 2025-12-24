@@ -1017,12 +1017,12 @@ class ProcesadorCSV:
             if estado_global.esperar_si_pausado():
                 return False, None
             time.sleep(1)
-
+            """
             # precionar enter
             logger.info("Paso 2: Presionando ENTER")
             self.ahk_enter.presionar_enter(1)
             time.sleep(1)
-            
+            """
             # precionar seleccionar en el mapa
             logger.info("Paso 2.1: Click en (168, 188)")
             pyautogui.click(168, 188)
