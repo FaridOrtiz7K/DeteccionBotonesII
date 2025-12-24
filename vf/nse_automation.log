@@ -1,0 +1,46 @@
+2025-12-24 14:06:00,820 - INFO - CSV cargado correctamente: 349 registros
+2025-12-24 14:06:00,834 - INFO - CSV cargado correctamente: 349 registros
+2025-12-24 14:06:00,836 - INFO - Iniciando procesos AHK...
+2025-12-24 14:06:04,492 - INFO - AutoHotkey iniciado correctamente
+2025-12-24 14:06:07,636 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-12-24 14:06:09,786 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-12-24 14:06:11,930 - INFO - AutoHotkey iniciado correctamente
+2025-12-24 14:06:11,931 - INFO - Iniciando procesamiento de registro...
+2025-12-24 14:06:11,932 - INFO - Paso 1: Click en (83, 266)
+2025-12-24 14:06:13,048 - INFO - Paso 2.1: Click en (168, 188)
+2025-12-24 14:06:13,655 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2025-12-24 14:06:13,662 - INFO - Comando enviado a AHK: 1483,519
+2025-12-24 14:06:14,778 - INFO - Valor copiado: 90001
+2025-12-24 14:06:14,779 - INFO - ID obtenido: 90001
+2025-12-24 14:06:14,780 - INFO - Paso 4: Buscando ID 90001 en CSV (2 intentos máx)
+2025-12-24 14:06:14,866 - INFO - ID 90001 encontrado en intento 1
+2025-12-24 14:06:14,868 - INFO - Paso 5: Escribiendo valor '1' en (1483, 519)
+2025-12-24 14:06:14,870 - INFO - Enviando comando a AHK: coordenadas (1483, 519), texto: '1'
+2025-12-24 14:06:15,783 - INFO - Esperando respuesta AHK... (10 intentos)
+2025-12-24 14:06:16,794 - INFO - Esperando respuesta AHK... (20 intentos)
+2025-12-24 14:06:17,805 - INFO - Esperando respuesta AHK... (30 intentos)
+2025-12-24 14:06:18,815 - INFO - Esperando respuesta AHK... (40 intentos)
+2025-12-24 14:06:18,923 - INFO - Debug AHK: Texto escrito: 1
+
+2025-12-24 14:06:18,924 - INFO - Escritura completada correctamente via AHK
+2025-12-24 14:06:20,925 - INFO - Paso 6: Valor columna 4 = 
+2025-12-24 14:06:20,927 - INFO - Paso 7: Saltado (columna 4 <= 0 o vacía)
+2025-12-24 14:06:20,928 - INFO - Paso 8: Click en (1290, 349)
+2025-12-24 14:06:23,031 - INFO - Procesamiento completado exitosamente
+2025-12-24 14:06:23,033 - INFO - Procesamiento completado. Línea procesada: 1
+2025-12-24 14:06:23,034 - INFO - Deteniendo procesos AHK...
+2025-12-24 14:06:23,062 - INFO - AutoHotkey detenido correctamente
+2025-12-24 14:06:23,079 - INFO - AutoHotkey (writer) detenido correctamente
+2025-12-24 14:06:23,089 - INFO - AutoHotkey (click down) detenido correctamente
+2025-12-24 14:06:23,102 - INFO - AutoHotkey detenido correctamente
+2025-12-24 14:06:31,498 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-12-24 14:06:31,537 - INFO - AutoHotkey (writer) detenido correctamente
+2025-12-24 14:06:37,671 - INFO - AutoHotkey (writer) iniciado correctamente
+2025-12-24 14:06:39,823 - INFO - AutoHotkey (click down) iniciado correctamente
+2025-12-24 14:06:41,983 - INFO - AutoHotkey iniciado correctamente
+2025-12-24 14:06:41,984 - INFO - ✅ Todos los servicios AHK iniciados correctamente
+2025-12-24 14:06:41,997 - INFO - PROCESANDO LÍNEA ESPECÍFICA: 1/349
+2025-12-24 14:06:42,023 - INFO - AutoHotkey (writer) detenido correctamente
+2025-12-24 14:06:42,037 - INFO - AutoHotkey (click down) detenido correctamente
+2025-12-24 14:06:42,045 - INFO - AutoHotkey detenido correctamente
+2025-12-24 14:06:42,046 - INFO - ✅ Todos los servicios AHK detenidos correctamente
