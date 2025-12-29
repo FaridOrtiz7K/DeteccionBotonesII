@@ -1791,7 +1791,7 @@ class GEAutomation:
             'anotar': (1366, 384),
             'agregar_texto_adicional': (1449, 452),
             'limpiar_trazo': (360, 980),
-            'lote_again': (70, 266),
+            'lote_again': (83, 266),
             'cerrar_ventana_archivo': (1530, 555)
         }
         
@@ -2073,7 +2073,7 @@ class GEAutomation:
             row = df.iloc[row_index]
             if len(row) <= 27 or pd.isna(row.iloc[27]) or row.iloc[27] != 1:
                 print(f"⚠️  Columna 27 vacía, no es 1 o no existe en fila {row_index}, saltando...")
-                if not self.presionar_flecha_abajo_ahk(70, 266,1):
+                if not self.presionar_flecha_abajo_ahk(83, 266,1):
                     print("⚠️  No se pudo presionar flecha abajo con AHK, usando pyautogui")
                     pyautogui.press('down')
                 else:
@@ -2085,7 +2085,7 @@ class GEAutomation:
             
             if len(row) <= 28 or pd.isna(row.iloc[28]):
                 print(f"⚠️  Columna 28 vacía o no existe en fila {row_index}, saltando...")
-                if not self.presionar_flecha_abajo_ahk(70, 266,1):
+                if not self.presionar_flecha_abajo_ahk(83, 266,1):
                     print("⚠️  No se pudo presionar flecha abajo con AHK, usando pyautogui")
                     pyautogui.press('down')
                 else:
@@ -2097,7 +2097,7 @@ class GEAutomation:
                 
             if len(row) <= 29:
                 print(f"⚠️  Columna 29 no existe en fila {row_index}, saltando...")
-                if not self.presionar_flecha_abajo_ahk(70, 266,1):
+                if not self.presionar_flecha_abajo_ahk(83, 266,1):
                     print("⚠️  No se pudo presionar flecha abajo con AHK, usando pyautogui")
                     pyautogui.press('down')
                 else:
@@ -2212,7 +2212,7 @@ class GEAutomation:
             self.click(1406, 675)
             self.sleep(3)
 
-            self.click(70, 266)
+            self.click(83, 266)
             self.sleep(3)
 
             self.click(*self.coords['cerrar_ventana_archivo'])
