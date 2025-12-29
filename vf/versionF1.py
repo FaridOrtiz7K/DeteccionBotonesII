@@ -1792,7 +1792,8 @@ class GEAutomation:
             'agregar_texto_adicional': (1449, 452),
             'limpiar_trazo': (360, 980),
             'lote_again': (83, 266),
-            'cerrar_ventana_archivo': (1530, 555)
+            'cerrar_ventana_archivo': (1530, 555),
+            'boton_documentos': (1120, 666),
         }
         
         self.coords_texto_relativas = {
@@ -1894,11 +1895,15 @@ class GEAutomation:
             return False
 
     def handle_archivo_special_behavior(self, nombre_archivo):
-        coordenadas_ventana = self.encontrar_ventana_archivo()
-
+        coordenadas_ventana = self.encontrar_ventana_archivo()        
         if coordenadas_ventana:
             x_ventana, y_ventana = coordenadas_ventana
             logger.info(f"Coordenadas ventana: x={x_ventana}, y={y_ventana}")
+            x_documento = x_ventana + 64
+            y_documento = y_ventana + 315
+            if not self.click(x_documento, y_documento):
+                logger.error("No se pudo hacer clic en el botón de documentos")
+                return False
             
             x_campo = x_ventana + 294
             y_campo = y_ventana + 500
