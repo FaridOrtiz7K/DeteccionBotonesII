@@ -16,6 +16,7 @@ from utils.ahk_writer import AHKWriter
 from utils.ahk_click_down import AHKClickDown
 from utils.ahk_enter import EnterAHKManager
 from utils.ahk_manager import AHKManager
+from utils.ahk_manager_save import AHKSaveManager  # Nuevo import
 
 # Configurar logging
 logging.basicConfig(
@@ -196,6 +197,9 @@ class InterfazAutomation:
         
         # Referencia a ventana de pausa
         self.pause_window = None
+        
+        # Manager de guardado AHK
+        self.save_manager = AHKSaveManager()
         
         self.setup_ui()
         self.setup_bindings()
@@ -478,9 +482,15 @@ class InterfazAutomation:
     def guardar_progreso_manual(self):
         try:
             self.log("💾 Guardando progreso manualmente...")
-            pyautogui.hotkey('ctrl', 's')
-            time.sleep(6)
-            self.log("✅ Progreso guardado exitosamente")
+            if not self.save_manager.start_ahk():
+                self.log("❌ No se pudo iniciar AHK para guardar")
+                return False
+                
+            if not self.save_manager.trigger_save():
+                self.log("❌ No se pudo guardar con AHK")
+                return False
+                
+            self.log("✅ Progreso guardado exitosamente con AHK")
             return True
         except Exception as e:
             self.log(f"❌ Error al guardar progreso: {e}")
@@ -517,6 +527,12 @@ class InterfazAutomation:
         except Exception as e:
             self.log(f"❌ Error al leer CSV: {e}")
             return
+        
+        # Iniciar manager de guardado AHK
+        if not self.save_manager.start_ahk():
+            self.log("⚠️ No se pudo iniciar AutoHotkey para guardar. Continuando sin funcionalidad de guardado...")
+        else:
+            self.log("✅ AutoHotkey para guardar iniciado correctamente")
         
         estado_global.set_ejecutando(True)
         estado_global.set_pausado(False)
@@ -617,6 +633,9 @@ class InterfazAutomation:
         
         estado_global.set_detener_inmediato(True)
         estado_global.set_ejecutando(False)
+        
+        # Detener manager de guardado AHK
+        self.save_manager.stop_ahk()
         
         self.estado.set("Detenido")
         self.estado_label.configure(foreground="red")
@@ -734,18 +753,23 @@ class InterfazAutomation:
                 estado_global.set_linea_en_proceso(False)
                 lotes_desde_ultimo_guardado += 1
                 
+                # GUARDAR CADA 10 LOTES CON AHK
                 if lotes_desde_ultimo_guardado >= 10:
                     self.log("📁 Guardando progreso después de 10 lotes...")
-                    try:
+                    if self.save_manager.is_running:
+                        if not self.save_manager.trigger_save():
+                            self.log("⚠️ No se pudo guardar con AHK. Usando pyautogui como respaldo...")
+                            pyautogui.hotkey('ctrl', 's')
+                    else:
+                        self.log("⚠️ AHK no está corriendo. Usando pyautogui...")
                         pyautogui.hotkey('ctrl', 's')
-                        for _ in range(6):
-                            if estado_global.esperar_si_pausado():
-                                break
-                            time.sleep(1)
-                        self.log("✅ Progreso guardado exitosamente")
-                        lotes_desde_ultimo_guardado = 0
-                    except Exception as e:
-                        self.log(f"⚠️ Error al guardar progreso: {e}")
+                    
+                    for _ in range(6):
+                        if estado_global.esperar_si_pausado():
+                            break
+                        time.sleep(1)
+                    self.log("✅ Progreso guardado exitosamente")
+                    lotes_desde_ultimo_guardado = 0
                 
                 LINEA_ACTUAL += 1
                 self.actualizar_estado_lineas()
@@ -755,14 +779,19 @@ class InterfazAutomation:
                         break
                     time.sleep(1)
             
+            # GUARDADO FINAL CON AHK
             if not estado_global.detener_inmediato and LINEA_ACTUAL > LINEA_MAXIMA:
                 self.log("📁 Guardando progreso final al completar todos los lotes...")
-                try:
+                if self.save_manager.is_running:
+                    if not self.save_manager.trigger_save():
+                        self.log("⚠️ No se pudo guardar con AHK. Usando pyautogui como respaldo...")
+                        pyautogui.hotkey('ctrl', 's')
+                else:
+                    self.log("⚠️ AHK no está corriendo. Usando pyautogui...")
                     pyautogui.hotkey('ctrl', 's')
-                    time.sleep(6)
-                    self.log("✅ Progreso final guardado exitosamente")
-                except Exception as e:
-                    self.log(f"⚠️ Error al guardar progreso final: {e}")
+                
+                time.sleep(6)
+                self.log("✅ Progreso final guardado exitosamente")
             
             if estado_global.detener_inmediato:
                 self.log("🛑 Proceso detenido inmediatamente por usuario")
@@ -783,6 +812,7 @@ class InterfazAutomation:
         
         finally:
             estado_global.set_ejecutando(False)
+            self.save_manager.stop_ahk()  # Detener manager de guardado
             self.actualizar_estado_botones()
             # Cerrar ventana de pausa si está abierta
             if self.pause_window is not None and self.pause_window.winfo_exists():
