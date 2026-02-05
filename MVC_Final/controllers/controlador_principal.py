@@ -50,6 +50,12 @@ class ControladorPrincipal:
         self.vista.btn_prueba.config(command=self.escribir_prueba_a)
         self.vista.btn_kml.config(command=self.configurar_kml)
         
+        # Configurar botones de selección y búsqueda
+        if hasattr(self.vista, 'btn_seleccionar'):
+            self.vista.btn_seleccionar.config(command=self.seleccionar_csv)
+        if hasattr(self.vista, 'btn_buscar'):
+            self.vista.btn_buscar.config(command=self.consultar_id)
+        
         # Reemplazar métodos de la vista
         self.vista.seleccionar_csv = self.seleccionar_csv
         self.vista.consultar_id = self.consultar_id

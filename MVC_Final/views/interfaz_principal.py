@@ -24,6 +24,8 @@ class InterfazPrincipal:
         self.btn_pausar = None
         self.btn_reanudar = None
         self.btn_detener = None
+        self.btn_seleccionar = None
+        self.btn_buscar = None
         self.log_text = None
         self.estado_label = None
         self.info_label = None
@@ -81,6 +83,14 @@ class InterfazPrincipal:
         ttk.Label(exec_frame, text="Líneas restantes:").grid(row=0, column=2, sticky=tk.W, padx=5)
         ttk.Label(exec_frame, textvariable=self.lineas_restantes).grid(row=0, column=3, sticky=tk.W, padx=5)
         
+        # Para el botón de selección:
+        self.btn_seleccionar = ttk.Button(csv_frame, text="Seleccionar", command=self.seleccionar_csv)
+        self.btn_seleccionar.grid(row=0, column=2, padx=5)
+
+        # Para el botón de búsqueda:
+        self.btn_buscar = ttk.Button(csv_frame, text="Buscar", command=self.consultar_id)
+        self.btn_buscar.grid(row=0, column=5, padx=5)
+
         # Botones de control
         control_frame = ttk.Frame(main_frame)
         control_frame.grid(row=4, column=0, columnspan=4, pady=10)
