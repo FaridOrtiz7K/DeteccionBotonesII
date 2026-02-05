@@ -1,5 +1,3 @@
-import threading
-
 class DatosGlobales:
     CSV_FILE = ""
     KML_FILENAME = "NN"
@@ -8,4 +6,3 @@ class DatosGlobales:
     LOTE_INICIO = 1
     LOTE_FIN = 1
     INFO_LOTE_ACTUAL = {}
-    

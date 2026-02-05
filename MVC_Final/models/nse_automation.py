@@ -222,4 +222,3 @@ class NSEAutomation:
         y_cerrar_abs = base_y + y_cerrar_rel
         self.click(x_cerrar_abs, y_cerrar_abs)
         self.sleep(3)
-        

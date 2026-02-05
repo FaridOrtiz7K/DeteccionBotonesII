@@ -1,12 +1,12 @@
-import os
 import threading
 import time
 import pandas as pd
 import keyboard
-import tkinter as tk
 from tkinter import filedialog, messagebox, simpledialog
+import tkinter as tk
 import pyautogui
 import logging
+import os
 
 from models.estado import EstadoEjecucion
 from models.datos_globales import DatosGlobales
