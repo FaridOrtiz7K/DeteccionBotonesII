@@ -6,7 +6,6 @@ from utils.ahk_managerCopyDelete import AHKManagerCD
 from utils.ahk_writer import AHKWriter
 from utils.ahk_click_down import AHKClickDown
 from utils.ahk_enter import EnterAHKManager
-from ..models.datos_globales import DatosGlobales
 
 logger = logging.getLogger(__name__)
 
