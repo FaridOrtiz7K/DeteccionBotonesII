@@ -1932,7 +1932,7 @@ class GEAutomation:
             x_documento = x_ventana + 64
             y_documento = y_ventana + 315
             if not self.click(x_documento, y_documento):
-                logger.error("No se pudo hacer clic en el botón de documentos")
+                logger.error("No se pudo hacer clic en el botón de documentos en las coordenadas x={x_documento}, y={y_documento}")
                 return False
             
             x_campo = x_ventana + 294
@@ -2034,6 +2034,8 @@ class GEAutomation:
 
     def click(self, x, y, duration=0.2):
         pyautogui.click(x, y, duration=duration)
+        print(f"❗Click en ({x}, {y})")
+        logger.info(f"Click en ({x}, {y})")
         for _ in range(1):
             if estado_global.esperar_si_pausado():
                 return
