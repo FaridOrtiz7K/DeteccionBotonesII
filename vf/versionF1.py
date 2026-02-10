@@ -1931,8 +1931,9 @@ class GEAutomation:
             logger.info(f"Coordenadas ventana: x={x_ventana}, y={y_ventana}")
             x_documento = x_ventana + 64
             y_documento = y_ventana + 315
+            logger.info(f"Coordenadas botón documentos: x={x_documento}, y={y_documento}")
             if not self.click(x_documento, y_documento):
-                logger.error("No se pudo hacer clic en el botón de documentos en las coordenadas x={x_documento}, y={y_documento}")
+                logger.error(f"No se pudo hacer clic en el botón de documentos en las coordenadas x={x_documento}, y={y_documento}")
                 return False
             
             x_campo = x_ventana + 294
@@ -2034,7 +2035,6 @@ class GEAutomation:
 
     def click(self, x, y, duration=0.2):
         pyautogui.click(x, y, duration=duration)
-        print(f"❗Click en ({x}, {y})")
         logger.info(f"Click en ({x}, {y})")
         for _ in range(1):
             if estado_global.esperar_si_pausado():
@@ -2219,6 +2219,8 @@ class GEAutomation:
 
         print(f"📁 Archivo a cargar: {self.nombre}")
         print(f"📝 Texto adicional: '{texto_adicional}'")
+        logger.info(f"Archivo a cargar: {self.nombre}")
+        logger.info(f"Texto adicional: '{texto_adicional}'")
 
         try:
             self.click(*self.coords['agregar_ruta'])
