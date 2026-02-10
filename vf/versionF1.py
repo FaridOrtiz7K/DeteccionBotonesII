@@ -1932,8 +1932,8 @@ class GEAutomation:
             x_documento = x_ventana + 64
             y_documento = y_ventana + 315
             logger.info(f"Coordenadas botón documentos: x={x_documento}, y={y_documento}")
-            if not self.click(x_documento, y_documento):
-                logger.error(f"No se pudo hacer clic en el botón de documentos en las coordenadas x={x_documento}, y={y_documento}")
+            if not pyautogui.click(x_documento, y_documento):
+                logger.error("Error haciendo click en botón documentos")
                 return False
             
             x_campo = x_ventana + 294
@@ -1945,6 +1945,7 @@ class GEAutomation:
                 return False
             
             if self.ahk_manager.ejecutar_acciones_ahk(x_campo, y_campo, nombre_archivo):
+                logger.info("Nombre del archivo escrito exitosamente")
                 for _ in range(2):
                     if estado_global.esperar_si_pausado():
                         self.ahk_manager.stop_ahk()
@@ -2231,8 +2232,9 @@ class GEAutomation:
             self.sleep(3)
             
             nombre_archivo = self.nombre
+            logger.info(f"Intentando cargar archivo: {nombre_archivo}")
             success = self.handle_archivo_special_behavior(nombre_archivo)
-            
+            logger.info(f"Resultado de cargar archivo: {'Éxito' if success else 'Fallo'}")
             if not success:
                 print("❌ No se pudo cargar el archivo. Regresando a agregar_ruta...")
                 self.click(*self.coords['agregar_ruta'])
@@ -2253,7 +2255,7 @@ class GEAutomation:
 
             self.click(83, 266)
             self.sleep(3)
-
+            logger.info("cerrando la ventana de archivo")
             self.click(*self.coords['cerrar_ventana_archivo'])
             self.sleep(4)
 
