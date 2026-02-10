@@ -1929,11 +1929,15 @@ class GEAutomation:
         if coordenadas_ventana:
             x_ventana, y_ventana = coordenadas_ventana
             logger.info(f"Coordenadas ventana: x={x_ventana}, y={y_ventana}")
-            x_documento = x_ventana + 64
-            y_documento = y_ventana + 315
+            x_documento = int(x_ventana) + 64
+            y_documento = int(y_ventana) + 315
             logger.info(f"Coordenadas botón documentos: x={x_documento}, y={y_documento}")
-            if not pyautogui.click(x_documento, y_documento):
-                logger.error("Error haciendo click en botón documentos")
+            
+            try:
+                pyautogui.click(x_documento, y_documento)
+                logger.info("Click realizado en botón documentos")
+            except Exception as e:
+                logger.error(f"Error haciendo click en botón documentos: {e}")
                 return False
             
             x_campo = x_ventana + 294
