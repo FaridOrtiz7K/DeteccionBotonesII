@@ -149,3 +149,539 @@
 2026-02-10 14:53:04,896 - INFO - AutoHotkey iniciado correctamente
 2026-02-10 14:53:04,897 - INFO - Iniciando procesamiento de registro...
 2026-02-10 14:53:04,898 - INFO - Paso 1: Click en (83, 266)
+2026-02-10 15:03:51,289 - INFO - Iniciando AHK desde: AutoHotkey_1.1.37.02/AutoHotkeyU64.exe
+2026-02-10 15:03:54,444 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:03:55,356 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:03:55,364 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:03:55,364 - INFO - Iniciando procesos AHK...
+2026-02-10 15:03:59,032 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:04:02,188 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:04:04,331 - INFO - AutoHotkey (click down) iniciado correctamente
+2026-02-10 15:04:06,439 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:04:06,440 - INFO - Iniciando procesamiento de registro...
+2026-02-10 15:04:06,441 - INFO - Paso 1: Click en (83, 266)
+2026-02-10 15:04:07,558 - INFO - Paso 2: Presionando ENTER
+2026-02-10 15:04:07,562 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2026-02-10 15:04:07,563 - INFO - Paso 2.1: Click en (168, 188)
+2026-02-10 15:04:08,167 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2026-02-10 15:04:08,169 - INFO - Comando enviado a AHK: 1483,519
+2026-02-10 15:04:09,491 - INFO - Valor copiado: 1008
+2026-02-10 15:04:09,492 - INFO - ID obtenido: 1008
+2026-02-10 15:04:09,493 - INFO - Paso 4: Buscando ID 1008 en CSV (2 intentos máx)
+2026-02-10 15:04:09,497 - INFO - ID 1008 encontrado en intento 1
+2026-02-10 15:04:09,500 - INFO - Paso 5: Escribiendo valor '1340' en (1483, 519)
+2026-02-10 15:04:09,502 - INFO - Enviando comando a AHK: coordenadas (1483, 519), texto: '1340'
+2026-02-10 15:04:10,415 - INFO - Esperando respuesta AHK... (10 intentos)
+2026-02-10 15:04:11,424 - INFO - Esperando respuesta AHK... (20 intentos)
+2026-02-10 15:04:12,442 - INFO - Esperando respuesta AHK... (30 intentos)
+2026-02-10 15:04:13,358 - INFO - Debug AHK: Texto escrito: 1340
+
+2026-02-10 15:04:13,359 - INFO - Escritura completada correctamente via AHK
+2026-02-10 15:04:15,365 - INFO - Paso 6: Valor columna 4 = 
+2026-02-10 15:04:15,366 - INFO - Paso 7: Saltado (columna 4 <= 0 o vacía)
+2026-02-10 15:04:15,366 - INFO - Paso 8: Click en (1290, 349)
+2026-02-10 15:04:17,491 - INFO - Procesamiento completado exitosamente
+2026-02-10 15:04:17,493 - INFO - Procesamiento completado. Línea procesada: 8
+2026-02-10 15:04:17,494 - INFO - Deteniendo procesos AHK...
+2026-02-10 15:04:17,520 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:04:17,533 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:04:17,544 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:04:17,555 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:04:25,819 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:04:44,398 - INFO - Enviando comando a AHK: coordenadas (1355, 693), texto: '1'
+2026-02-10 15:04:45,323 - INFO - Esperando respuesta AHK... (10 intentos)
+2026-02-10 15:04:46,337 - INFO - Esperando respuesta AHK... (20 intentos)
+2026-02-10 15:04:47,347 - INFO - Esperando respuesta AHK... (30 intentos)
+2026-02-10 15:04:48,359 - INFO - Debug AHK: Texto escrito: 1
+
+2026-02-10 15:04:48,360 - INFO - Escritura completada correctamente via AHK
+2026-02-10 15:05:06,050 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:05:12,263 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:05:14,418 - INFO - AutoHotkey (click down) iniciado correctamente
+2026-02-10 15:05:16,520 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:05:16,521 - INFO - ✅ Todos los servicios AHK iniciados correctamente
+2026-02-10 15:05:16,534 - INFO - PROCESANDO LÍNEA ESPECÍFICA: 8/110
+2026-02-10 15:05:16,562 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:05:16,585 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:05:16,592 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:05:16,592 - INFO - ✅ Todos los servicios AHK detenidos correctamente
+2026-02-10 15:05:23,330 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:05:23,347 - INFO - Archivo a cargar: NN 19.kml
+2026-02-10 15:05:23,348 - INFO - Texto adicional: 'LLANTERA'
+2026-02-10 15:05:24,423 - INFO - Click en (327, 381)
+2026-02-10 15:05:30,484 - INFO - Click en (1396, 608)
+2026-02-10 15:05:36,542 - INFO - Click en (1406, 634)
+2026-02-10 15:05:41,553 - INFO - Intentando cargar archivo: NN 19.kml
+2026-02-10 15:05:41,844 - INFO - Ventana encontrada con confianza: 1.00
+2026-02-10 15:05:41,846 - INFO - Coordenadas ventana: x=1040, y=330
+2026-02-10 15:05:41,846 - INFO - Coordenadas botón documentos: x=1104, y=645
+2026-02-10 15:05:42,648 - INFO - Click realizado en botón documentos
+2026-02-10 15:05:42,649 - INFO - Coordenadas campo texto: x=1334, y=830
+2026-02-10 15:05:42,664 - INFO - Script de AutoHotkey creado automáticamente
+2026-02-10 15:05:44,785 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:05:44,793 - INFO - Comando enviado a AHK: 1334,830,NN 19.kml
+2026-02-10 15:05:44,794 - INFO - Nombre del archivo escrito exitosamente
+2026-02-10 15:05:46,826 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:05:46,827 - INFO - Resultado de cargar archivo: Éxito
+2026-02-10 15:05:48,991 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:05:48,996 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2026-02-10 15:05:49,035 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:05:56,107 - INFO - Click en (327, 381)
+2026-02-10 15:06:02,171 - INFO - Click en (1406, 675)
+2026-02-10 15:06:08,242 - INFO - Click en (83, 266)
+2026-02-10 15:06:13,255 - INFO - cerrando la ventana de archivo
+2026-02-10 15:06:14,311 - INFO - Click en (1530, 555)
+2026-02-10 15:06:22,394 - INFO - Click en (168, 188)
+2026-02-10 15:06:28,453 - INFO - Click en (1366, 384)
+2026-02-10 15:06:34,519 - INFO - Click en (1449, 452)
+2026-02-10 15:06:39,830 - INFO - AHK Writer ya está en ejecución
+2026-02-10 15:06:39,831 - INFO - Enviando comando a AHK: coordenadas (1421, 528), texto: 'LLANTERA'
+2026-02-10 15:06:40,744 - INFO - Esperando respuesta AHK... (10 intentos)
+2026-02-10 15:06:41,753 - INFO - Esperando respuesta AHK... (20 intentos)
+2026-02-10 15:06:42,767 - INFO - Esperando respuesta AHK... (30 intentos)
+2026-02-10 15:06:43,576 - INFO - Debug AHK: Texto escrito: LLANTERA
+
+2026-02-10 15:06:43,576 - INFO - Escritura completada correctamente via AHK
+2026-02-10 15:06:43,589 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:06:48,681 - INFO - Click en (1255, 562)
+2026-02-10 15:06:56,770 - INFO - Click en (1330, 560)
+2026-02-10 15:07:02,845 - INFO - Click en (360, 980)
+2026-02-10 15:07:07,914 - INFO - Click en (83, 266)
+2026-02-10 15:07:15,089 - INFO - AutoHotkey (click down) iniciado correctamente
+2026-02-10 15:07:15,095 - INFO - Comando click+down enviado a AHK: 83|266|1
+2026-02-10 15:07:15,921 - INFO - Click + Down ejecutado correctamente
+2026-02-10 15:07:15,942 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:07:20,281 - INFO - Ventana de error detectada con confianza: 0.94
+2026-02-10 15:07:22,396 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:07:22,400 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2026-02-10 15:07:25,403 - INFO - Ventana de error detectada y cerrada
+2026-02-10 15:07:25,428 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:07:27,594 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:07:27,598 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2026-02-10 15:07:27,625 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:07:28,627 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:07:28,629 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:07:28,629 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:07:33,215 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:07:33,228 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:07:33,229 - INFO - Iniciando procesos AHK...
+2026-02-10 15:07:36,898 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:07:40,070 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:07:42,242 - INFO - AutoHotkey (click down) iniciado correctamente
+2026-02-10 15:07:44,398 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:07:44,399 - INFO - Iniciando procesamiento de registro...
+2026-02-10 15:07:44,399 - INFO - Paso 1: Click en (83, 266)
+2026-02-10 15:07:46,204 - INFO - Paso 2: Presionando ENTER
+2026-02-10 15:07:46,208 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2026-02-10 15:07:46,209 - INFO - Paso 2.1: Click en (168, 188)
+2026-02-10 15:07:47,512 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2026-02-10 15:07:47,525 - INFO - Comando enviado a AHK: 1483,519
+2026-02-10 15:07:48,548 - INFO - Valor copiado: 1009
+2026-02-10 15:07:48,549 - INFO - ID obtenido: 1009
+2026-02-10 15:07:48,550 - INFO - Paso 4: Buscando ID 1009 en CSV (2 intentos máx)
+2026-02-10 15:07:48,554 - INFO - ID 1009 encontrado en intento 1
+2026-02-10 15:07:48,557 - INFO - Paso 5: Escribiendo valor '330' en (1483, 519)
+2026-02-10 15:07:48,559 - INFO - Enviando comando a AHK: coordenadas (1483, 519), texto: '330'
+2026-02-10 15:07:49,495 - INFO - Esperando respuesta AHK... (10 intentos)
+2026-02-10 15:07:50,510 - INFO - Esperando respuesta AHK... (20 intentos)
+2026-02-10 15:07:51,530 - INFO - Esperando respuesta AHK... (30 intentos)
+2026-02-10 15:07:52,545 - INFO - Debug AHK: Texto escrito: 330
+
+2026-02-10 15:07:52,547 - INFO - Escritura completada correctamente via AHK
+2026-02-10 15:07:54,552 - INFO - Paso 6: Valor columna 4 = 
+2026-02-10 15:07:54,553 - INFO - Paso 7: Saltado (columna 4 <= 0 o vacía)
+2026-02-10 15:07:54,554 - INFO - Paso 8: Click en (1290, 349)
+2026-02-10 15:07:57,369 - INFO - Procesamiento completado exitosamente
+2026-02-10 15:07:57,371 - INFO - Procesamiento completado. Línea procesada: 9
+2026-02-10 15:07:57,372 - INFO - Deteniendo procesos AHK...
+2026-02-10 15:07:57,396 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:07:57,411 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:07:57,437 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:07:57,445 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:08:05,678 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:08:24,227 - INFO - Enviando comando a AHK: coordenadas (1355, 693), texto: '1'
+2026-02-10 15:08:25,144 - INFO - Esperando respuesta AHK... (10 intentos)
+2026-02-10 15:08:26,157 - INFO - Esperando respuesta AHK... (20 intentos)
+2026-02-10 15:08:27,166 - INFO - Esperando respuesta AHK... (30 intentos)
+2026-02-10 15:08:28,182 - INFO - Debug AHK: Texto escrito: 
+
+2026-02-10 15:08:28,183 - INFO - Escritura completada correctamente via AHK
+2026-02-10 15:08:45,864 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:08:52,066 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:08:54,211 - INFO - AutoHotkey (click down) iniciado correctamente
+2026-02-10 15:08:56,363 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:08:56,365 - INFO - ✅ Todos los servicios AHK iniciados correctamente
+2026-02-10 15:08:56,380 - INFO - PROCESANDO LÍNEA ESPECÍFICA: 9/110
+2026-02-10 15:09:02,449 - INFO - 🔍 Buscando imagen: img/ventanaAdministracion4.PNG
+2026-02-10 15:09:02,731 - INFO - ✅ Imagen encontrada en intento 1 - Coordenadas: (10, 26) - Confianza: 0.93
+2026-02-10 15:09:02,733 - INFO - ✅ Coordenadas actualizadas a relativas
+2026-02-10 15:09:08,814 - INFO - Procesando servicios para línea 9
+2026-02-10 15:09:08,816 - INFO -   └─ Procesando VOZ COBRE TELMEX: 2.0
+2026-02-10 15:09:14,894 - INFO - Usando coordenadas relativas para escribir: (118, 376)
+2026-02-10 15:09:14,896 - INFO - Enviando comando a AHK: coordenadas (118, 376), texto: '2'
+2026-02-10 15:09:15,816 - INFO - Esperando respuesta AHK... (10 intentos)
+2026-02-10 15:09:16,831 - INFO - Esperando respuesta AHK... (20 intentos)
+2026-02-10 15:09:17,840 - INFO - Esperando respuesta AHK... (30 intentos)
+2026-02-10 15:09:18,648 - INFO - Debug AHK: Texto escrito: 2
+
+2026-02-10 15:09:18,649 - INFO - Escritura completada correctamente via AHK
+2026-02-10 15:09:18,649 - INFO - ✅ Texto escrito exitosamente: 2
+2026-02-10 15:09:20,651 - INFO - Escribio cantidad de VOZ COBRE TELMEX: 2
+2026-02-10 15:10:10,193 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:10:10,219 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:10:10,227 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:10:10,227 - INFO - ✅ Todos los servicios AHK detenidos correctamente
+2026-02-10 15:10:16,953 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:10:19,115 - INFO - AutoHotkey (click down) iniciado correctamente
+2026-02-10 15:10:19,121 - INFO - Comando click+down enviado a AHK: 83|266|1
+2026-02-10 15:10:20,030 - INFO - Click + Down ejecutado correctamente
+2026-02-10 15:10:20,050 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:10:26,210 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:10:26,214 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2026-02-10 15:10:26,239 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:10:27,261 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:10:27,261 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:10:27,262 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:10:31,836 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:10:31,849 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:10:31,850 - INFO - Iniciando procesos AHK...
+2026-02-10 15:10:35,508 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:10:38,665 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:10:40,830 - INFO - AutoHotkey (click down) iniciado correctamente
+2026-02-10 15:10:43,002 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:10:43,003 - INFO - Iniciando procesamiento de registro...
+2026-02-10 15:10:43,004 - INFO - Paso 1: Click en (83, 266)
+2026-02-10 15:10:44,820 - INFO - Paso 2: Presionando ENTER
+2026-02-10 15:10:44,823 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2026-02-10 15:10:44,824 - INFO - Paso 2.1: Click en (168, 188)
+2026-02-10 15:10:46,127 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2026-02-10 15:10:46,139 - INFO - Comando enviado a AHK: 1483,519
+2026-02-10 15:10:47,161 - INFO - Valor copiado: 
+2026-02-10 15:10:47,162 - ERROR - No se pudo obtener el ID
+2026-02-10 15:10:47,164 - ERROR - Procesamiento falló
+2026-02-10 15:10:47,165 - INFO - Deteniendo procesos AHK...
+2026-02-10 15:10:47,198 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:10:47,214 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:10:47,227 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:10:47,240 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:10:49,338 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:10:49,343 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:10:49,344 - INFO - Iniciando procesos AHK...
+2026-02-10 15:10:53,008 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:10:56,168 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:10:58,344 - INFO - AutoHotkey (click down) iniciado correctamente
+2026-02-10 15:11:00,510 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:11:00,511 - INFO - Iniciando procesamiento de registro...
+2026-02-10 15:11:00,512 - INFO - Paso 1: Click en (83, 266)
+2026-02-10 15:11:02,321 - INFO - Paso 2: Presionando ENTER
+2026-02-10 15:11:02,323 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2026-02-10 15:11:02,324 - INFO - Paso 2.1: Click en (168, 188)
+2026-02-10 15:11:03,637 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2026-02-10 15:11:03,639 - INFO - Comando enviado a AHK: 1483,519
+2026-02-10 15:11:04,660 - INFO - Valor copiado: 330
+2026-02-10 15:11:04,660 - INFO - ID obtenido: 330
+2026-02-10 15:11:04,660 - INFO - Paso 4: Buscando ID 330 en CSV (2 intentos máx)
+2026-02-10 15:11:04,661 - WARNING - Intento 1: ID 330 no encontrado en el CSV
+2026-02-10 15:11:04,662 - INFO - Esperando 2 segundos antes de reintentar...
+2026-02-10 15:11:06,666 - WARNING - Intento 2: ID 330 no encontrado en el CSV
+2026-02-10 15:11:06,667 - ERROR - ID 330 no encontrado después de 2 intentos
+2026-02-10 15:11:06,668 - ERROR - ID 330 no encontrado en CSV después de 2 intentos. Saltando...
+2026-02-10 15:11:06,669 - INFO - Procesamiento completado. Línea procesada: None
+2026-02-10 15:11:06,670 - INFO - Deteniendo procesos AHK...
+2026-02-10 15:11:06,694 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:11:06,711 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:11:06,726 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:11:06,737 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:11:08,795 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:11:08,804 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:11:08,805 - INFO - Iniciando procesos AHK...
+2026-02-10 15:11:12,475 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:11:15,627 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:11:17,782 - INFO - AutoHotkey (click down) iniciado correctamente
+2026-02-10 15:11:19,926 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:11:19,927 - INFO - Iniciando procesamiento de registro...
+2026-02-10 15:11:19,927 - INFO - Paso 1: Click en (83, 266)
+2026-02-10 15:11:21,739 - INFO - Paso 2: Presionando ENTER
+2026-02-10 15:11:21,744 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2026-02-10 15:11:21,745 - INFO - Paso 2.1: Click en (168, 188)
+2026-02-10 15:11:23,048 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2026-02-10 15:11:23,052 - INFO - Comando enviado a AHK: 1483,519
+2026-02-10 15:11:33,120 - ERROR - Timeout esperando respuesta de AHK
+2026-02-10 15:11:33,122 - ERROR - No se pudo obtener el ID
+2026-02-10 15:11:33,123 - ERROR - Procesamiento falló
+2026-02-10 15:11:33,124 - INFO - Deteniendo procesos AHK...
+2026-02-10 15:11:33,151 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:11:33,167 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:11:33,179 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:11:33,190 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:11:35,242 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:11:35,255 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:11:35,256 - INFO - Iniciando procesos AHK...
+2026-02-10 15:11:38,941 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:11:42,100 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:11:44,240 - INFO - AutoHotkey (click down) iniciado correctamente
+2026-02-10 15:11:46,340 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:11:46,342 - INFO - Iniciando procesamiento de registro...
+2026-02-10 15:11:46,343 - INFO - Paso 1: Click en (83, 266)
+2026-02-10 15:11:48,159 - INFO - Paso 2: Presionando ENTER
+2026-02-10 15:11:48,161 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2026-02-10 15:11:48,161 - INFO - Paso 2.1: Click en (168, 188)
+2026-02-10 15:11:49,465 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2026-02-10 15:11:49,471 - INFO - Comando enviado a AHK: 1483,519
+2026-02-10 15:11:59,519 - ERROR - Timeout esperando respuesta de AHK
+2026-02-10 15:11:59,519 - ERROR - No se pudo obtener el ID
+2026-02-10 15:11:59,520 - ERROR - Procesamiento falló
+2026-02-10 15:11:59,520 - INFO - Deteniendo procesos AHK...
+2026-02-10 15:11:59,532 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:11:59,571 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:11:59,583 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:11:59,606 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:12:01,699 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:12:01,707 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:12:01,707 - INFO - Iniciando procesos AHK...
+2026-02-10 15:12:05,337 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:12:08,498 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:12:10,670 - INFO - AutoHotkey (click down) iniciado correctamente
+2026-02-10 15:12:12,827 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:12:12,828 - INFO - Iniciando procesamiento de registro...
+2026-02-10 15:12:12,829 - INFO - Paso 1: Click en (83, 266)
+2026-02-10 15:12:14,644 - INFO - Paso 2: Presionando ENTER
+2026-02-10 15:12:14,645 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2026-02-10 15:12:14,645 - INFO - Paso 2.1: Click en (168, 188)
+2026-02-10 15:12:15,947 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2026-02-10 15:12:15,949 - INFO - Comando enviado a AHK: 1483,519
+2026-02-10 15:12:16,976 - INFO - Valor copiado: 330
+2026-02-10 15:12:16,976 - INFO - ID obtenido: 330
+2026-02-10 15:12:16,977 - INFO - Paso 4: Buscando ID 330 en CSV (2 intentos máx)
+2026-02-10 15:12:16,978 - WARNING - Intento 1: ID 330 no encontrado en el CSV
+2026-02-10 15:12:16,978 - INFO - Esperando 2 segundos antes de reintentar...
+2026-02-10 15:12:18,980 - WARNING - Intento 2: ID 330 no encontrado en el CSV
+2026-02-10 15:12:18,980 - ERROR - ID 330 no encontrado después de 2 intentos
+2026-02-10 15:12:18,981 - ERROR - ID 330 no encontrado en CSV después de 2 intentos. Saltando...
+2026-02-10 15:12:18,981 - INFO - Procesamiento completado. Línea procesada: None
+2026-02-10 15:12:18,982 - INFO - Deteniendo procesos AHK...
+2026-02-10 15:12:18,989 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:12:18,995 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:12:19,002 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:12:19,011 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:12:21,092 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:12:21,100 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:12:21,101 - INFO - Iniciando procesos AHK...
+2026-02-10 15:12:24,756 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:12:27,913 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:12:30,056 - INFO - AutoHotkey (click down) iniciado correctamente
+2026-02-10 15:12:32,161 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:12:32,162 - INFO - Iniciando procesamiento de registro...
+2026-02-10 15:12:32,163 - INFO - Paso 1: Click en (83, 266)
+2026-02-10 15:12:33,984 - INFO - Paso 2: Presionando ENTER
+2026-02-10 15:12:33,988 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2026-02-10 15:12:33,989 - INFO - Paso 2.1: Click en (168, 188)
+2026-02-10 15:12:35,292 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2026-02-10 15:12:35,298 - INFO - Comando enviado a AHK: 1483,519
+2026-02-10 15:12:45,387 - ERROR - Timeout esperando respuesta de AHK
+2026-02-10 15:12:45,388 - ERROR - No se pudo obtener el ID
+2026-02-10 15:12:45,389 - ERROR - Procesamiento falló
+2026-02-10 15:12:45,390 - INFO - Deteniendo procesos AHK...
+2026-02-10 15:12:45,411 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:12:45,436 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:12:45,462 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:12:45,478 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:12:47,569 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:12:47,580 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:12:47,581 - INFO - Iniciando procesos AHK...
+2026-02-10 15:12:51,195 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:12:54,346 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:12:56,477 - INFO - AutoHotkey (click down) iniciado correctamente
+2026-02-10 15:12:58,612 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:12:58,613 - INFO - Iniciando procesamiento de registro...
+2026-02-10 15:12:58,613 - INFO - Paso 1: Click en (83, 266)
+2026-02-10 15:13:00,425 - INFO - Paso 2: Presionando ENTER
+2026-02-10 15:13:00,428 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2026-02-10 15:13:00,429 - INFO - Paso 2.1: Click en (168, 188)
+2026-02-10 15:13:01,738 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2026-02-10 15:13:01,742 - INFO - Comando enviado a AHK: 1483,519
+2026-02-10 15:13:11,806 - ERROR - Timeout esperando respuesta de AHK
+2026-02-10 15:13:11,807 - ERROR - No se pudo obtener el ID
+2026-02-10 15:13:11,808 - ERROR - Procesamiento falló
+2026-02-10 15:13:11,809 - INFO - Deteniendo procesos AHK...
+2026-02-10 15:13:11,835 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:13:11,858 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:13:11,877 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:13:11,900 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:13:13,957 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:13:13,968 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:13:13,969 - INFO - Iniciando procesos AHK...
+2026-02-10 15:13:17,603 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:13:20,732 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:13:22,906 - INFO - AutoHotkey (click down) iniciado correctamente
+2026-02-10 15:13:25,017 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:13:25,018 - INFO - Iniciando procesamiento de registro...
+2026-02-10 15:13:25,018 - INFO - Paso 1: Click en (83, 266)
+2026-02-10 15:13:27,439 - ERROR - Procesamiento falló
+2026-02-10 15:13:27,441 - INFO - Deteniendo procesos AHK...
+2026-02-10 15:13:27,451 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:13:27,457 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:13:27,470 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:13:27,483 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:13:27,498 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:13:29,058 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:14:02,827 - INFO - Iniciando AHK desde: AutoHotkey_1.1.37.02/AutoHotkeyU64.exe
+2026-02-10 15:14:05,979 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:14:06,535 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:14:06,546 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:14:06,547 - INFO - Iniciando procesos AHK...
+2026-02-10 15:14:10,203 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:14:13,354 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:14:15,515 - INFO - AutoHotkey (click down) iniciado correctamente
+2026-02-10 15:14:17,650 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:14:17,652 - INFO - Iniciando procesamiento de registro...
+2026-02-10 15:14:17,653 - INFO - Paso 1: Click en (83, 266)
+2026-02-10 15:14:19,464 - INFO - Paso 2: Presionando ENTER
+2026-02-10 15:14:19,467 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2026-02-10 15:14:19,468 - INFO - Paso 2.1: Click en (168, 188)
+2026-02-10 15:14:20,785 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2026-02-10 15:14:20,796 - INFO - Comando enviado a AHK: 1483,519
+2026-02-10 15:14:30,853 - ERROR - Timeout esperando respuesta de AHK
+2026-02-10 15:14:30,854 - ERROR - No se pudo obtener el ID
+2026-02-10 15:14:30,855 - ERROR - Procesamiento falló
+2026-02-10 15:14:30,856 - INFO - Deteniendo procesos AHK...
+2026-02-10 15:14:30,882 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:14:30,902 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:14:30,929 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:14:30,957 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:14:33,023 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:14:33,034 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:14:33,035 - INFO - Iniciando procesos AHK...
+2026-02-10 15:14:36,668 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:14:39,801 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:14:41,966 - INFO - AutoHotkey (click down) iniciado correctamente
+2026-02-10 15:14:44,117 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:14:44,118 - INFO - Iniciando procesamiento de registro...
+2026-02-10 15:14:44,119 - INFO - Paso 1: Click en (83, 266)
+2026-02-10 15:14:45,937 - INFO - Paso 2: Presionando ENTER
+2026-02-10 15:14:45,939 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2026-02-10 15:14:45,940 - INFO - Paso 2.1: Click en (168, 188)
+2026-02-10 15:14:47,243 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2026-02-10 15:14:47,249 - INFO - Comando enviado a AHK: 1483,519
+2026-02-10 15:14:48,272 - INFO - Valor copiado: 330
+2026-02-10 15:14:48,273 - INFO - ID obtenido: 330
+2026-02-10 15:14:48,274 - INFO - Paso 4: Buscando ID 330 en CSV (2 intentos máx)
+2026-02-10 15:14:48,277 - WARNING - Intento 1: ID 330 no encontrado en el CSV
+2026-02-10 15:14:48,278 - INFO - Esperando 2 segundos antes de reintentar...
+2026-02-10 15:14:50,289 - WARNING - Intento 2: ID 330 no encontrado en el CSV
+2026-02-10 15:14:50,291 - ERROR - ID 330 no encontrado después de 2 intentos
+2026-02-10 15:14:50,292 - ERROR - ID 330 no encontrado en CSV después de 2 intentos. Saltando...
+2026-02-10 15:14:50,293 - INFO - Procesamiento completado. Línea procesada: None
+2026-02-10 15:14:50,294 - INFO - Deteniendo procesos AHK...
+2026-02-10 15:14:50,316 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:14:50,333 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:14:50,347 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:14:50,357 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:14:52,436 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:14:52,448 - INFO - CSV cargado correctamente: 110 registros
+2026-02-10 15:14:52,449 - INFO - Iniciando procesos AHK...
+2026-02-10 15:14:56,106 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:14:59,260 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:15:01,385 - INFO - AutoHotkey (click down) iniciado correctamente
+2026-02-10 15:15:03,553 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:15:03,554 - INFO - Iniciando procesamiento de registro...
+2026-02-10 15:15:03,556 - INFO - Paso 1: Click en (83, 266)
+2026-02-10 15:15:05,374 - INFO - Paso 2: Presionando ENTER
+2026-02-10 15:15:05,378 - INFO - Comando enviado a AHK: Presionar Enter 1 veces
+2026-02-10 15:15:05,379 - INFO - Paso 2.1: Click en (168, 188)
+2026-02-10 15:15:06,682 - INFO - Paso 3: Obteniendo ID con AHKManager en (1483, 519)
+2026-02-10 15:15:06,688 - INFO - Comando enviado a AHK: 1483,519
+2026-02-10 15:15:07,711 - INFO - Valor copiado: 1008
+2026-02-10 15:15:07,712 - INFO - ID obtenido: 1008
+2026-02-10 15:15:07,713 - INFO - Paso 4: Buscando ID 1008 en CSV (2 intentos máx)
+2026-02-10 15:15:07,715 - INFO - ID 1008 encontrado en intento 1
+2026-02-10 15:15:07,717 - INFO - Paso 5: Escribiendo valor '1340' en (1483, 519)
+2026-02-10 15:15:07,718 - INFO - Enviando comando a AHK: coordenadas (1483, 519), texto: '1340'
+2026-02-10 15:15:08,631 - INFO - Esperando respuesta AHK... (10 intentos)
+2026-02-10 15:15:09,647 - INFO - Esperando respuesta AHK... (20 intentos)
+2026-02-10 15:15:10,663 - INFO - Esperando respuesta AHK... (30 intentos)
+2026-02-10 15:15:11,677 - INFO - Debug AHK: Texto escrito: 1340
+
+2026-02-10 15:15:11,679 - INFO - Escritura completada correctamente via AHK
+2026-02-10 15:15:13,688 - INFO - Paso 6: Valor columna 4 = 
+2026-02-10 15:15:13,689 - INFO - Paso 7: Saltado (columna 4 <= 0 o vacía)
+2026-02-10 15:15:13,690 - INFO - Paso 8: Click en (1290, 349)
+2026-02-10 15:15:16,501 - INFO - Procesamiento completado exitosamente
+2026-02-10 15:15:16,502 - INFO - Procesamiento completado. Línea procesada: 8
+2026-02-10 15:15:16,503 - INFO - Deteniendo procesos AHK...
+2026-02-10 15:15:16,527 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:15:16,551 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:15:16,575 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:15:16,585 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:15:24,788 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:15:43,385 - INFO - Enviando comando a AHK: coordenadas (1355, 693), texto: '1'
+2026-02-10 15:15:44,304 - INFO - Esperando respuesta AHK... (10 intentos)
+2026-02-10 15:15:45,322 - INFO - Esperando respuesta AHK... (20 intentos)
+2026-02-10 15:15:46,356 - INFO - Esperando respuesta AHK... (30 intentos)
+2026-02-10 15:15:47,379 - INFO - Esperando respuesta AHK... (40 intentos)
+2026-02-10 15:15:47,587 - INFO - Debug AHK: Texto escrito: 1
+
+2026-02-10 15:15:47,588 - INFO - Escritura completada correctamente via AHK
+2026-02-10 15:16:05,255 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:16:11,441 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:16:13,605 - INFO - AutoHotkey (click down) iniciado correctamente
+2026-02-10 15:16:15,771 - INFO - AutoHotkey iniciado correctamente
+2026-02-10 15:16:15,772 - INFO - ✅ Todos los servicios AHK iniciados correctamente
+2026-02-10 15:16:15,777 - INFO - PROCESANDO LÍNEA ESPECÍFICA: 8/110
+2026-02-10 15:16:15,806 - INFO - AutoHotkey (writer) detenido correctamente
+2026-02-10 15:16:15,831 - INFO - AutoHotkey (click down) detenido correctamente
+2026-02-10 15:16:15,849 - INFO - AutoHotkey detenido correctamente
+2026-02-10 15:16:15,850 - INFO - ✅ Todos los servicios AHK detenidos correctamente
+2026-02-10 15:16:22,534 - INFO - AutoHotkey (writer) iniciado correctamente
+2026-02-10 15:16:22,549 - INFO - Archivo a cargar: NN 19.kml
+2026-02-10 15:16:22,550 - INFO - Texto adicional: 'LLANTERA'
+2026-02-10 15:16:23,624 - INFO - Click en (327, 381)
+2026-02-10 15:16:29,689 - INFO - Click en (1396, 608)
+2026-02-10 15:16:35,760 - INFO - Click en (1406, 634)
+2026-02-10 15:16:40,775 - INFO - Intentando cargar archivo: NN 19.kml
+2026-02-10 15:16:52,402 - INFO - Intento 10: Mejor coincidencia: 0.18
+2026-02-10 15:16:52,403 - INFO - Esperando 12 segundos...
+2026-02-10 15:17:15,927 - INFO - Intento 20: Mejor coincidencia: 0.18
+2026-02-10 15:17:15,928 - INFO - Esperando 12 segundos...
+2026-02-10 15:17:39,544 - INFO - Intento 30: Mejor coincidencia: 0.18
+2026-02-10 15:17:39,544 - INFO - Esperando 12 segundos...
+2026-02-10 15:18:03,072 - INFO - Intento 40: Mejor coincidencia: 0.16
+2026-02-10 15:18:03,072 - INFO - Esperando 12 segundos...
+2026-02-10 15:18:26,657 - INFO - Intento 50: Mejor coincidencia: 0.18
+2026-02-10 15:18:26,657 - INFO - Esperando 12 segundos...
+2026-02-10 15:18:50,305 - INFO - Intento 60: Mejor coincidencia: 0.18
+2026-02-10 15:18:50,306 - INFO - Esperando 12 segundos...
+2026-02-10 15:19:13,902 - INFO - Intento 70: Mejor coincidencia: 0.18
+2026-02-10 15:19:13,902 - INFO - Esperando 12 segundos...
+2026-02-10 15:19:37,499 - INFO - Intento 80: Mejor coincidencia: 0.18
+2026-02-10 15:19:37,500 - INFO - Esperando 12 segundos...
+2026-02-10 15:20:01,173 - INFO - Intento 90: Mejor coincidencia: 0.18
+2026-02-10 15:20:01,173 - INFO - Esperando 12 segundos...
+2026-02-10 15:20:24,862 - INFO - Intento 100: Mejor coincidencia: 0.18
+2026-02-10 15:20:24,862 - INFO - Esperando 12 segundos...
+2026-02-10 15:20:48,441 - INFO - Intento 110: Mejor coincidencia: 0.18
+2026-02-10 15:20:48,441 - INFO - Esperando 12 segundos...
+2026-02-10 15:21:12,159 - INFO - Intento 120: Mejor coincidencia: 0.18
+2026-02-10 15:21:12,159 - INFO - Esperando 12 segundos...
+2026-02-10 15:21:35,773 - INFO - Intento 130: Mejor coincidencia: 0.18
+2026-02-10 15:21:35,773 - INFO - Esperando 12 segundos...
+2026-02-10 15:21:59,275 - INFO - Intento 140: Mejor coincidencia: 0.18
+2026-02-10 15:21:59,276 - INFO - Esperando 12 segundos...
+2026-02-10 15:22:22,757 - INFO - Intento 150: Mejor coincidencia: 0.18
+2026-02-10 15:22:22,758 - INFO - Esperando 12 segundos...
+2026-02-10 15:22:46,287 - INFO - Intento 160: Mejor coincidencia: 0.18
+2026-02-10 15:22:46,288 - INFO - Esperando 12 segundos...
+2026-02-10 15:23:09,867 - INFO - Intento 170: Mejor coincidencia: 0.18
+2026-02-10 15:23:09,867 - INFO - Esperando 12 segundos...
+2026-02-10 15:23:33,384 - INFO - Intento 180: Mejor coincidencia: 0.18
+2026-02-10 15:23:33,385 - INFO - Esperando 12 segundos...
+2026-02-10 15:23:57,013 - INFO - Intento 190: Mejor coincidencia: 0.18
+2026-02-10 15:23:57,013 - INFO - Esperando 12 segundos...
+2026-02-10 15:24:20,760 - INFO - Intento 200: Mejor coincidencia: 0.18
+2026-02-10 15:24:20,760 - INFO - Esperando 12 segundos...
+2026-02-10 15:24:44,061 - INFO - Intento 210: Mejor coincidencia: 0.18
+2026-02-10 15:24:44,065 - INFO - Esperando 12 segundos...
+2026-02-10 15:25:07,499 - INFO - Intento 220: Mejor coincidencia: 0.18
+2026-02-10 15:25:07,499 - INFO - Esperando 12 segundos...
+2026-02-10 15:25:31,100 - INFO - Intento 230: Mejor coincidencia: 0.18
+2026-02-10 15:25:31,100 - INFO - Esperando 12 segundos...
