@@ -31,12 +31,12 @@ Loop {
         
         ; Hacer click en las coordenadas especificadas
         Click, %x_campo% %y_campo%
-        Sleep, 300
+        Sleep, 400
         
         ; Presionar flecha down las veces especificadas
         Loop, %veces_down% {
             Send, {Down}
-            Sleep, 150
+            Sleep, 250
         }
         
         ; Confirmación para Python

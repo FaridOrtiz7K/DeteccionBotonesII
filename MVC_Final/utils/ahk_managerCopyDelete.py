@@ -38,7 +38,9 @@ Loop {
         
         ; Copiar el valor seleccionado al portapapeles
         Send, ^c
-        Sleep, 200
+        Sleep, 100
+        Send, ^c
+        sleep, 100
         
         ; Guardar el valor del portapapeles en un archivo
         ClipboardTemp := Clipboard

@@ -44,9 +44,13 @@ class EstadoEjecucion:
     def esperar_si_pausado(self):
         with self.condition:
             while (self.pausado or self.en_cuenta_regresiva) and self.ejecutando and not self.detener_inmediato:
-                self.condition.wait()
+                # Esperar con timeout para poder verificar cambios en las variables
+                self.condition.wait(timeout=1.0)
             return not self.ejecutando or self.detener_inmediato
     
     def verificar_continuar(self):
         with self.condition:
             return self.ejecutando and not self.detener_inmediato and not self.en_cuenta_regresiva
+
+# Instancia global única
+estado_global = EstadoEjecucion()

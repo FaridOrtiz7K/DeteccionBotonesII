@@ -1,15 +1,9 @@
 import os
 import sys
 import logging
-
-# Agregar directorio actual al path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
 import tkinter as tk
-from models.estado import EstadoEjecucion
-from models.datos_globales import DatosGlobales
-from views.interfaz_principal import InterfazPrincipal
-from controllers.controlador_principal import ControladorPrincipal
+from views.main_window import InterfazAutomation
+from controllers.automation_controller import AutomationController
 
 # Configurar logging
 logging.basicConfig(
@@ -20,21 +14,22 @@ logging.basicConfig(
         logging.StreamHandler(sys.stdout)
     ]
 )
-logger = logging.getLogger(__name__)
 
 def main():
     root = tk.Tk()
-    
-    # Crear instancias del modelo
-    estado_global = EstadoEjecucion()
-    datos_globales = DatosGlobales()
-    
-    # Crear vista
-    vista = InterfazPrincipal(root)
-    
-    # Crear controlador
-    controlador = ControladorPrincipal(vista, estado_global, datos_globales)
-    
+
+    # Establecer icono
+    icon_path = os.path.join(os.path.dirname(__file__), 'img', 'icon.ico')
+    if os.path.exists(icon_path):
+        root.iconbitmap(icon_path)
+    else:
+        logging.warning(f"Icono no encontrado en {icon_path}")
+
+    # Crear controlador y vista
+    controller = AutomationController(view=None)  # Temporal
+    view = InterfazAutomation(root, controller)
+    controller.view = view  # Inyectar vista
+
     root.mainloop()
 
 if __name__ == "__main__":

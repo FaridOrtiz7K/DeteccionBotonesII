@@ -2,6 +2,7 @@ import pandas as pd
 import pyautogui
 import time
 import logging
+from models.estado import estado_global
 from utils.ahk_managerCopyDelete import AHKManagerCD
 from utils.ahk_writer import AHKWriter
 from utils.ahk_click_down import AHKClickDown
@@ -10,16 +11,19 @@ from utils.ahk_enter import EnterAHKManager
 logger = logging.getLogger(__name__)
 
 class ProcesadorCSV:
-    def __init__(self, archivo_csv, estado_global):
+    def __init__(self, archivo_csv):
+        """
+        Inicializa el procesador con la ruta del archivo CSV.
+        """
         self.archivo_csv = archivo_csv
         self.df = None
         self.ahk_manager = AHKManagerCD()
         self.ahk_writer = AHKWriter()
         self.ahk_click_down = AHKClickDown()
         self.ahk_enter = EnterAHKManager()
-        self.estado_global = estado_global
         
     def cargar_csv(self):
+        """Carga el archivo CSV en un DataFrame."""
         try:
             self.df = pd.read_csv(self.archivo_csv)
             if len(self.df) == 0:
@@ -32,6 +36,7 @@ class ProcesadorCSV:
             return False
     
     def iniciar_ahk(self):
+        """Inicia todos los procesos AHK necesarios."""
         logger.info("Iniciando procesos AHK...")
         time.sleep(1.5)
         return (self.ahk_manager.start_ahk() and 
@@ -40,6 +45,7 @@ class ProcesadorCSV:
                 self.ahk_enter.start_ahk())
     
     def detener_ahk(self):
+        """Detiene todos los procesos AHK."""
         logger.info("Deteniendo procesos AHK...")
         self.ahk_manager.stop_ahk()
         self.ahk_writer.stop_ahk()
@@ -48,12 +54,16 @@ class ProcesadorCSV:
         time.sleep(1.5)
     
     def buscar_por_id(self, id_buscar, max_intentos=2):
+        """
+        Busca un ID en la primera columna del DataFrame.
+        Retorna la fila si la encuentra, None en caso contrario.
+        """
         if self.df is None or len(self.df) == 0:
             logger.warning("CSV no cargado o vacío")
             return None
             
         for intento in range(1, max_intentos + 1):
-            if self.estado_global.esperar_si_pausado():
+            if estado_global.esperar_si_pausado():
                 return None
                 
             resultado = self.df[self.df.iloc[:, 0] == id_buscar]
@@ -66,7 +76,7 @@ class ProcesadorCSV:
                 if intento < max_intentos:
                     logger.info(f"Esperando 2 segundos antes de reintentar...")
                     for _ in range(2):
-                        if self.estado_global.esperar_si_pausado():
+                        if estado_global.esperar_si_pausado():
                             return None
                         time.sleep(1)
         
@@ -74,19 +84,26 @@ class ProcesadorCSV:
         return None
     
     def procesar_registro(self):
+        """
+        Ejecuta la secuencia de acciones para procesar un registro.
+        Retorna (exito, linea_procesada) donde linea_procesada es el número de línea (1-indexado) del ID procesado,
+        o None si no se pudo determinar.
+        """
         try:
             logger.info("Paso 1: Click en (83, 266)")
             pyautogui.click(83, 266)
-            if self.estado_global.esperar_si_pausado():
+            if estado_global.esperar_si_pausado():
                 return False, None
             time.sleep(1)
             
+            # presionar enter
             logger.info("Paso 2: Presionando ENTER")
             self.ahk_enter.presionar_enter(1)
             
+            # presionar seleccionar en el mapa
             logger.info("Paso 2.1: Click en (168, 188)")
             pyautogui.click(168, 188)
-            if self.estado_global.esperar_si_pausado():
+            if estado_global.esperar_si_pausado():
                 return False, None
             time.sleep(0.5)
             
@@ -100,19 +117,31 @@ class ProcesadorCSV:
             id_obtenido = int(id_obtenido)
             logger.info(f"ID obtenido: {id_obtenido}")
 
+            try:
+                id_obtenido = int(id_obtenido)
+                if id_obtenido < 90000:
+                    logger.warning(f"ID {id_obtenido} ya actualizado. Saltando lote...")
+                    return True, None  # No es error fatal, se salta el lote
+            except ValueError:
+                # Si no se puede convertir a entero, solo se salta el lote sin marcar error fatal
+                logger.error(f"ID obtenido no es un número válido: {id_obtenido}")
+                return True, None
+
             logger.info(f"Paso 4: Buscando ID {id_obtenido} en CSV (2 intentos máx)")
             registro = self.buscar_por_id(id_obtenido, max_intentos=2)
             
             if registro is None:
                 logger.error(f"ID {id_obtenido} no encontrado en CSV después de 2 intentos. Saltando...")
-                return True, None
+                return True, None  # No es error fatal, se salta el lote
             
+            # Determinar la línea (número de fila) donde se encontró el ID
             linea_procesada = None
             for idx in range(len(self.df)):
                 if self.df.iloc[idx, 0] == id_obtenido:
                     linea_procesada = idx + 1
                     break
-            
+                    
+            # Procesar columna 2 (índice 1)
             if len(registro) >= 2:
                 valor_columna_2 = registro.iloc[1]
                 if pd.isna(valor_columna_2):
@@ -122,29 +151,23 @@ class ProcesadorCSV:
                 
                 logger.info(f"Paso 5: Escribiendo valor '{valor_columna_2}' en (1483, 519)")
                 
-                if valor_columna_2:
-                    exito_escritura = self.ahk_writer.ejecutar_escritura_ahk(1483, 519, valor_columna_2)
-                    if not exito_escritura:
-                        logger.error("Error en la escritura")
-                        return False, linea_procesada
-                else:
-                    exito_escritura = self.ahk_writer.ejecutar_escritura_ahk(1483, 519, "")
-                    if not exito_escritura:
-                        logger.error("Error en la escritura")
-                        return False, linea_procesada
-                    logger.info("Columna 2 vacía, no se escribe nada")
+                exito_escritura = self.ahk_writer.ejecutar_escritura_ahk(1483, 519, valor_columna_2)
+                if not exito_escritura:
+                    logger.error("Error en la escritura")
+                    return False, linea_procesada
                 
                 for _ in range(2):
-                    if self.estado_global.esperar_si_pausado():
+                    if estado_global.esperar_si_pausado():
                         return False, linea_procesada
                     time.sleep(1)
             else:
                 logger.warning("No hay columna 2 en el registro")
             
+            # Procesar columna 4 (índice 3)
             if len(registro) >= 4:
                 valor_columna_4 = registro.iloc[3]
                 if pd.isna(valor_columna_4):
-                    logger.info("Paso 6: Valor columna 4 = ")
+                    logger.info("Paso 6: Valor columna 4 vacío")
                 else:
                     logger.info(f"Paso 6: Valor columna 4 = {valor_columna_4}")
                 
@@ -158,7 +181,7 @@ class ProcesadorCSV:
                         return False, linea_procesada
                     
                     for _ in range(2):
-                        if self.estado_global.esperar_si_pausado():
+                        if estado_global.esperar_si_pausado():
                             return False, linea_procesada
                         time.sleep(1)
                 else:
@@ -170,7 +193,7 @@ class ProcesadorCSV:
             pyautogui.click(1290, 349)
             
             for _ in range(2):
-                if self.estado_global.esperar_si_pausado():
+                if estado_global.esperar_si_pausado():
                     return False, linea_procesada
                 time.sleep(1)
             
@@ -182,6 +205,10 @@ class ProcesadorCSV:
             return False, None
     
     def procesar_todo(self):
+        """
+        Método principal que ejecuta todo el flujo del Programa 1.
+        Retorna (exito, linea_procesada).
+        """
         if not self.cargar_csv():
             return False, None
             
