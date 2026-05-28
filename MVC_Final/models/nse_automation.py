@@ -176,9 +176,9 @@ class NSEAutomation:
             
             # Secuencia inicial de clics
             self.click(169, 189)
-            self.sleep(3)
+            self.sleep(1.5)
             self.click(1491, 386)
-            self.sleep(3)
+            self.sleep(1.5)
             
             # Buscar imagen de referencia
             image_found, base_location = self.wait_for_image_with_retries(self.reference_image, max_attempts=30)
@@ -220,22 +220,22 @@ class NSEAutomation:
                 y_ct_abs = base_y + y_ct_rel
                 
                 self.click(x_cs_abs, y_cs_abs)
-                self.sleep(3)
+                self.sleep(1.5)
                 
                 texto = str(int(row.iloc[col_index-1]))
                 self.write_with_ahk(x_ct_abs, y_ct_abs, texto)
-                self.sleep(3)
+                self.sleep(1.5)
         
         # Hacer clic en Asignar
         x_asignar_rel, y_asignar_rel = self.coords_asignar
         x_asignar_abs = base_x + x_asignar_rel
         y_asignar_abs = base_y + y_asignar_rel
         self.click(x_asignar_abs, y_asignar_abs)
-        self.sleep(3)
+        self.sleep(1.5)
         
         # Hacer clic en Cerrar
         x_cerrar_rel, y_cerrar_rel = self.coords_cerrar
         x_cerrar_abs = base_x + x_cerrar_rel
         y_cerrar_abs = base_y + y_cerrar_rel
         self.click(x_cerrar_abs, y_cerrar_abs)
-        self.sleep(3)
+        self.sleep(1.5)
