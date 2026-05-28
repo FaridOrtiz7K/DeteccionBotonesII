@@ -468,11 +468,6 @@ class AutomationController:
                     lotes_desde_ultimo_guardado += 1
                     continue
 
-                # Espera entre programas
-                for _ in range(3):
-                    if estado_global.esperar_si_pausado():
-                        break
-                    time.sleep(0.3)
 
                 if not estado_global.verificar_continuar():
                     break
@@ -488,12 +483,6 @@ class AutomationController:
                     lotes_desde_ultimo_guardado += 1
                     continue
 
-                # Espera
-                for _ in range(3):
-                    if estado_global.esperar_si_pausado():
-                        break
-                    time.sleep(0.3)
-
                 if not estado_global.verificar_continuar():
                     break
 
@@ -507,12 +496,6 @@ class AutomationController:
                     self.linea_actual += 1
                     lotes_desde_ultimo_guardado += 1
                     continue
-
-                # Espera
-                for _ in range(3):
-                    if estado_global.esperar_si_pausado():
-                        break
-                    time.sleep(0.3)
 
                 if not estado_global.verificar_continuar():
                     break
