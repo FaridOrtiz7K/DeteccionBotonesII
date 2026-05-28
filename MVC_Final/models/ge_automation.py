@@ -374,7 +374,7 @@ class GEAutomation:
                     pyautogui.press('down')
                 else:
                     logger.info("✅ Flecha abajo presionada con AHK")
-                self.sleep(3)
+                self.sleep(1.5)
                 self.presionar_enter_ahk(1)
                 self.sleep(1)
                 return False
@@ -387,7 +387,7 @@ class GEAutomation:
                     pyautogui.press('down')
                 else:
                     logger.info("✅ Flecha abajo presionada con AHK")
-                self.sleep(2)
+                self.sleep(1)
                 self.presionar_enter_ahk(1)
                 self.sleep(1)
                 return False
@@ -487,46 +487,46 @@ class GEAutomation:
         try:
             # Secuencia de acciones
             self.click(*self.coords['agregar_ruta'])
-            self.sleep(3)
+            self.sleep(1.5)
             self.click(*self.coords['archivo'])
-            self.sleep(3)
+            self.sleep(1.5)
             self.click(*self.coords['abrir'])
-            self.sleep(3)
+            self.sleep(1.5)
             
             success = self.handle_archivo_special_behavior(self.nombre_archivo)
             logger.info(f"Resultado de cargar archivo: {'Éxito' if success else 'Fallo'}")
             if not success:
                 logger.error("❌ No se pudo cargar el archivo. Regresando a agregar_ruta...")
                 self.click(*self.coords['agregar_ruta'])
-                self.sleep(3)
+                self.sleep(1.5)
                 return False
             
             if not self.presionar_enter_ahk(1):
                 logger.warning("⚠️  No se pudo presionar Enter con AHK, usando pyautogui")
                 pyautogui.press('enter')
             
-            self.sleep(4)
+            self.sleep(2)
 
             self.click(*self.coords['agregar_ruta'])
-            self.sleep(3)
+            self.sleep(1.5)
 
             self.click(1406, 675)
-            self.sleep(3)
+            self.sleep(1.5)
 
             self.click(83, 266)
-            self.sleep(3)
+            self.sleep(1.5)
             logger.info("Cerrando la ventana de archivo")
             self.click(*self.coords['cerrar_ventana_archivo'])
-            self.sleep(4)
+            self.sleep(2)
 
             self.click(*self.coords['seleccionar_mapa'])
-            self.sleep(3)
+            self.sleep(1.5)
             
             self.click(*self.coords['anotar'])
-            self.sleep(3)
+            self.sleep(1.5)
             
             self.click(*self.coords['agregar_texto_adicional'])
-            self.sleep(3)
+            self.sleep(1.5)
             
             # Buscar la ventana de texto adicional
             image_found, base_location = self.wait_for_image_with_retries(self.reference_image, max_attempts=10)
@@ -547,22 +547,22 @@ class GEAutomation:
                 else:
                     logger.info("ℹ️  Texto adicional vacío, no se escribe nada")
                 
-                self.sleep(3)
+                self.sleep(1.5)
 
                 self.click(x_agregar, y_agregar)
-                self.sleep(4)
+                self.sleep(2)
             
                 self.click(x_cerrar, y_cerrar)
-                self.sleep(3)
+                self.sleep(1)
             else:
                 logger.error("❌ No se pudo detectar la imagen del campo de texto")
                 return False
                         
             self.click(*self.coords['limpiar_trazo'])
-            self.sleep(2)
+            self.sleep(0.8)
             
             self.click(*self.coords['lote_again'])
-            self.sleep(3)
+            self.sleep(1.5)
             
             if not self.presionar_flecha_abajo_ahk(*self.coords['lote_again'], 1):
                 logger.warning("⚠️  No se pudo presionar flecha abajo con AHK, usando pyautogui")
@@ -570,13 +570,13 @@ class GEAutomation:
             else:
                 logger.info("✅ Flecha abajo presionada con AHK")
             
-            self.sleep(3)
+            self.sleep(1)
             
             if self.detectar_ventana_error():
                 logger.info("✅ Ventana de error detectada y cerrada")
         
             self.presionar_enter_ahk(1)
-            self.sleep(1)
+            self.sleep(0.5)
             logger.info(f"✅ Línea {linea_especifica} completada exitosamente")
 
             return True

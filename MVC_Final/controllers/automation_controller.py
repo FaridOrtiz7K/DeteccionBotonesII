@@ -534,12 +534,6 @@ class AutomationController:
                 self.linea_actual += 1
                 self._actualizar_estado_lineas()
 
-                # Espera entre lotes
-                for _ in range(4):
-                    if estado_global.esperar_si_pausado():
-                        break
-                    time.sleep(1)
-
             # Guardado final
             if not estado_global.detener_inmediato and self.linea_actual > self.linea_maxima:
                 self.view.root.after(0, self.view.log, "📁 Guardando progreso final al completar todos los lotes...")
