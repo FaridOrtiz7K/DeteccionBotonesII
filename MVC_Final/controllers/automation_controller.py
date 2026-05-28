@@ -461,8 +461,8 @@ class AutomationController:
                 self._actualizar_info_lote(self.linea_actual, datos_lote)
 
                 if not resultado1 or linea_procesada is None:
-                    self.view.root.after(0, self.view.log,
-                                         f"⚠️ Programa 1 no procesó la línea {self.linea_actual} (ID no encontrado después de 2 intentos). Saltando al siguiente lote...")
+                    self.view.root.after(0, self.view.log, f"⚠️ Programa 1 no procesó la línea {self.linea_actual} (ID no encontrado después de 2 intentos). Saltando al siguiente lote...")
+                                        
                     estado_global.set_linea_en_proceso(False)
                     self.linea_actual += 1
                     lotes_desde_ultimo_guardado += 1
@@ -472,7 +472,7 @@ class AutomationController:
                 for _ in range(3):
                     if estado_global.esperar_si_pausado():
                         break
-                    time.sleep(1)
+                    time.sleep(0.3)
 
                 if not estado_global.verificar_continuar():
                     break
@@ -492,7 +492,7 @@ class AutomationController:
                 for _ in range(3):
                     if estado_global.esperar_si_pausado():
                         break
-                    time.sleep(1)
+                    time.sleep(0.3)
 
                 if not estado_global.verificar_continuar():
                     break
@@ -512,7 +512,7 @@ class AutomationController:
                 for _ in range(3):
                     if estado_global.esperar_si_pausado():
                         break
-                    time.sleep(1)
+                    time.sleep(0.3)
 
                 if not estado_global.verificar_continuar():
                     break
@@ -544,7 +544,7 @@ class AutomationController:
                     for _ in range(6):
                         if estado_global.esperar_si_pausado():
                             break
-                        time.sleep(1)
+                        time.sleep(0.3)
                     self.view.root.after(0, self.view.log, "✅ Progreso guardado exitosamente")
                     lotes_desde_ultimo_guardado = 0
 
