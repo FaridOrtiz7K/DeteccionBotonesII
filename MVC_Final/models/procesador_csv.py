@@ -91,7 +91,7 @@ class ProcesadorCSV:
         """
         try:
             logger.info("Paso 1: Click en (83, 266)")
-            pyautogui.click(83, 266)
+            pyautogui.click(83, 260)
             if estado_global.esperar_si_pausado():
                 return False, None
             time.sleep(0.8)
@@ -122,13 +122,13 @@ class ProcesadorCSV:
                 if id_obtenido < 90000:
                     logger.warning(f"ID {id_obtenido} ya actualizado. Saltando lote...")
                     #saltar lote sin marcar error fatal, ya que el ID es menor a 90000, lo que indica que ya fue procesado
-                    self.ahk_click_down.ejecutar_click_down(83, 266, 1)  # Hacer un click + down para saltar el lote
+                    self.ahk_click_down.ejecutar_click_down(83, 260, 1)  # Hacer un click + down para saltar el lote
                     return True, None  # No es error fatal, se salta el lote
             except ValueError:
                 # Si no se puede convertir a entero, solo se salta el lote sin marcar error fatal
                 logger.error(f"ID obtenido no es un número válido: {id_obtenido}")
                 #saltar lote sin marcar error fatal, ya que el ID no es un número válido
-                self.ahk_click_down.ejecutar_click_down(83, 266, 1)  # Hacer un click + down para saltar el lote
+                self.ahk_click_down.ejecutar_click_down(83, 260, 1)  # Hacer un click + down para saltar el lote
                 return True, None
 
             logger.info(f"Paso 4: Buscando ID {id_obtenido} en CSV (2 intentos máx)")
