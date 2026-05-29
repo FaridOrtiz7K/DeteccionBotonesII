@@ -105,7 +105,7 @@ class ProcesadorCSV:
             pyautogui.click(168, 188)
             if estado_global.esperar_si_pausado():
                 return False, None
-            time.sleep(0.5)
+            time.sleep(0.8)
             
             logger.info("Paso 3: Obteniendo ID con AHKManager en (1483, 519)")
             id_obtenido = self.ahk_manager.ejecutar_acciones_ahk(1483, 519)

@@ -45,7 +45,7 @@ class EstadoEjecucion:
         with self.condition:
             while (self.pausado or self.en_cuenta_regresiva) and self.ejecutando and not self.detener_inmediato:
                 # Esperar con timeout para poder verificar cambios en las variables
-                self.condition.wait(timeout=0.5)
+                self.condition.wait(timeout=0.8)
             return not self.ejecutando or self.detener_inmediato
     
     def verificar_continuar(self):

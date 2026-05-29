@@ -59,7 +59,7 @@ Loop {
                     return False
                     
             self.ahk_process = subprocess.Popen(['AutoHotkey_1.1.37.02/AutoHotkeyU64.exe', self.script_path])
-            time.sleep(2)
+            time.sleep(1)
             is_running = self.ahk_process.poll() is None
             if is_running:
                 logger.info("AutoHotkey iniciado correctamente")

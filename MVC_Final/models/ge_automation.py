@@ -95,12 +95,12 @@ class GEAutomation:
                         for _ in range(12):
                             if estado_global.esperar_si_pausado():
                                 return None
-                            time.sleep(0.5)
+                            time.sleep(0.8)
                     else:
                         for _ in range(int(tiempo_espera_base)):
                             if estado_global.esperar_si_pausado():
                                 return None
-                            time.sleep(0.5)
+                            time.sleep(0.8)
                     intentos += 1
                     
             except Exception as e:
@@ -108,7 +108,7 @@ class GEAutomation:
                 for _ in range(int(tiempo_espera_base)):
                     if estado_global.esperar_si_pausado():
                         return None
-                    time.sleep(0.5)
+                    time.sleep(0.8)
                 intentos += 1
 
         return None
@@ -143,7 +143,7 @@ class GEAutomation:
                         if estado_global.esperar_si_pausado():
                             self.enter.stop_ahk()
                             return True
-                        time.sleep(0.5)
+                        time.sleep(0.8)
                 else:
                     logger.error("Error enviando comando a AHK")
                     return False
@@ -191,7 +191,7 @@ class GEAutomation:
                     if estado_global.esperar_si_pausado():
                         self.ahk_manager.stop_ahk()
                         return False
-                    time.sleep(0.5)
+                    time.sleep(0.8)
             else:
                 logger.error("Error enviando comando a AHK")
                 return False

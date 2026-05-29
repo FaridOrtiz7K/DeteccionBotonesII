@@ -157,7 +157,7 @@ Loop {
                         except Exception as e:
                             logger.error(f"Error leyendo archivo de confirmación: {e}")
                     
-                    time.sleep(0.5)  # Esperar medio segundo entre chequeos
+                    time.sleep(0.8)  # Esperar medio segundo entre chequeos
                 
                 logger.warning("Timeout esperando confirmación de AHK")
                 return False

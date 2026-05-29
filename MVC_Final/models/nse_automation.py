@@ -47,7 +47,7 @@ class NSEAutomation:
         for _ in range(1):
             if estado_global.esperar_si_pausado():
                 return
-            time.sleep(0.5)
+            time.sleep(0.8)
 
     def write_with_ahk(self, x, y, text):
         if pd.isna(text) or text is None or str(text).strip() == "":
