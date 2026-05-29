@@ -47,7 +47,7 @@ class NSEAutomation:
         for _ in range(1):
             if estado_global.esperar_si_pausado():
                 return
-            time.sleep(1)
+            time.sleep(0.5)
 
     def write_with_ahk(self, x, y, text):
         if pd.isna(text) or text is None or str(text).strip() == "":
@@ -60,14 +60,14 @@ class NSEAutomation:
         for _ in range(1):
             if estado_global.esperar_si_pausado():
                 return False
-            time.sleep(1.5)
+            time.sleep(0.8)
         return success
 
     def sleep(self, seconds):
         for _ in range(int(seconds * 1.5)):
             if estado_global.esperar_si_pausado():
                 return
-            time.sleep(1)
+            time.sleep(0.8)
 
     def detect_image_with_cv2(self, image_path, confidence=0.6):
         try:
@@ -113,12 +113,12 @@ class NSEAutomation:
                     for _ in range(15):
                         if estado_global.esperar_si_pausado():
                             return False, None
-                        time.sleep(1)
+                        time.sleep(0.8)
                 else:
                     for _ in range(3):
                         if estado_global.esperar_si_pausado():
                             return False, None
-                        time.sleep(1)
+                        time.sleep(0.8)
         
         logger.error("❌ Imagen no encontrada después de 30 intentos. Terminando proceso.")
         return False, None

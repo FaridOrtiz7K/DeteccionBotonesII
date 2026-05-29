@@ -78,7 +78,7 @@ class NSEServicesAutomation:
                 for _ in range(2):
                     if estado_global.esperar_si_pausado():
                         return None
-                    time.sleep(1)
+                    time.sleep(0.8)
             
             logger.error(f"❌ No se encontró la imagen después de {timeout} intentos")
             return None
@@ -149,7 +149,7 @@ class NSEServicesAutomation:
         for _ in range(1):
             if estado_global.esperar_si_pausado():
                 return
-            time.sleep(1)
+            time.sleep(0.8)
 
     def write(self, text):
         """
@@ -173,7 +173,7 @@ class NSEServicesAutomation:
                 for _ in range(2):
                     if estado_global.esperar_si_pausado():
                         return False
-                    time.sleep(1)
+                    time.sleep(0.8)
             else:
                 logger.error(f"❌ Error al escribir texto: {text}")
             return success
@@ -209,7 +209,7 @@ class NSEServicesAutomation:
         for _ in range(int(seconds * 1.5)):
             if estado_global.esperar_si_pausado():
                 return
-            time.sleep(1)
+            time.sleep(0.8)
 
     def handle_error_click(self):
         """Maneja clics en el botón de error si aparece."""

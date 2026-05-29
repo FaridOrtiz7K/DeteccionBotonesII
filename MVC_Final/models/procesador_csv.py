@@ -38,7 +38,7 @@ class ProcesadorCSV:
     def iniciar_ahk(self):
         """Inicia todos los procesos AHK necesarios."""
         logger.info("Iniciando procesos AHK...")
-        time.sleep(1.5)
+        time.sleep(1)
         return (self.ahk_manager.start_ahk() and 
                 self.ahk_writer.start_ahk() and 
                 self.ahk_click_down.start_ahk() and
@@ -51,7 +51,7 @@ class ProcesadorCSV:
         self.ahk_writer.stop_ahk()
         self.ahk_click_down.stop_ahk()
         self.ahk_enter.stop_ahk()
-        time.sleep(1.5)
+        time.sleep(1)
     
     def buscar_por_id(self, id_buscar, max_intentos=2):
         """
@@ -78,7 +78,7 @@ class ProcesadorCSV:
                     for _ in range(2):
                         if estado_global.esperar_si_pausado():
                             return None
-                        time.sleep(1)
+                        time.sleep(0.8)
         
         logger.error(f"ID {id_buscar} no encontrado después de {max_intentos} intentos")
         return None
@@ -94,7 +94,7 @@ class ProcesadorCSV:
             pyautogui.click(83, 266)
             if estado_global.esperar_si_pausado():
                 return False, None
-            time.sleep(1)
+            time.sleep(0.8)
             
             # presionar enter
             logger.info("Paso 2: Presionando ENTER")
@@ -163,7 +163,7 @@ class ProcesadorCSV:
                 for _ in range(2):
                     if estado_global.esperar_si_pausado():
                         return False, linea_procesada
-                    time.sleep(1)
+                    time.sleep(0.8)
             else:
                 logger.warning("No hay columna 2 en el registro")
             
@@ -187,7 +187,7 @@ class ProcesadorCSV:
                     for _ in range(2):
                         if estado_global.esperar_si_pausado():
                             return False, linea_procesada
-                        time.sleep(1)
+                        time.sleep(0.8)
                 else:
                     logger.info("Paso 7: Saltado (columna 4 <= 0 o vacía)")
             else:
@@ -199,7 +199,7 @@ class ProcesadorCSV:
             for _ in range(2):
                 if estado_global.esperar_si_pausado():
                     return False, linea_procesada
-                time.sleep(1)
+                time.sleep(0.8)
             
             logger.info("Procesamiento completado exitosamente")
             return True, linea_procesada
