@@ -48,7 +48,7 @@ class GEAutomation:
             'anotar': (1366, 384),
             'agregar_texto_adicional': (1449, 452),
             'limpiar_trazo': (360, 980),
-            'lote_again': (83, 266),
+            'lote_again': (83, 260),
             'cerrar_ventana_archivo': (1530, 555),
             'boton_documentos': (1120, 666),
         }
@@ -369,7 +369,7 @@ class GEAutomation:
             # Columna 28 (índice 27) debe ser 1 para continuar
             if len(row) <= 27 or pd.isna(row.iloc[27]) or row.iloc[27] != 1:
                 logger.info(f"⚠️  Columna 27 vacía, no es 1 o no existe en fila {row_index}, saltando...")
-                if not self.presionar_flecha_abajo_ahk(83, 266, 1):
+                if not self.presionar_flecha_abajo_ahk(83, 260, 1):
                     logger.warning("⚠️  No se pudo presionar flecha abajo con AHK, usando pyautogui")
                     pyautogui.press('down')
                 else:
@@ -382,7 +382,7 @@ class GEAutomation:
             # Columna 29 (índice 28) debe tener valor
             if len(row) <= 28 or pd.isna(row.iloc[28]):
                 logger.info(f"⚠️  Columna 28 vacía o no existe en fila {row_index}, saltando...")
-                if not self.presionar_flecha_abajo_ahk(83, 266, 1):
+                if not self.presionar_flecha_abajo_ahk(83, 260, 1):
                     logger.warning("⚠️  No se pudo presionar flecha abajo con AHK, usando pyautogui")
                     pyautogui.press('down')
                 else:
@@ -487,18 +487,18 @@ class GEAutomation:
         try:
             # Secuencia de acciones
             self.click(*self.coords['agregar_ruta'])
-            self.sleep(1.5)
+            self.sleep(1)
             self.click(*self.coords['archivo'])
-            self.sleep(1.5)
+            self.sleep(1)
             self.click(*self.coords['abrir'])
-            self.sleep(1.5)
+            self.sleep(1)
             
             success = self.handle_archivo_special_behavior(self.nombre_archivo)
             logger.info(f"Resultado de cargar archivo: {'Éxito' if success else 'Fallo'}")
             if not success:
                 logger.error("❌ No se pudo cargar el archivo. Regresando a agregar_ruta...")
                 self.click(*self.coords['agregar_ruta'])
-                self.sleep(1.5)
+                self.sleep(1)
                 return False
             
             if not self.presionar_enter_ahk(1):
@@ -513,7 +513,7 @@ class GEAutomation:
             self.click(1406, 675)
             self.sleep(1.5)
 
-            self.click(83, 266)
+            self.click(83, 260)
             self.sleep(1.5)
             logger.info("Cerrando la ventana de archivo")
             self.click(*self.coords['cerrar_ventana_archivo'])
@@ -576,7 +576,7 @@ class GEAutomation:
                 logger.info("✅ Ventana de error detectada y cerrada")
         
             self.presionar_enter_ahk(1)
-            self.sleep(0.5)
+            self.sleep(0.8)
             logger.info(f"✅ Línea {linea_especifica} completada exitosamente")
 
             return True
