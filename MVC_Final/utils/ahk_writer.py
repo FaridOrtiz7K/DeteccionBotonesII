@@ -2,13 +2,14 @@ import subprocess
 import time
 import os
 import logging
+from utils.resource_path import resource_path
 
 logger = logging.getLogger(__name__)
 
 class AHKWriter:
     def __init__(self):
         self.ahk_process = None
-        self.script_path = "ahk_writer2.ahk"
+        self.script_path = resource_path("ahk_txt/ahk_writer2.ahk")
         
     def crear_script_ahk(self):
         """Crea automáticamente el script de AutoHotkey para escribir texto"""
@@ -19,10 +20,10 @@ class AHKWriter:
 ; Script de AutoHotkey para escribir texto en coordenadas específicas
 Loop {
     ; Esperar comandos de Python
-    FileRead, comando, ahk_writer_command.txt
+    FileRead, comando, %A_ScriptDir%/ahk_writer_command.txt
     if (ErrorLevel = 0) {
-        FileDelete, ahk_writer_command.txt
-        
+        FileDelete, %A_ScriptDir%/ahk_writer_command.txt
+
         ; Parsear comando: x,y,texto
         Array := StrSplit(comando, "|")
         x_campo := Array[1]
@@ -61,14 +62,14 @@ Loop {
         
         ; Guardar texto copiado para verificación
         clipboard_text := Clipboard
-        FileAppend, Texto escrito: %clipboard_text%`n, ahk_writer_debug.txt
+        FileAppend, Texto escrito: %clipboard_text%`n, %A_ScriptDir%/ahk_writer_debug.txt
         
         ; Restaurar selección
         Send, {Right}
         Sleep, 100
         
         ; Confirmación para Python
-        FileAppend, done, ahk_writer_done.txt
+        FileAppend, done, %A_ScriptDir%/ahk_writer_done.txt
         
         ; Limpiar portapapeles
         Clipboard := ""
@@ -92,7 +93,8 @@ Loop {
 
         try:
             # Limpiar archivos temporales previos
-            for temp_file in ["ahk_writer_command.txt", "ahk_writer_done.txt", "ahk_writer_debug.txt"]:
+            for temp_file in [resource_path("ahk_txt/ahk_writer_command.txt"), resource_path("ahk_txt/ahk_writer_done.txt"), resource_path("ahk_txt/ahk_writer_debug.txt")]:
+                logger.info(f"Limpiando archivo temporal: {temp_file}")
                 if os.path.exists(temp_file):
                     os.remove(temp_file)
             
@@ -101,13 +103,15 @@ Loop {
                     return False
                     
             # Verificar que AutoHotkey existe
-            ahk_exe_path = 'AutoHotkey_1.1.37.02/AutoHotkeyU64.exe'
+            ahk_exe_path = resource_path('AutoHotkey_1.1.37.02/AutoHotkeyU64.exe')
+            logger.info(f"Verificando existencia de AutoHotkey en: {ahk_exe_path}")
             if not os.path.exists(ahk_exe_path):
                 logger.error(f"AutoHotkey no encontrado en: {ahk_exe_path}")
                 return False
                 
             self.ahk_process = subprocess.Popen([ahk_exe_path, self.script_path])
-            time.sleep(3)  # Esperar más tiempo para que inicie
+            time.sleep(2)  # Esperar más tiempo para que inicie
+            logger.info("Intentando iniciar AutoHotkey (writer)...")
             
             is_running = self.ahk_process.poll() is None
             if is_running:
@@ -138,7 +142,7 @@ Loop {
     def ejecutar_escritura_ahk(self, x_campo, y_campo, texto):
         """Envía comandos a AutoHotkey para escribir texto en coordenadas específicas"""
         # Limpiar archivos temporales previos
-        for temp_file in ["ahk_writer_command.txt", "ahk_writer_done.txt"]:
+        for temp_file in [resource_path("ahk_txt/ahk_writer_command.txt"), resource_path("ahk_txt/ahk_writer_done.txt"), resource_path("ahk_txt/ahk_writer_debug.txt")]:
             if os.path.exists(temp_file):
                 try:
                     os.remove(temp_file)
@@ -156,21 +160,22 @@ Loop {
         try:
             logger.info(f"Enviando comando a AHK: coordenadas ({x_campo}, {y_campo}), texto: '{texto}'")
             
-            with open("ahk_writer_command.txt", "w", encoding="utf-8") as f:
+            with open(resource_path("ahk_txt/ahk_writer_command.txt"), "w", encoding="utf-8") as f:
                 f.write(comando)
+                logger.info(f"Archivo de comando AHK creado: {resource_path('ahk_txt/ahk_writer_command.txt')}")
             
             # Esperar a que AHK complete la acción
             timeout = 15  # Aumentar timeout
             start_time = time.time()
             attempt = 0
             
-            while not os.path.exists("ahk_writer_done.txt"):
+            while not os.path.exists(resource_path("ahk_txt/ahk_writer_done.txt")):
                 if time.time() - start_time > timeout:
                     logger.error(f"Timeout esperando respuesta de AHK (writer) después de {timeout} segundos")
-                    
+                    logger.error("Posibles causas: AHK no se ejecutó, script con error, o AHK no pudo interactuar con la ventana objetivo.")
                     # Verificar si hay archivo de debug
-                    if os.path.exists("ahk_writer_debug.txt"):
-                        with open("ahk_writer_debug.txt", "r", encoding="utf-8") as f:
+                    if os.path.exists(resource_path("ahk_txt/ahk_writer_debug.txt")):
+                        with open(resource_path("ahk_txt/ahk_writer_debug.txt"), "r", encoding="utf-8") as f:
                             debug_content = f.read()
                         logger.info(f"Contenido debug AHK: {debug_content}")
                     
@@ -182,12 +187,12 @@ Loop {
                 time.sleep(0.1)
             
             # Leer y limpiar archivo de confirmación
-            if os.path.exists("ahk_writer_done.txt"):
-                os.remove("ahk_writer_done.txt")
+            if os.path.exists(resource_path("ahk_txt/ahk_writer_done.txt")):
+                os.remove(resource_path("ahk_txt/ahk_writer_done.txt"))
             
             # Verificar archivo de debug
-            if os.path.exists("ahk_writer_debug.txt"):
-                with open("ahk_writer_debug.txt", "r", encoding="utf-8") as f:
+            if os.path.exists(resource_path("ahk_txt/ahk_writer_debug.txt")):
+                with open(resource_path("ahk_txt/ahk_writer_debug.txt"), "r", encoding="utf-8") as f:
                     debug_content = f.read()
                 logger.info(f"Debug AHK: {debug_content}")
                 # No eliminar el debug para mantener historial
@@ -198,7 +203,7 @@ Loop {
         except Exception as e:
             logger.error(f"Error en ejecutar_escritura_ahk: {e}")
             # Limpiar archivos temporales en caso de error
-            for temp_file in ["ahk_writer_command.txt", "ahk_writer_done.txt"]:
+            for temp_file in [resource_path("ahk_txt\ahk_writer_command.txt"), resource_path("ahk_txt\ahk_writer_done.txt"), resource_path("ahk_txt\ahk_writer_debug.txt")]:
                 if os.path.exists(temp_file):
                     try:
                         os.remove(temp_file)

@@ -2,13 +2,14 @@ import subprocess
 import time
 import os
 import logging
+from utils.resource_path import resource_path
 
 logger = logging.getLogger(__name__)
 
 class AHKManager:
     def __init__(self):
         self.ahk_process = None
-        self.script_path = "ahk_script.ahk"
+        self.script_path = resource_path("ahk_txt/ahk_script.ahk")
         
     def crear_script_ahk(self):
         """Crea automáticamente el script de AutoHotkey"""
@@ -19,10 +20,10 @@ class AHKManager:
 ; Script de AutoHotkey para manejar acciones de UI
 Loop {
     ; Esperar comandos de Python
-    FileRead, comando, ahk_command.txt
+    FileRead, comando, %A_ScriptDir%/ahk_command.txt
     if (ErrorLevel = 0) {
-        FileDelete, ahk_command.txt
-        
+        FileDelete, %A_ScriptDir%/ahk_command.txt
+
         ; Parsear comando: x,y,filename
         Array := StrSplit(comando, ",")
         x_campo := Array[1]
@@ -48,8 +49,8 @@ Loop {
         Sleep, 200
         
         ; Confirmación para Python
-        FileAppend, done, ahk_done.txt
-        FileDelete, ahk_done.txt
+        FileAppend, done, %A_ScriptDir%/ahk_done.txt
+        FileDelete, %A_ScriptDir%/ahk_done.txt
     }
     Sleep, 500  ; Revisar cada medio segundo
 }
@@ -73,7 +74,7 @@ Loop {
                 if not self.crear_script_ahk():
                     return False
                     
-            self.ahk_process = subprocess.Popen(['AutoHotkey_1.1.37.02/AutoHotkeyU64.exe', self.script_path])
+            self.ahk_process = subprocess.Popen([resource_path('AutoHotkey_1.1.37.02/AutoHotkeyU64.exe'), self.script_path])
             time.sleep(2)
             is_running = self.ahk_process.poll() is None
             if is_running:
@@ -104,7 +105,7 @@ Loop {
         comando = f"{x_campo},{y_campo},{nombre_archivo}"
         
         try:
-            with open("ahk_command.txt", "w", encoding="utf-8") as f:
+            with open(resource_path("ahk_txt/ahk_command.txt"), "w", encoding="utf-8") as f:
                 f.write(comando)
             
             logger.info(f"Comando enviado a AHK: {comando}")

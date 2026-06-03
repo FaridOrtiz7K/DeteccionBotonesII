@@ -2,13 +2,14 @@ import subprocess
 import time
 import os
 import logging
+from utils.resource_path import resource_path  
 
 logger = logging.getLogger(__name__)
 
 class EnterAHKManager:
     def __init__(self):
         self.ahk_process = None
-        self.script_path = "ahk_enter.ahk"
+        self.script_path = resource_path("ahk_txt/ahk_enter.ahk")
         
     def crear_script_ahk(self):
         """Crea automáticamente el script de AutoHotkey para presionar Enter"""
@@ -19,10 +20,10 @@ class EnterAHKManager:
 ; Script de AutoHotkey para presionar Enter múltiples veces
 Loop {
     ; Esperar comandos de Python
-    FileRead, comando, ahk_command.txt
+    FileRead, comando, %A_ScriptDir%/ahk_command.txt
     if (ErrorLevel = 0) {
-        FileDelete, ahk_command.txt
-        
+        FileDelete, %A_ScriptDir%/ahk_command.txt
+
         ; Parsear comando: numero_de_veces
         veces := comando
         
@@ -33,8 +34,8 @@ Loop {
         }
         
         ; Confirmación para Python
-        FileAppend, done, ahk_done.txt
-        FileDelete, ahk_done.txt
+        FileAppend, done, %A_ScriptDir%/ahk_done.txt
+        FileDelete, %A_ScriptDir%/ahk_done.txt
     }
     Sleep, 500  ; Revisar cada medio segundo
 }
@@ -58,7 +59,7 @@ Loop {
                 if not self.crear_script_ahk():
                     return False
                     
-            self.ahk_process = subprocess.Popen(['AutoHotkey_1.1.37.02/AutoHotkeyU64.exe', self.script_path])
+            self.ahk_process = subprocess.Popen([resource_path('AutoHotkey_1.1.37.02/AutoHotkeyU64.exe'), self.script_path])
             time.sleep(1)
             is_running = self.ahk_process.poll() is None
             if is_running:
@@ -86,7 +87,7 @@ Loop {
     def presionar_enter(self, veces):
         """Envía comando a AutoHotkey para presionar Enter N veces"""
         try:
-            with open("ahk_command.txt", "w", encoding="utf-8") as f:
+            with open(resource_path("ahk_txt/ahk_command.txt"), "w", encoding="utf-8") as f:
                 f.write(str(veces))
             
             logger.info(f"Comando enviado a AHK: Presionar Enter {veces} veces")

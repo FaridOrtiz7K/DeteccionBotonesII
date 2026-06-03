@@ -2,13 +2,14 @@ import subprocess
 import time
 import os
 import logging
+from utils.resource_path import resource_path
 
 logger = logging.getLogger(__name__)
 
 class AHKClickDown:
     def __init__(self):
         self.ahk_process = None
-        self.script_path = "ahk_click_down.ahk"
+        self.script_path = resource_path("ahk_txt/ahk_click_down.ahk")
         
     def crear_script_ahk(self):
         """Crea automáticamente el script de AutoHotkey para clics y flechas down"""
@@ -19,9 +20,9 @@ class AHKClickDown:
 ; Script de AutoHotkey para clics y flechas down
 Loop {
     ; Esperar comandos de Python
-    FileRead, comando, ahk_click_down_command.txt
+    FileRead, comando, %A_ScriptDir%/ahk_click_down_command.txt
     if (ErrorLevel = 0) {
-        FileDelete, ahk_click_down_command.txt
+        FileDelete, %A_ScriptDir%/ahk_click_down_command.txt
         
         ; Parsear comando: x,y,veces_down
         Array := StrSplit(comando, "|")
@@ -40,7 +41,7 @@ Loop {
         }
         
         ; Confirmación para Python
-        FileAppend, done, ahk_click_down_done.txt
+        FileAppend, done, %A_ScriptDir%/ahk_click_down_done.txt
     }
     Sleep, 500  ; Revisar cada medio segundo
 }
@@ -63,8 +64,8 @@ Loop {
             if not os.path.exists(self.script_path):
                 if not self.crear_script_ahk():
                     return False
-                    
-            self.ahk_process = subprocess.Popen(['AutoHotkey_1.1.37.02/AutoHotkeyU64.exe', self.script_path])
+              
+            self.ahk_process = subprocess.Popen([resource_path('AutoHotkey_1.1.37.02/AutoHotkeyU64.exe'), self.script_path])
             time.sleep(2)
             is_running = self.ahk_process.poll() is None
             if is_running:
@@ -92,7 +93,7 @@ Loop {
     def ejecutar_click_down(self, x_campo, y_campo, veces_down):
         """Envía comandos a AutoHotkey para hacer clic y presionar flecha down"""
         # Limpiar archivos temporales previos
-        for temp_file in ["ahk_click_down_command.txt", "ahk_click_down_done.txt"]:
+        for temp_file in [resource_path("ahk_txt/ahk_click_down_command.txt"), resource_path("ahk_txt/ahk_click_down_done.txt")]:
             if os.path.exists(temp_file):
                 try:
                     os.remove(temp_file)
@@ -103,7 +104,7 @@ Loop {
         comando = f"{x_campo}|{y_campo}|{veces_down}"
         
         try:
-            with open("ahk_click_down_command.txt", "w", encoding="utf-8") as f:
+            with open(resource_path("ahk_txt/ahk_click_down_command.txt"), "w", encoding="utf-8") as f:
                 f.write(comando)
             
             logger.info(f"Comando click+down enviado a AHK: {comando}")
@@ -112,15 +113,15 @@ Loop {
             timeout = 10  # 10 segundos de timeout
             start_time = time.time()
             
-            while not os.path.exists("ahk_click_down_done.txt"):
+            while not os.path.exists(resource_path("ahk_txt/ahk_click_down_done.txt")):
                 if time.time() - start_time > timeout:
                     logger.error("Timeout esperando respuesta de AHK (click down)")
                     return False
                 time.sleep(0.1)
             
             # Limpiar archivo de confirmación
-            if os.path.exists("ahk_click_down_done.txt"):
-                os.remove("ahk_click_down_done.txt")
+            if os.path.exists(resource_path("ahk_txt/ahk_click_down_done.txt")):
+                os.remove(resource_path("ahk_txt/ahk_click_down_done.txt"))
             
             logger.info("Click + Down ejecutado correctamente")
             return True
@@ -128,7 +129,7 @@ Loop {
         except Exception as e:
             logger.error(f"Error en ejecutar_click_down: {e}")
             # Limpiar archivos temporales en caso de error
-            for temp_file in ["ahk_click_down_command.txt", "ahk_click_down_done.txt"]:
+            for temp_file in [resource_path("ahk_txt/ahk_click_down_command.txt"), resource_path("ahk_txt/ahk_click_down_done.txt")]:
                 if os.path.exists(temp_file):
                     try:
                         os.remove(temp_file)

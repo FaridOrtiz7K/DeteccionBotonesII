@@ -7,6 +7,8 @@ import logging
 from models.estado import estado_global
 from utils.ahk_writer import AHKWriter
 
+from utils.resource_path import resource_path
+
 logger = logging.getLogger(__name__)
 
 class NSEAutomation:
@@ -18,7 +20,7 @@ class NSEAutomation:
         """
         self.csv_file = csv_file
         self.linea_especifica = linea_especifica
-        self.reference_image = "img/VentanaAsignar.png"
+        self.reference_image = resource_path("img/VentanaAsignar.png")
         self.is_running = False
         
         self.ahk_writer = AHKWriter()

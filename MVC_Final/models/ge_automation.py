@@ -11,6 +11,8 @@ from utils.ahk_manager import AHKManager
 from utils.ahk_enter import EnterAHKManager
 from utils.ahk_click_down import AHKClickDown
 
+from utils.resource_path import resource_path
+
 logger = logging.getLogger(__name__)
 
 class GEAutomation:
@@ -24,9 +26,9 @@ class GEAutomation:
         self.csv_file = csv_file
         self.linea_especifica = linea_especifica
         self.kml_base_name = kml_base_name
-        self.reference_image = "img/textoAdicional.PNG"
-        self.ventana_archivo_img = "img/cargarArchivo.png"
-        self.ventana_error_img = "img/ventanaError.png"
+        self.reference_image = resource_path("img/textoAdicional.PNG")
+        self.ventana_archivo_img = resource_path("img/cargarArchivo.png")
+        self.ventana_error_img = resource_path("img/ventanaError.png")
         self.is_running = False
         
         self.ahk_writer = AHKWriter()

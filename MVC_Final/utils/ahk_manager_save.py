@@ -4,13 +4,14 @@ import time
 import os
 import logging
 import threading
+from utils.resource_path import resource_path
 
 logger = logging.getLogger(__name__)
 
 class AHKSaveManager:
-    def __init__(self, ahk_path="AutoHotkey_1.1.37.02/AutoHotkeyU64.exe"):
+    def __init__(self, ahk_path=resource_path("AutoHotkey_1.1.37.02/AutoHotkeyU64.exe")):
         self.ahk_process = None
-        self.script_path = "ahk_save.ahk"
+        self.script_path = resource_path("ahk_txt/ahk_save.ahk")
         self.ahk_path = ahk_path
         self.batch_counter = 0
         self.save_lock = threading.Lock()
@@ -24,10 +25,10 @@ class AHKSaveManager:
 ; Script de AutoHotkey para guardar con Ctrl+S
 Loop {
     ; Esperar comandos de Python
-    FileRead, comando, ahk_save_command.txt
+    FileRead, comando, %A_ScriptDir%/ahk_save_command.txt
     if (ErrorLevel = 0) {
-        FileDelete, ahk_save_command.txt
-        
+        FileDelete, %A_ScriptDir%/ahk_save_command.txt
+
         ; Parsear comando: acción
         accion := Trim(comando)
         
@@ -38,8 +39,8 @@ Loop {
             Sleep, 1000
             
             ; Confirmación para Python
-            FileDelete, ahk_savedone.txt
-            FileAppend, saved, ahk_savedone.txt
+            FileDelete, %A_ScriptDir%/ahk_save_done.txt
+            FileAppend, saved, %A_ScriptDir%/ahk_save_done.txt
             Sleep, 300
         }
     }
@@ -67,7 +68,7 @@ Loop {
             if not os.path.exists(self.ahk_path):
                 logger.error(f"No se encuentra AutoHotkey en: {self.ahk_path}")
                 # Intentar con la ruta alterna
-                self.ahk_path = "AutoHotkeyU64.exe"
+                self.ahk_path = resource_path("AutoHotkeyU64.exe")
                 if not os.path.exists(self.ahk_path):
                     logger.error("No se encuentra AutoHotkeyU64.exe en el directorio")
                     return False
@@ -78,7 +79,7 @@ Loop {
                     return False
             
             # Limpiar archivos viejos
-            for file in ["ahk_save_command.txt", "ahk_savedone.txt"]:
+            for file in [resource_path("ahk_txt/ahk_save_command.txt"), resource_path("ahk_txt/ahk_save_done.txt")]:
                 if os.path.exists(file):
                     try:
                         os.remove(file)
@@ -131,12 +132,12 @@ Loop {
                     return False
                 
                 # Limpiar archivo de confirmación previo
-                if os.path.exists("ahk_savedone.txt"):
-                    os.remove("ahk_savedone.txt")
+                if os.path.exists(resource_path("ahk_txt/ahk_save_done.txt")):
+                    os.remove(resource_path("ahk_txt/ahk_save_done.txt"))
                 
                 # Crear archivo de comando
                 logger.info("Enviando comando SAVE a AHK...")
-                with open("ahk_save_command.txt", "w", encoding="utf-8") as f:
+                with open(resource_path("ahk_txt/ahk_save_command.txt"), "w", encoding="utf-8") as f:
                     f.write("SAVE")
                 
                 # Esperar confirmación (tiempo aumentado)
@@ -144,14 +145,14 @@ Loop {
                 start_time = time.time()
                 
                 while time.time() - start_time < timeout:
-                    if os.path.exists("ahk_savedone.txt"):
+                    if os.path.exists(resource_path("ahk_txt/ahk_save_done.txt")):
                         # Leer contenido para verificar
                         try:
-                            with open("ahk_savedone.txt", "r") as f:
+                            with open(resource_path("ahk_txt/ahk_save_done.txt"), "r") as f:
                                 content = f.read().strip()
                             if content == "saved":
                                 # Limpiar archivo de confirmación
-                                os.remove("ahk_savedone.txt")
+                                os.remove(resource_path("ahk_txt/ahk_save_done.txt"))
                                 logger.info("Guardado confirmado por AHK")
                                 return True
                         except Exception as e:
@@ -174,8 +175,8 @@ Loop {
             "ahk_process_alive": self.ahk_process and self.ahk_process.poll() is None,
             "script_exists": os.path.exists(self.script_path),
             "ahk_executable_exists": os.path.exists(self.ahk_path),
-            "command_file_exists": os.path.exists("ahk_save_command.txt"),
-            "done_file_exists": os.path.exists("ahk_savedone.txt")
+            "command_file_exists": os.path.exists(resource_path("ahk_txt/ahk_save_command.txt")),
+            "done_file_exists": os.path.exists(resource_path("ahk_txt/ahk_save_done.txt"))
         }
         logger.info(f"Estado AHK: {status}")
         return status

@@ -10,6 +10,8 @@ from utils.ahk_writer import AHKWriter
 from utils.ahk_click_down import AHKClickDown
 from utils.ahk_enter import EnterAHKManager
 
+from utils.resource_path import resource_path
+
 logger = logging.getLogger(__name__)
 
 class NSEServicesAutomation:
@@ -257,7 +259,7 @@ class NSEServicesAutomation:
                 self.sleep(3)
                 
                 logger.info("🔍 Buscando ventana de servicios...")
-                referencia = self.buscar_imagen("img/ventanaAdministracion4.PNG", timeout=30)
+                referencia = self.buscar_imagen(resource_path("img/ventanaAdministracion4.PNG"), timeout=30)
                 
                 if referencia is None:
                     logger.error("❌ ERROR: No se pudo encontrar la ventana de servicios")
