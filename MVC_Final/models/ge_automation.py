@@ -69,7 +69,6 @@ class GEAutomation:
         intentos = 1
         confianza_minima = 0.6
         tiempo_espera_base = 1.5
-        tiempo_espera_largo = 12
         
         template = cv2.imread(self.ventana_archivo_img)
         if template is None:

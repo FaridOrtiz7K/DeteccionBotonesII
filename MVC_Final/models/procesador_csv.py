@@ -129,14 +129,15 @@ class ProcesadorCSV:
                 logger.error(f"ID obtenido no es un número válido: {id_obtenido}")
                 #saltar lote sin marcar error fatal, ya que el ID no es un número válido
                 self.ahk_click_down.ejecutar_click_down(83, 260, 1)  # Hacer un click + down para saltar el lote
-                return True, None
+                return False, None # No es error fatal, se salta el lote
 
             logger.info(f"Paso 4: Buscando ID {id_obtenido} en CSV (2 intentos máx)")
             registro = self.buscar_por_id(id_obtenido, max_intentos=2)
             
             if registro is None:
                 logger.error(f"ID {id_obtenido} no encontrado en CSV después de 2 intentos. Saltando...")
-                return True, None  # No es error fatal, se salta el lote
+                self.ahk_click_down.ejecutar_click_down(83, 260, 1)  # Hacer un click + down para saltar el lote
+                return False, None  # No es error fatal, se salta el lote
             
             # Determinar la línea (número de fila) donde se encontró el ID
             linea_procesada = None
@@ -206,6 +207,7 @@ class ProcesadorCSV:
             
         except Exception as e:
             logger.error(f"Error en procesar_registro: {e}")
+            self.ahk_click_down.ejecutar_click_down(83, 260, 1)  # Hacer un click + down para saltar el lote
             return False, None
     
     def procesar_todo(self):
