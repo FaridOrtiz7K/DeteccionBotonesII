@@ -94,7 +94,7 @@ class ProcesadorCSV:
             pyautogui.click(83, 260)
             if estado_global.esperar_si_pausado():
                 return False, None
-            time.sleep(0.8)
+            time.sleep(1)
             
             # presionar enter
             logger.info("Paso 2: Presionando ENTER")
@@ -105,7 +105,7 @@ class ProcesadorCSV:
             pyautogui.click(168, 188)
             if estado_global.esperar_si_pausado():
                 return False, None
-            time.sleep(0.8)
+            time.sleep(1)
             
             logger.info("Paso 3: Obteniendo ID con AHKManager en (1483, 519)")
             id_obtenido = self.ahk_manager.ejecutar_acciones_ahk(1483, 519)
@@ -164,7 +164,7 @@ class ProcesadorCSV:
                 for _ in range(2):
                     if estado_global.esperar_si_pausado():
                         return False, linea_procesada
-                    time.sleep(0.8)
+                    time.sleep(1)
             else:
                 logger.warning("No hay columna 2 en el registro")
             
@@ -188,7 +188,7 @@ class ProcesadorCSV:
                     for _ in range(2):
                         if estado_global.esperar_si_pausado():
                             return False, linea_procesada
-                        time.sleep(0.8)
+                        time.sleep(1)
                 else:
                     logger.info("Paso 7: Saltado (columna 4 <= 0 o vacía)")
             else:
@@ -200,7 +200,7 @@ class ProcesadorCSV:
             for _ in range(2):
                 if estado_global.esperar_si_pausado():
                     return False, linea_procesada
-                time.sleep(0.8)
+                time.sleep(1)
             
             logger.info("Procesamiento completado exitosamente")
             return True, linea_procesada

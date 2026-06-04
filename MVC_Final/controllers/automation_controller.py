@@ -546,7 +546,7 @@ class AutomationController:
                     self.view.root.after(0, self.view.log, "⚠️ AHK no está corriendo. Usando pyautogui...")
                     pyautogui.hotkey('ctrl', 's')
 
-                time.sleep(6)
+                time.sleep(1)
                 self.view.root.after(0, self.view.log, "✅ Progreso final guardado exitosamente")
 
             # Mensaje final
